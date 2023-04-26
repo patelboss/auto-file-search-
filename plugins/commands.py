@@ -26,7 +26,7 @@ async def start(client, message):
                 InlineKeyboardButton('🔔 Updates 🤖', url='https://t.me/pankaj_patel_p')
             ],
             [
-                InlineKeyboardButton('🙆🏻 Help 🦾', url=f"https://t.me/{temp.U_NAME}?start=help"),
+                InlineKeyboardButton('🙆🏻𝗛𝗲𝗹𝗽 🦾', url=f"https://t.me/{temp.U_NAME}?start=help"),
             ]
             ]
         reply_markup = InlineKeyboardMarkup(buttons)
@@ -45,10 +45,10 @@ async def start(client, message):
             InlineKeyboardButton('➕↖️ Add Me To Your Groups  मुझे ग्रुप में जोड़े ↗️➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[
             InlineKeyboardButton('🧞‍♀️ Search 🧐', switch_inline_query_current_chat=''),
-            InlineKeyboardButton('🔔 Group 🤖', url='https://t.me/Filmykeedha_ask')
+            InlineKeyboardButton('✪𝙂𝙍𝙊𝙐𝙋✪', url='https://t.me/Filmykeedha_ask')
             ],[
-            InlineKeyboardButton('🙆🏻 Help 🦾', callback_data='help'),
-            InlineKeyboardButton('♥️ About ♥️', callback_data='about')
+            InlineKeyboardButton('🙆🏻 𝗛𝗲𝗹𝗽 🦾', callback_data='help'),
+            InlineKeyboardButton('♥️ 𝗔𝗯𝗼𝘂𝘁 ♥️', callback_data='about')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
@@ -88,13 +88,13 @@ async def start(client, message):
         return
     if len(message.command) == 2 and message.command[1] in ["subscribe", "error", "okay", "help"]:
         buttons = [[
-            InlineKeyboardButton('➕↖️ Add Me To Your Groups  मुझे ग्रुप में जोड़े ↗️➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+            InlineKeyboardButton('➕↖️ 𝗔𝗱𝗱 𝗠𝗲 𝗧𝗼 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽𝘀\nमुझे GROUP में add करे। ↗️➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[
             InlineKeyboardButton('🧞‍♀️ Search 🧐', switch_inline_query_current_chat=''),
-            InlineKeyboardButton('🔔 Group 🤖', url='https://t.me/Filmykeedha_ask')
+            InlineKeyboardButton('✪𝙂𝙍𝙊𝙐𝙋✪', url='https://t.me/Filmykeedha_search')
             ],[
-            InlineKeyboardButton('🙆🏻 Help 🦾', callback_data='help'),
-            InlineKeyboardButton('♥️ About ♥️', callback_data='about')
+            InlineKeyboardButton('🙆🏻 𝗛𝗲𝗹𝗽 🦾', callback_data='help'),
+            InlineKeyboardButton('♥️ 𝗔𝗯𝗼𝘂𝘁 ♥️', callback_data='about')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply_photo(
