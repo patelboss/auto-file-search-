@@ -38,7 +38,7 @@ async def save_group(bot, message):
             return
         buttons = [[
             InlineKeyboardButton('🤥सहायता 𝗛𝗲𝗹𝗽', url=f"https://t.me/{temp.U_NAME}?start=help"),
-            InlineKeyboardButton('🔔 सूचना 𝗦𝘂𝗽𝗽𝗼𝗿𝘁', url='https://t.me/Pankaj_patel_p')
+            InlineKeyboardButton('🔔 सूचना 𝗦𝘂𝗽𝗽𝗼𝗿𝘁', url='https://t.me/iAmRashmibot')
         ]]
         reply_markup=InlineKeyboardMarkup(buttons)
         await message.reply_text(
@@ -100,13 +100,13 @@ async def disable_chat(bot, message):
     if not cha_t:
         return await message.reply("𝐂𝐡𝐚𝐭 𝐍𝐨𝐭 𝐅𝐨𝐮𝐧𝐝 𝐈𝐧 𝐃𝐁")
     if cha_t['is_disabled']:
-        return await message.reply(f"This chat is already disabled:\nReason-<code> {cha_t['reason']} </code>")
+        return await message.reply(f"𝗧𝗵𝗶𝘀 𝗰𝗵𝗮𝘁 𝗶𝘀 𝗮𝗹𝗿𝗲𝗮𝗱𝘆 𝗱𝗶𝘀𝗮𝗯𝗹𝗲𝗱:\nReason-<code> {cha_t['reason']} </code>")
     await db.disable_chat(int(chat_), reason)
     temp.BANNED_CHATS.append(int(chat_))
-    await message.reply('Chat Successfully Disabled')
+    await message.reply('𝗖𝗵𝗮𝘁 𝗦𝘂𝗰𝗰𝗲𝘀𝘀𝗳𝘂𝗹𝗹𝘆 𝗗𝗶𝘀𝗮𝗯𝗹𝗲𝗱')
     try:
         buttons = [[
-            InlineKeyboardButton('Support', url=f'https://t.me/iAmRashmibot')
+            InlineKeyboardButton('𝗦𝘂𝗽𝗽𝗼𝗿𝘁', url=f'https://t.me/iAmRashmibot')
         ]]
         reply_markup=InlineKeyboardMarkup(buttons)
         await bot.send_message(
@@ -121,17 +121,17 @@ async def disable_chat(bot, message):
 @Client.on_message(filters.command('enable') & filters.user(ADMINS))
 async def re_enable_chat(bot, message):
     if len(message.command) == 1:
-        return await message.reply('Give me a chat id मुझे Chat ID दीजिए')
+        return await message.reply('𝗚𝗶𝘃𝗲 𝗠𝗲 𝗔 𝗖𝗵𝗮𝘁 𝗜𝗗 मुझे Chat ID दीजिए')
     chat = message.command[1]
     try:
         chat_ = int(chat)
     except:
-        return await message.reply('Give Me A Valid Chat ID कृपया मुझे सही chat id दे')
+        return await message.reply('𝗚𝗶𝘃𝗲 𝗠𝗲 𝗔 𝗩𝗮𝗹𝗶𝗱 𝗖𝗵𝗮𝘁 𝗜𝗗 कृपया मुझे सही chat id दे')
     sts = await db.get_chat(int(chat))
     if not sts:
-        return await message.reply("Chat Not Found In DB यह Chat हमारे दस्तावेजों में नहीं है !")
+        return await message.reply("𝗖𝗵𝗮𝘁 𝗡𝗼𝘁 𝗙𝗼𝘂𝗻𝗱 𝗜𝗻 𝗗𝗕 यह 𝗰𝗵𝗮𝘁 हमारे दस्तावेजों में नहीं है !")
     if not sts.get('is_disabled'):
-        return await message.reply('This chat is not yet disabled. यह Chat अभी बंद नहीं किया गया')
+        return await message.reply('𝗧𝗵𝗶𝘀 𝗰𝗵𝗮𝘁 𝗶𝘀 𝗻𝗼𝘁 𝘆𝗲𝘁 𝗱𝗶𝘀𝗮𝗯𝗹𝗲𝗱. यह 𝗰𝗵𝗮𝘁 अभी बंद नहीं किया गया')
     await db.re_enable_chat(int(chat_))
     temp.BANNED_CHATS.remove(int(chat_))
     await message.reply("Chat Successfully re-enabled")
