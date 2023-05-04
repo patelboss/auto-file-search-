@@ -56,6 +56,7 @@ async def answer(bot, query):
 
     for file in files:
         title=file.file_name
+        file_id=file.file_id
         size=get_size(file.file_size)
         f_caption=file.caption
         if CUSTOM_FILE_CAPTION:
