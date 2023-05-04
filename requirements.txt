@@ -8,4 +8,4 @@ requests>=2.25
 bs4
 imdbpy
 aiohttp
-urllib3>=1.26
+urllib3
