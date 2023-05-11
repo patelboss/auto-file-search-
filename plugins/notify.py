@@ -16,13 +16,13 @@
 #     # Check if the movie is in the database
 #     if message_text in movie_database:
 #         # If the movie is found, send a message to the user
-#         context.bot.send_message(chat_id=user_id, text=f"Your requested movie '{message_text}' is already in our database.")
+#         context.bot.send_message(chat_id=user_id, text=f"𝐘𝐨𝐮𝐫 𝐫𝐞𝐪𝐮𝐞𝐬𝐭𝐞𝐝 𝐦𝐨𝐯𝐢𝐞 '{message_text}' 𝐢𝐬 𝐚𝐥𝐫𝐞𝐚𝐝𝐲 𝐢𝐧 𝐨𝐮𝐫 𝐝𝐚𝐭𝐚𝐛𝐚𝐬𝐞.")
 #     else:
 #         # If the movie is not found, notify the user and send a message to the log channel with a "Notify user" button
-#         context.bot.send_message(chat_id=user_id, text=f"Sorry, your requested movie '{message_text}' is not in our database. We'll try to add it soon!")
+#         context.bot.send_message(chat_id=user_id, text=f"𝐒𝐨𝐫𝐫𝐲, 𝐲𝐨𝐮𝐫 𝐫𝐞𝐪𝐮𝐞𝐬𝐭𝐞𝐝 𝐦𝐨𝐯𝐢𝐞 '{message_text}' 𝐢𝐬 𝐧𝐨𝐭 𝐢𝐧 𝐨𝐮𝐫 𝐝𝐚𝐭𝐚𝐛𝐚𝐬𝐞. 𝐖𝐞'𝐥𝐥 𝐭𝐫𝐲 𝐭𝐨 𝐚𝐝𝐝 𝐢𝐭 𝐬𝐨𝐨𝐧!")
         
 #         # Send a message to the log channel with the movie name and user ID
-#         log_message = f"Movie '{message_text}' requested by user {user_id}."
+#         log_message = f"𝐌𝐨𝐯𝐢𝐞 '{message_text}'𝐫𝐞𝐪𝐮𝐞𝐬𝐭𝐞𝐝 𝐛𝐲 𝐮𝐬𝐞𝐫 {user_id}."
 #         keyboard = [[InlineKeyboardButton("Notify user", callback_data=f"notify:{user_id}:{message_text}")]]
 #         reply_markup = InlineKeyboardMarkup(keyboard)
 #         context.bot.send_message(chat_id=LOG_CHANNEL_ID, text=log_message, reply_markup=reply_markup)
@@ -37,7 +37,7 @@
 #     movie_database[movie_name] = True
     
 #     # Send a message to the user to notify them that their requested movie has been added
-#     context.bot.send_message(chat_id=user_id, text=f"Your requested movie '{movie_name}' has been added to our database. Enjoy!")
+#     context.bot.send_message(chat_id=user_id, text=f"𝐘𝐨𝐮𝐫 𝐫𝐞𝐪𝐮𝐞𝐬𝐭𝐞𝐝 𝐦𝐨𝐯𝐢𝐞 '{movie_name}' 𝐡𝐚𝐬 𝐛𝐞𝐞𝐧 𝐚𝐝𝐝𝐞𝐝 𝐭𝐨 𝐨𝐮𝐫 𝐝𝐚𝐭𝐚𝐛𝐚𝐬𝐞. 𝐄𝐧𝐣𝐨𝐲!")
     
 #     # Delete the "Notify user" button from the log message
 #     context.bot.edit_message_reply_markup(chat_id=LOG_CHANNEL_ID, message_id=update.callback_query.message.message_id, reply_markup=None)
@@ -68,7 +68,7 @@
     
 #     if requested_movie not in database:
 #         # Notify user that movie is not in database
-#         await client.send_message(message.chat_id, f"Sorry, {requested_movie} is not available in our database.")
+#         await client.send_message(message.chat_id, f"𝐒𝐨𝐫𝐫𝐲, 𝐲𝐨𝐮𝐫 𝐫𝐞𝐪𝐮𝐞𝐬𝐭𝐞𝐝 𝐦𝐨𝐯𝐢𝐞 '{message_text}' 𝐢𝐬 𝐧𝐨𝐭 𝐢𝐧 𝐨𝐮𝐫 𝐝𝐚𝐭𝐚𝐛𝐚𝐬𝐞. 𝐖𝐞'𝐥𝐥 𝐭𝐫𝐲 𝐭𝐨 𝐚𝐝𝐝 𝐢𝐭 𝐬𝐨𝐨𝐧!")
 #         # Send message to log channel
 #         button_data = f"notify_user:{user_id}:{requested_movie}"
 #         notify_button = Button.inline("Notify User", data=button_data)
@@ -82,7 +82,7 @@
 #     if data.startswith("notify_user"):
 #         _, user_id, movie = data.split(":")
 #         # Send message to user
-#         await client.send_message(int(user_id), f"Your requested movie {movie} is now available in our database!")
+#         await client.send_message(int(user_id), f"𝐘𝐨𝐮𝐫 𝐫𝐞𝐪𝐮𝐞𝐬𝐭𝐞𝐝 𝐦𝐨𝐯𝐢𝐞 {movie} 𝐢𝐬 𝐧𝐨𝐰 𝐚𝐯𝐚𝐢𝐥𝐚𝐛𝐥𝐞 𝐢𝐧 𝐨𝐮𝐫 𝐝𝐚𝐭𝐚𝐛𝐚𝐬𝐞!")
 #         # Delete callback query message
 #         await callback_query.answer()
 #         await callback_query.delete()
