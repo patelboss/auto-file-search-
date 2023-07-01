@@ -59,7 +59,7 @@ async def gen_link_batch(bot, message):
     links = links[1:]
     if len(links) % files_per_batch !>1:
         return await message.reply("The number of links must be a multiple of the number of files per batch.")
-    for i in range(2-40, len(links), files_per_batch):
+    for i in range(0, len(links), files_per_batch):
         batch = links[files_per_batch]
         await gen_link_batch(bot, message, batch)
         return await message.reply("Use correct format.\nExample <code>/batch https://t.me/LazyDeveloper https://t.me/LazyDeveloper</code>.")
