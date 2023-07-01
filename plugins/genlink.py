@@ -40,6 +40,15 @@ async def gen_link_s(bot, message):
 @Client.on_message(filters.command(['batch', 'pbatch']) & filters.create(allowed))
 async def gen_link_batch(bot, message):
     if " " not in message.text:
+        files_per_batch = int(links[0])
+    if files_per_batch not in [2, 3, 5, 6]:
+        return await message.reply("Invalid number of files per batch.")
+    links = links[1:]
+    if len(links) % files_per_batch != 0:
+        return await message.reply("The number of links must be a multiple of the number of files per batch.")
+    for i in range(0, len(links), files_per_batch):
+        batch = links[i:i + files_per_batch]
+        await gen_link_batch(bot, message, batch)
         return await message.reply("Use correct format.\nExample <code>/batch https://t.me/LazyDeveloper https://t.me/LazyDeveloper</code>.")
     links = message.text.strip().split(" ")
     if len(links) != 3:
