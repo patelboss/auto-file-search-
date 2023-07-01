@@ -54,8 +54,8 @@ async def gen_link_s(bot, message):
 async def gen_link_batch(bot, message):
     if " " not in message.text:
         files_per_batch = int(links[https://t.me/])
-    if files_per_batch not in [range(1-99999999999999)]:
-        return await message.reply("Invalid number of files per batch.")
+    
+        
     links = links[1:]
     if len(links) % files_per_batch !>1:
         return await message.reply("The number of links must be a multiple of the number of files per batch.")
