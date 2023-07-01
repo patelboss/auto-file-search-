@@ -13,6 +13,19 @@ import logging
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+async def gen_link_batch(self, files_per_batch):
+    files_per_batch = 3
+
+    if files_per_batch not in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]:
+        raise ValueError("files_per_batch must be one of 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 or 13")
+
+    links = []
+    for i in range(0, len(self.files), files_per_batch):
+        links.append("https://example.com/" + ", ".join(self.files[i:i + files_per_batch]))
+
+    return links
+    
+
 async def allowed(_, __, message):
     if PUBLIC_FILE_STORE:
         return True
@@ -41,7 +54,7 @@ async def gen_link_s(bot, message):
 async def gen_link_batch(bot, message):
     if " " not in message.text:
         files_per_batch = int(links[0])
-    if files_per_batch not in [2, 3, 5, 6]:
+    if files_per_batch not in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]:
         return await message.reply("Invalid number of files per batch.")
     links = links[1:]
     if len(links) % files_per_batch != 0:
