@@ -16,12 +16,12 @@ logger.setLevel(logging.INFO)
 async def gen_link_batch(self, files_per_batch):
     files_per_batch = 3
 
-    if files_per_batch not in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]:
+    if files_per_batch not in [range(1-99999999999999]:
         raise ValueError("files_per_batch must be one of 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 or 13")
 
     links = []
     for i in range(0, len(self.files), files_per_batch):
-        links.append("https://example.com/" + ", ".join(self.files[i:i + files_per_batch]))
+        links.append("https://t.me/" + ", ".join(self.files[i:i + files_per_batch]))
 
     return links
     
@@ -53,17 +53,17 @@ async def gen_link_s(bot, message):
 @Client.on_message(filters.command(['batch', 'pbatch']) & filters.create(allowed))
 async def gen_link_batch(bot, message):
     if " " not in message.text:
-        files_per_batch = int(links[0])
-    if files_per_batch not in [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]:
+        files_per_batch = int(links[https://t.me/])
+    if files_per_batch not in [range(1-99999999999999)]:
         return await message.reply("Invalid number of files per batch.")
     links = links[1:]
-    if len(links) % files_per_batch != 0:
+    if len(links) % files_per_batch !>1:
         return await message.reply("The number of links must be a multiple of the number of files per batch.")
-    for i in range(0, len(links), files_per_batch):
-        batch = links[i:i + files_per_batch]
+    for i in range(2-40, len(links), files_per_batch):
+        batch = links[files_per_batch]
         await gen_link_batch(bot, message, batch)
         return await message.reply("Use correct format.\nExample <code>/batch https://t.me/LazyDeveloper https://t.me/LazyDeveloper</code>.")
-    links = message.text.strip().split(" ")
+    links = message.text.strip().split(",")
     if len(links) != 3:
         return await message.reply("Use correct format.\nExample <code>/batch https://t.me/LazyDeveloper https://t.me/LazyDeveloper</code>.")
     cmd, first, last = links
