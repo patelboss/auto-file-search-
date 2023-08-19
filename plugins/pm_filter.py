@@ -59,7 +59,7 @@ async def perform_imdb_search(client, message):
     logging.info("Received message from user: %s", message.text)
 
     if word_count < 20:
-    inline_keyboard = perform_imdb_search(client, message)   
+       inline_keyboard = perform_imdb_search(client, message)   
     
          if inline_keyboard:
             # Create InlineKeyboardMarkup object
