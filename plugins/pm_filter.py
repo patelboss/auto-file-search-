@@ -41,10 +41,10 @@ BUTTONS = {}
 SPELL_CHECK = {}
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
-async def reply_to_group_message(client, message):
+async def reply_to_group_message(client, query):
     logging.info("Running PM filter")
     search = message.text
-    inline_keyboard = tarjen(client, search)
+    inline_keyboard = tarjen(client, query)
 
     if inline_keyboard:
         await message.reply("Select a movie:", reply_markup=inline_keyboard)
@@ -675,7 +675,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, msg, spoll=False):
+async def auto_filter(client, title, spoll=false):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
