@@ -37,6 +37,7 @@ from pymongo import MongoClient
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
+logging.basicConfig(level=logging.DEBUG)
 
 BUTTONS = {}
 SPELL_CHECK = {}
@@ -44,14 +45,19 @@ SPELL_CHECK = {}
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
+  try:
+    logging.debug("Received message: %s", message.text)
     k = await manual_filters(client, message)
     if k == False:
         await perform_imdb_search(client, message)
-
+       except Exception as e:
+        logging.error("An error occurred: %s", e)
 def perform_imdb_search(client, message):
+   try:
+    logging.debug("Performing IMDb search for: %s", message.text)
     ia = IMDb()
-    search_results = ia.search_movie(message)
-
+    search_results = ia.search_movie(message.text)
+    logging.info("searching")
     if search_results:
         keyboard = []
         for i, result in enumerate(search_results[:10], start=1):
@@ -62,6 +68,8 @@ def perform_imdb_search(client, message):
 
         return InlineKeyboardMarkup(keyboard)
     else:
+        except Exception as e:
+        logging.error("An error occurred during IMDb search: %s", e)
         return None
         
 async def reply_to_text(client, message):
