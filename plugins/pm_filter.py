@@ -76,21 +76,21 @@ def perform_imdb_search(client, message):
         
 async def reply_to_text(client, message):
     search_text = message.text
-
-    # Count the number of words in the search_text
     word_count = len(re.findall(r'\w+', search_text))
 
     if word_count < 20:
         inline_keyboard = perform_imdb_search(client, message)
 
         if inline_keyboard:
-            # Create a message with the inline keyboard
+            # Create InlineKeyboardMarkup object
+            keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+            
+            # Create message with the inline keyboard
             message_text = "Which one do you want? Choose one:"
-            await message.reply_text(message_text, reply_markup=inline_keyboard)
-        else:       
-            # IMDb search not found, provide a suggestion
+            await message.reply_text(message_text, reply_markup=keyboard_markup)
+        else:
             suggestion_message = "No results found for '{}'.".format(search_text)
-            await message.reply_text(suggestion_message)   
+            await message.reply_text(suggestion_message)
      
 async def callback_query_handler(client, query):
     logging.info("Callback query received.")
