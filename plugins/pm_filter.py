@@ -60,13 +60,12 @@ async def perform_imdb_search(client, message):
     logging.info("Received message from user: %s", message.text)
 
     if word_count < 20:
-        inline_keyboard = perform_imdb_search(client, message)
-
+        inline_keyboard = None  # Replace this with the actual code to generate inline keyboard
+        
         if inline_keyboard:
             # Create InlineKeyboardMarkup object
             keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
             
-            # Create an asyncio coroutine
             async def callback_handler(client, query):
                 title = query.data.lower()
 
@@ -77,7 +76,6 @@ async def perform_imdb_search(client, message):
                     db = mongo_client['TelegramBot']
                     collection = db['TelegramBot']
 
-                    # Use a case-insensitive regular expression to find similar titles in the 'file_name' field
                     similar_titles = collection.find({"file_name": {"$regex": title, "$options": "i"}})
 
                     if similar_titles.count() > 0:
@@ -86,20 +84,15 @@ async def perform_imdb_search(client, message):
                     else:
                         logging.info("No similar titles found for '{}'.".format(title))
                         reply_message = f"#Requested_ver {title} ."
-                        inline_keyboard = None
 
-                        # Use query.message.id to reply to the message that triggered the callback query
-                        await query.message.edit_text(reply_message, reply_markup=inline_keyboard, disable_web_page_preview=True)
+                        await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
                 except Exception as e:
                     logging.error(f"An error occurred: {e}")
 
-            # Call the perform_imdb_search function and await the result
-            await perform_imdb_search(client, message, reply_to_message_id=query.message_id, callback_data=query.data)
-
+            await callback_handler(client, query)  # Properly await callback_handler
         else:
             suggestion_message = "No results found for '{}'.".format(search_text)
             await message.reply_text(suggestion_message)
-
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
