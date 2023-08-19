@@ -77,7 +77,6 @@ def tarjen(client, query):
     
 # Inside callback_query_handler function
 @Client.on_callback_query(filters.regex('^tarjen'))
-     logging.info("tarjen call back")
      title = query.data
      ia = IMDb()
      
