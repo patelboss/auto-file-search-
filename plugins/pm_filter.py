@@ -45,9 +45,9 @@ async def give_filter(client, message):
     if k == False:
         await perform_imdb_search(search_text)
 
-def perform_imdb_search(search_text):
+def perform_imdb_search(client, message):
     ia = IMDb()
-    search_results = ia.search_movie(search_text)
+    search_results = ia.search_movie(message)
 
     if search_results:
         keyboard = []
@@ -68,7 +68,7 @@ async def reply_to_text(client, message):
     word_count = len(re.findall(r'\w+', search_text))
 
     if word_count < 20:
-        inline_keyboard = perform_imdb_search(search_text)
+        inline_keyboard = perform_imdb_search(client, message)
 
         if inline_keyboard:
             await message.reply_text("Which one do you want? Choose one:", reply_markup=inline_keyboard)
@@ -90,7 +90,7 @@ async def callback_query_handler(client, query):
         similar_titles = collection.find({"file_name": {"$regex": title, "$options": "i"}})
 
         if similar_titles.count() > 0:
-            await auto_filter(client, message) 
+            await auto_filter(client, title) 
         else:
             reply_message = f"#Requested_ver {title} ."
             inline_keyboard = None
@@ -678,9 +678,9 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, msg, spoll=False):
+async def auto_filter(client, title, spoll=False):
     if not spoll:
-        message = msg
+        message = title
         settings = await get_settings(message.chat.id)
         if message.text.startswith("/"): return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
