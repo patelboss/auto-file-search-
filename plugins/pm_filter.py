@@ -84,8 +84,10 @@ async def reply_to_text(client, message):
         inline_keyboard = perform_imdb_search(client, message)
 
         if inline_keyboard:
-            await message.reply_text("Which one do you want? Choose one:", reply_markup=inline_keyboard)
-        else:
+            # Create a message with the inline keyboard
+            message_text = "Which one do you want? Choose one:"
+            await message.reply_text(message_text, reply_markup=inline_keyboard)
+        else:       
             # IMDb search not found, provide a suggestion
             suggestion_message = "No results found for '{}'.".format(search_text)
             await message.reply_text(suggestion_message)   
