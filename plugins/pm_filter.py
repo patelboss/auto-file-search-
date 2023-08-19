@@ -93,9 +93,9 @@ async def perform_imdb_search(client, message):
                 except Exception as e:
                     logging.error(f"An error occurred: {e}")
 
-            # Call the reply_to_text function with the query object
-            await client.send_message(query.message.chat_id, "Which one do you want? Choose one:", reply_markup=keyboard_markup, reply_to_message_id=query.message_id, 
-                                    callback_data=callback_handler)
+            # Call the perform_imdb_search function and await the result
+            await perform_imdb_search(client, message, reply_to_message_id=query.message_id, callback_data=query.data)
+
         else:
             suggestion_message = "No results found for '{}'.".format(search_text)
             await message.reply_text(suggestion_message)
