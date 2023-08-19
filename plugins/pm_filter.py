@@ -52,7 +52,6 @@ async def give_filter(client, message):
     except Exception as e:
         logging.error("An error occurred: %s", e)     
         
-import logging
 
 async def perform_imdb_search(client, message):
     search_text = message.text
@@ -82,17 +81,20 @@ async def perform_imdb_search(client, message):
                     similar_titles = collection.find({"file_name": {"$regex": title, "$options": "i"}})
 
                     if similar_titles.count() > 0:
+                        logging.info("Found similar titles for '{}'.".format(title))
                         await auto_filter(client, title) 
                     else:
+                        logging.info("No similar titles found for '{}'.".format(title))
                         reply_message = f"#Requested_ver {title} ."
                         inline_keyboard = None
 
+                        # Use query.message.id to reply to the message that triggered the callback query
                         await query.message.edit_text(reply_message, reply_markup=inline_keyboard, disable_web_page_preview=True)
                 except Exception as e:
                     logging.error(f"An error occurred: {e}")
 
-            # Call the reply_to_text function with the asyncio coroutine
-            await client.send_message(message.chat.id, "Which one do you want? Choose one:", reply_markup=keyboard_markup, reply_to_message_id=message.message_id, 
+            # Call the reply_to_text function with the query object
+            await client.send_message(query.message.chat_id, "Which one do you want? Choose one:", reply_markup=keyboard_markup, reply_to_message_id=query.message_id, 
                                     callback_data=callback_handler)
         else:
             suggestion_message = "No results found for '{}'.".format(search_text)
