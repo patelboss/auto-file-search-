@@ -55,14 +55,10 @@ async def give_filter(client, message):
 
 async def perform_imdb_search(client, message):
     search_text = message.text
-    word_count = len(re.findall(r'\w+', search_text))
-
+   
     logging.info("Received message from user: %s", message.text)
-
-    if word_count < 20:
-        inline_keyboard = None  # Replace this with the actual code to generate inline keyboard
         
-        if inline_keyboard:
+    if inline_keyboard:
             # Create InlineKeyboardMarkup object
             keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
             
