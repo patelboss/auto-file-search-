@@ -56,18 +56,18 @@ async def reply_to_group_message(client, message):
 
 
 def tarjen(client, query):
-	logging.info("Running PM filter")
+    logging.info("Running PM filter")
 
-        ia = IMDb()
-        search_results = ia.search_movie(query)
+    ia = IMDb()
+    search_results = ia.search_movie(query)
      
-        if search_results:
-            keyboard = []
-            for i, result in enumerate(search_results[:10], start=1):
-                title = result['title']
-                release_year = result.get('year', 'N/A')
-                button_text = f"{i}. {title} - {release_year}"
-                keyboard.append([InlineKeyboardButton(button_text, callback_data=f"imdb:{title}")])
+    if search_results:
+        keyboard = []
+        for i, result in enumerate(search_results[:10], start=1):
+            title = result['title']
+            release_year = result.get('year', 'N/A')
+            button_text = f"{i}. {title} - {release_year}"
+            keyboard.append([InlineKeyboardButton(button_text, callback_data=f"imdb:{title}")])
 
             return InlineKeyboardMarkup(keyboard)
         else:
