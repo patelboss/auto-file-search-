@@ -32,6 +32,9 @@ from database.filters_mdb import (
 )
 import logging
 
+from imdb import IMDb
+from pymongo import MongoClient
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
