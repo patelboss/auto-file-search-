@@ -52,31 +52,13 @@ async def give_filter(client, message):
     except Exception as e:
         logging.error("An error occurred: %s", e)     
         
-def perform_imdb_search(client, message):
-    try:
-        logging.debug("Performing IMDb search for: %s", message.text)
-        ia = IMDb()
-        search_results = ia.search_movie(message.text)
-        logging.info("searching")
-        
-        if search_results:
-            keyboard = []
-            for i, result in enumerate(search_results[:10], start=1):
-                title = result['title']
-                year = result.get('year', 'N/A')
-                button_text = f"{i}. {title} - {year}"
-                keyboard.append([InlineKeyboardButton(button_text, callback_data=title)])
+import logging
 
-            return InlineKeyboardMarkup(keyboard)
-        else:
-            return None
-    except Exception as e:
-        logging.error("An error occurred during IMDb search: %s", e)
-        return None
-        
-async def reply_to_text(client, message):
+async def perform_imdb_search(client, message):
     search_text = message.text
     word_count = len(re.findall(r'\w+', search_text))
+
+    logging.info("Received message from user: %s", message.text)
 
     if word_count < 20:
         inline_keyboard = perform_imdb_search(client, message)
@@ -85,34 +67,36 @@ async def reply_to_text(client, message):
             # Create InlineKeyboardMarkup object
             keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
             
-            # Create message with the inline keyboard
-            message_text = "Which one do you want? Choose one:"
-            await message.reply_text(message_text, reply_markup=keyboard_markup)
+            # Create an asyncio coroutine
+            async def callback_handler(client, query):
+                title = query.data.lower()
+
+                logging.info("Callback query received.")
+
+                try:
+                    mongo_client = MongoClient(DATABASE_URI)
+                    db = mongo_client['TelegramBot']
+                    collection = db['TelegramBot']
+
+                    # Use a case-insensitive regular expression to find similar titles in the 'file_name' field
+                    similar_titles = collection.find({"file_name": {"$regex": title, "$options": "i"}})
+
+                    if similar_titles.count() > 0:
+                        await auto_filter(client, title) 
+                    else:
+                        reply_message = f"#Requested_ver {title} ."
+                        inline_keyboard = None
+
+                        await query.message.edit_text(reply_message, reply_markup=inline_keyboard, disable_web_page_preview=True)
+                except Exception as e:
+                    logging.error(f"An error occurred: {e}")
+
+            # Call the reply_to_text function with the asyncio coroutine
+            await client.send_message(message.chat.id, "Which one do you want? Choose one:", reply_markup=keyboard_markup, reply_to_message_id=message.message_id, 
+                                    callback_data=callback_handler)
         else:
             suggestion_message = "No results found for '{}'.".format(search_text)
             await message.reply_text(suggestion_message)
-     
-async def callback_query_handler(client, query):
-    logging.info("Callback query received.")
-    title = query.data.lower()
-
-    try:
-        mongo_client = MongoClient(DATABASE_URI)
-        db = mongo_client['TelegramBot']
-        collection = db['TelegramBot']
-
-        # Use a case-insensitive regular expression to find similar titles in the 'file_name' field
-        similar_titles = collection.find({"file_name": {"$regex": title, "$options": "i"}})
-
-        if similar_titles.count() > 0:
-            await auto_filter(client, title) 
-        else:
-            reply_message = f"#Requested_ver {title} ."
-            inline_keyboard = None
-
-        await query.message.edit_text(reply_message, reply_markup=inline_keyboard, disable_web_page_preview=True)
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
