@@ -34,16 +34,67 @@ import logging
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.info("Running PM filter")
 
 BUTTONS = {}
 SPELL_CHECK = {}
 
-
 @Client.on_message(filters.group & filters.text & filters.incoming)
-async def give_filter(client, message):
-    k = await manual_filters(client, message)
-    if k == False:
-        await auto_filter(client, message)
+async def reply_to_group_message(client, message):
+    logging.info("Running PM filter")
+    search = message.text
+    inline_keyboard = tarjen(client, search)
+
+    if inline_keyboard:
+        await message.reply("Select a movie:", reply_markup=inline_keyboard)
+    else:
+        # IMDb search not found, provide a suggestion
+        suggestion_message = "Spelling Galat Hai!"
+        await message.reply(suggestion_message)
+        logging.info("Reply To Group Message")
+
+
+def tarjen(client, query):
+	logging.info("Running PM filter")
+
+        ia = IMDb()
+        search_results = ia.search_movie(query)
+     
+        if search_results:
+            keyboard = []
+            for i, result in enumerate(search_results[:10], start=1):
+                title = result['title']
+                release_year = result.get('year', 'N/A')
+                button_text = f"{i}. {title} - {release_year}"
+                keyboard.append([InlineKeyboardButton(button_text, callback_data=f"imdb:{title}")])
+
+            return InlineKeyboardMarkup(keyboard)
+        else:
+            return None
+    
+# Inside callback_query_handler function
+@Client.on_callback_query(filters.regex('^tarjen'))
+ async def tarjen_callback(client, query):
+     logging.info("tarjen call back")
+     title = query.data
+     ia = IMDb()
+     
+     mongo_client = MongoClient(DATABASE_URI)
+     db = mongo_client['TelegramBot']
+     collection = db['TelegramBot']
+
+    # Check if the movie is in the database
+     if collection.find_one({'title': title}):
+          logging.info("find one")
+          await auto_filter(client, title)
+          logging.info("await auto filter")
+
+     else:
+         reply_message = f"Please, Add '{title}' to the database.\n forward This message To\n https://t.me/iAmRashmibot"
+         await query.message.edit_text(reply_message)
+         
+
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
@@ -636,7 +687,7 @@ async def auto_filter(client, msg, spoll=False):
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
                 if settings["spell_check"]:
-                    return await advantage_spell_chok(msg)
+                    return await tarjen(client, query)
                 else:
                     return
         else:
