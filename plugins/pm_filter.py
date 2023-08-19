@@ -76,23 +76,36 @@ async def perform_imdb_search(client, message):
                     db = mongo_client['TelegramBot']
                     collection = db['TelegramBot']
 
-                    similar_titles = collection.find({"file_name": {"$regex": title, "$options": "i"}})
+                    # Search for movies and web series
+                    similar_titles = collection.find({"$or": [{"file_name": {"$regex": title, "$options": "i"}}, {"file_type": "TV Show", "title": {"$regex": title, "$options": "i"}}]})
 
                     if similar_titles.count() > 0:
                         logging.info("Found similar titles for '{}'.".format(title))
                         await auto_filter(client, title) 
                     else:
                         logging.info("No similar titles found for '{}'.".format(title))
-                        reply_message = f"#Requested_ver {title} ."
+                        # Your IMDb search code
+                        imdb_search_results = await get_imdb_search_results(title)
+                        if imdb_search_results:
+                            reply_message = "Here are the results for '{}' on IMDb:\n".format(title)
+                            for result in imdb_search_results:
+                                reply_message += "{} ({})\n".format(result['title'], result['year'])
+                                reply_message += "Select the title you want to search by autofilter: "
+                            logging.info("Sending message: {}".format(reply_message))
+                            await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+                        else:
+                            reply_message = f"#Requested_ver {title} ."
 
-                        await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+                            await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
                 except Exception as e:
                     logging.error(f"An error occurred: {e}")
 
-            await callback_handler(client, query)  # Properly await callback_handler
+            # Properly await callback_handler
+            await callback_handler(client, query)
         else:
             suggestion_message = "No results found for '{}'.".format(search_text)
             await message.reply_text(suggestion_message)
+
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
