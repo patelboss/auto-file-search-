@@ -68,8 +68,6 @@ def perform_imdb_search(client, message):
 
         return InlineKeyboardMarkup(keyboard)
     else:
-        except Exception as e:
-        logging.error("An error occurred during IMDb search: %s", e)
         return None
         
 async def reply_to_text(client, message):
