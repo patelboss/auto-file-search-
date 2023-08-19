@@ -43,7 +43,7 @@ SPELL_CHECK = {}
 async def give_filter(client, message):
     k = await manual_filters(client, message)
     if k == False:
-        await perform_imdb_search(search_text)
+        await perform_imdb_search(client, message)
 
 def perform_imdb_search(client, message):
     ia = IMDb()
