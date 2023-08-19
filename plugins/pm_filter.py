@@ -42,33 +42,35 @@ logging.basicConfig(level=logging.DEBUG)
 BUTTONS = {}
 SPELL_CHECK = {}
 
-
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
-  try:
-    logging.debug("Received message: %s", message.text)
-    k = await manual_filters(client, message)
-    if k == False:
-        await perform_imdb_search(client, message)
-        except Exception as e:
-        logging.error("An error occurred: %s", e)
+    try:
+        logging.debug("Received message: %s", message.text)
+        k = await manual_filters(client, message)
+        if k == False:
+            await perform_imdb_search(client, message)
+    except Exception as e:
+        logging.error("An error occurred: %s", e)     
+        
 def perform_imdb_search(client, message):
-   try:
-    logging.debug("Performing IMDb search for: %s", message.text)
-    ia = IMDb()
-    search_results = ia.search_movie(message.text)
-    logging.info("searching")
-    if search_results:
-        keyboard = []
-        for i, result in enumerate(search_results[:10], start=1):
-            title = result['title']
-            year = result.get('year', 'N/A')
-            button_text = f"{i}. {title} - {year}"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=title)])
+    try:
+        logging.debug("Performing IMDb search for: %s", message.text)
+        ia = IMDb()
+        search_results = ia.search_movie(message.text)
+        logging.info("searching")
+        
+        if search_results:
+            keyboard = []
+            for i, result in enumerate(search_results[:10], start=1):
+                title = result['title']
+                year = result.get('year', 'N/A')
+                button_text = f"{i}. {title} - {year}"
+                keyboard.append([InlineKeyboardButton(button_text, callback_data=title)])
 
-        return InlineKeyboardMarkup(keyboard)
-    else:
-        except Exception as e:
+            return InlineKeyboardMarkup(keyboard)
+        else:
+            return None
+    except Exception as e:
         logging.error("An error occurred during IMDb search: %s", e)
         return None
         
