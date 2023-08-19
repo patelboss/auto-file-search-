@@ -31,6 +31,8 @@ from database.filters_mdb import (
     get_filters,
 )
 import logging
+from imdb import IMDb
+from pymongo import MongoClient
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
@@ -75,7 +77,6 @@ def tarjen(client, query):
     
 # Inside callback_query_handler function
 @Client.on_callback_query(filters.regex('^tarjen'))
- async def tarjen_callback(client, query):
      logging.info("tarjen call back")
      title = query.data
      ia = IMDb()
