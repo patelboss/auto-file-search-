@@ -52,10 +52,6 @@ async def give_filter(client, message):
     except Exception as e:
         logging.error("An error occurred: %s", e)     
 
-async def perform_imdb_search(client, message)
-    except Exception as e:
-        logging.error("An error occurred: %s", e)     
-
 async def perform_imdb_search(client, message):
     search_text = message.text
     logging.info("Received message from user: %s", message.text)
