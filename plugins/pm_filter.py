@@ -52,73 +52,6 @@ async def give_filter(client, message):
     except Exception as e:
         logging.error("An error occurred: %s", e)     
 
-async def perform_imdb_search(client, message):
-    search_text = message.text
-    logging.info("Received message from user: %s", message.text)
-    
-    inline_keyboard = await get_imdb_search(search_text)
-    
-    if inline_keyboard:
-        keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        await auto_filter(client, msg, keyboard_markup) # Pass the keyboard_markup to auto_filter
-    else:
-        suggestion_message = "No results found for '{}'.".format(search_text)
-        await message.reply_text(suggestion_message)
-
-async def callback_handler(client, query, keyboard_markup):
-    title = query.data  # Use query.data to get the selected movie title
-
-    logging.info("Callback query received.")
-
-    try:
-        imdb_search_results = await get_imdb_search_results(title)
-        if imdb_search_results:
-            logging.info("Found results for '{}' on IMDb.".format(title))
-            reply_message = "Here are the results for '{}' on IMDb:\n".format(title)
-            for result in imdb_search_results:
-                reply_message += "{} ({})\n".format(result['title'], result['year'])
-            logging.info("Sending message: {}".format(reply_message))
-            await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
-        else:
-            logging.info("No results found for '{}' on IMDb.".format(title))
-            reply_message = "No results found in IMDb for '{}'. Let me autofilter it for you.".format(title)
-            logging.info("Sending message: {}".format(reply_message))
-            await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
-
-
-async def get_imdb_search(search_text):
-    ia = IMDb()
-    search_results = ia.search_movie(search_text)
-
-    if search_results:
-        keyboard = []
-        for i, result in enumerate(search_results[:10], start=1):
-            title = result['title']
-            year = result.get('year', 'N/A')
-            button_text = f"{i}. {title} - {year}"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=title)])
-
-        return keyboard
-    else:
-        return None
-
-async def get_imdb_search_results(title):
-    ia = IMDb()
-    search_results = ia.search_movie(title)
-
-    if search_results:
-        results = []
-        for result in search_results:
-            results.append({
-                'title': result['title'],
-                'year': result.get('year', 'N/A')
-            })
-
-        return results
-    else:
-        return None
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
@@ -916,3 +849,72 @@ async def manual_filters(client, message, text=False):
                 break
     else:
         return False
+        
+async def perform_imdb_search(client, message):
+    search_text = message.text
+    logging.info("Received message from user: %s", message.text)
+    
+    inline_keyboard = await get_imdb_search(search_text)
+    
+    if inline_keyboard:
+        keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+        await auto_filter(client, msg, keyboard_markup) # Pass the keyboard_markup to auto_filter
+    else:
+        suggestion_message = "No results found for '{}'.".format(search_text)
+        await message.reply_text(suggestion_message)
+
+async def callback_handler(client, query, keyboard_markup):
+    title = query.data  # Use query.data to get the selected movie title
+
+    logging.info("Callback query received.")
+
+    try:
+        imdb_search_results = await get_imdb_search_results(title)
+        if imdb_search_results:
+            logging.info("Found results for '{}' on IMDb.".format(title))
+            reply_message = "Here are the results for '{}' on IMDb:\n".format(title)
+            for result in imdb_search_results:
+                reply_message += "{} ({})\n".format(result['title'], result['year'])
+            logging.info("Sending message: {}".format(reply_message))
+            await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+        else:
+            logging.info("No results found for '{}' on IMDb.".format(title))
+            reply_message = "No results found in IMDb for '{}'. Let me autofilter it for you.".format(title)
+            logging.info("Sending message: {}".format(reply_message))
+            await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
+
+
+async def get_imdb_search(search_text):
+    ia = IMDb()
+    search_results = ia.search_movie(search_text)
+
+    if search_results:
+        keyboard = []
+        for i, result in enumerate(search_results[:10], start=1):
+            title = result['title']
+            year = result.get('year', 'N/A')
+            button_text = f"{i}. {title} - {year}"
+            keyboard.append([InlineKeyboardButton(button_text, callback_data=title)])
+
+        return keyboard
+    else:
+        return None
+
+async def get_imdb_search_results(title):
+    ia = IMDb()
+    search_results = ia.search_movie(title)
+
+    if search_results:
+        results = []
+        for result in search_results:
+            results.append({
+                'title': result['title'],
+                'year': result.get('year', 'N/A')
+            })
+
+        return results
+    else:
+        return None
+            
