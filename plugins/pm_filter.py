@@ -52,6 +52,10 @@ async def give_filter(client, message):
     except Exception as e:
         logging.error("An error occurred: %s", e)     
 
+async def perform_imdb_search(client, message)
+    except Exception as e:
+        logging.error("An error occurred: %s", e)     
+
 async def perform_imdb_search(client, message):
     search_text = message.text
     logging.info("Received message from user: %s", message.text)
@@ -60,8 +64,7 @@ async def perform_imdb_search(client, message):
     
     if inline_keyboard:
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        await message.reply_text("Select a movie title from the list:", reply_markup=keyboard_markup)
-        await auto_filter(client, message.chat.id, inline_keyboard)  # Start autofilter
+        await auto_filter(client, message, keyboard_markup)  # Pass the keyboard_markup to auto_filter
     else:
         suggestion_message = "No results found for '{}'.".format(search_text)
         await message.reply_text(suggestion_message)
@@ -699,11 +702,12 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, chat_id, inline_keyboard):
+async def auto_filter(client, msg, keyboard_markup):
     try:
-        await client.send_message(chat_id, "Select a title to search by autofilter:", reply_markup=InlineKeyboardMarkup(inline_keyboard))
+        await client.send_message(msg.chat.id, "Select a title to search by autofilter:", reply_markup=keyboard_markup)
     except Exception as e:
         logging.error(f"An error occurred during autofiltering: {e}")
+
    # if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
