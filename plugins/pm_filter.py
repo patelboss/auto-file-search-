@@ -631,7 +631,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, msg, spoll=False):
+async def auto_filter(client, msg, title, spoll=False):
     try:
         
         await client.send_message(message.chat.id, "Select a title to search by autofilter:", reply_markup=keyboard_markup)
@@ -851,7 +851,7 @@ async def manual_filters(client, message, text=False):
     else:
         return False
         
-def perform_imdb_search(search_text):
+def perform_imdb_search(client, message, search_text):
     ia = IMDb()
     search_results = ia.search_movie(search_text)
 
