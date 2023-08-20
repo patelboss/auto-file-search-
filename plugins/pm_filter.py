@@ -48,7 +48,7 @@ async def give_filter(client, message):
         logging.debug("Received message: %s", message.text)
         k = await manual_filters(client, message)
         if k == False:
-            await perform_imdb_search(client, message)
+            await perform_imdb_search(client, message, search_text)
     except Exception as e:
         logging.error("An error occurred: %s", e)     
 
@@ -886,4 +886,4 @@ async def reply_to_text(client, message):
 async def callback_query_handler(client, query):
     logging.info("Callback query received.")
     title = query.data.lower()
-    await auto_filer(client, title)
+    await auto_filter(client, title)
