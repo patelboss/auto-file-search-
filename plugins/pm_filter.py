@@ -63,7 +63,7 @@ async def perform_imdb_search(client, message):
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
         
         async def callback_handler(client, query):
-            title = query.data.lower()
+            title = query.text
 
             logging.info("Callback query received.")
 
