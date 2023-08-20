@@ -705,7 +705,7 @@ async def auto_filter(client, chat_id, inline_keyboard):
     except Exception as e:
         logging.error(f"An error occurred during autofiltering: {e}")
    # if not spoll:
-        message = inline_keyboard
+        message = msg
         settings = await get_settings(message.chat.id)
         if message.text.startswith("/"): return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
@@ -713,11 +713,11 @@ async def auto_filter(client, chat_id, inline_keyboard):
         if 2 < len(message.text) < 100:
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
-            if not files:
-                if settings["spell_check"]:
-                    return await advantage_spell_chok(msg)
-                else:
-                    return
+            #if not files:
+             #   if settings["spell_check"]:
+              #      return #await advantage_spell_chok(msg)
+               # else:
+                #    return
         else:
             return
     else:
