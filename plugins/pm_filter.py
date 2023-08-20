@@ -859,14 +859,13 @@ async def perform_imdb_search(client, message):
     
     if inline_keyboard:
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        await auto_filter(client, keyboard_markup) # Pass the keyboard_markup to auto_filter
+         # Pass the keyboard_markup to auto_filter
     else:
         suggestion_message = "No results found for '{}'.".format(search)
         await message.reply_text(suggestion_message)
 
 async def callback_handler(client, query, keyboard_markup):
-    find == query.title  # Use query.data to get the selected movie title
-
+    find == query.data  # Use query.data to get the selected movie title
     logging.info("Callback query received.")
 
     try:
@@ -883,6 +882,7 @@ async def callback_handler(client, query, keyboard_markup):
             reply_message = "No results found in IMDb for '{}'. Let me autofilter it for you.".format(title)
             logging.info("Sending message: {}".format(reply_message))
             await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+            await auto_filter(client, find)
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
