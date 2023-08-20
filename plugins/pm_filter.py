@@ -43,8 +43,6 @@ BUTTONS = {}
 SPELL_CHECK = {}
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
-
-@Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
     try:
         logging.debug("Received message: %s", message.text)
@@ -62,13 +60,14 @@ async def perform_imdb_search(client, message):
     
     if inline_keyboard:
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        await callback_handler(client, message, keyboard_markup)
+        await message.reply_text("Select a movie title from the list:", reply_markup=keyboard_markup)
+        await auto_filter(client, message.chat.id, inline_keyboard)  # Start autofilter
     else:
         suggestion_message = "No results found for '{}'.".format(search_text)
         await message.reply_text(suggestion_message)
 
-async def callback_handler(client, message, keyboard_markup):
-    title = message.text
+async def callback_handler(client, query, keyboard_markup):
+    title = query.data  # Use query.data to get the selected movie title
 
     logging.info("Callback query received.")
 
@@ -79,15 +78,13 @@ async def callback_handler(client, message, keyboard_markup):
             reply_message = "Here are the results for '{}' on IMDb:\n".format(title)
             for result in imdb_search_results:
                 reply_message += "{} ({})\n".format(result['title'], result['year'])
-            reply_message += "Select the title you want to search by autofilter: "
             logging.info("Sending message: {}".format(reply_message))
-            await message.reply_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
-            await auto_filter(client, message.chat.id, title)  # Start autofilter
+            await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
         else:
             logging.info("No results found for '{}' on IMDb.".format(title))
-            reply_message = "No results found in IMDb. Let me autofilter it for you."
+            reply_message = "No results found in IMDb for '{}'. Let me autofilter it for you.".format(title)
             logging.info("Sending message: {}".format(reply_message))
-            await message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+            await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
     except Exception as e:
         logging.error(f"An error occurred: {e}")
 
@@ -702,9 +699,13 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, title, spoll=False):
-    if not spoll:
-        message = title
+async def auto_filter(client, chat_id, inline_keyboard):
+    try:
+        await client.send_message(chat_id, "Select a title to search by autofilter:", reply_markup=InlineKeyboardMarkup(inline_keyboard))
+    except Exception as e:
+        logging.error(f"An error occurred during autofiltering: {e}"):
+   # if not spoll:
+        message = inline_keyboard
         settings = await get_settings(message.chat.id)
         if message.text.startswith("/"): return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
