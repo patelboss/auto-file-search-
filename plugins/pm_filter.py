@@ -631,15 +631,15 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, msg, keyboard_markup):
+async def auto_filter(client, title, keyboard_markup):
     try:
         
-        await client.send_message(msg.chat.id, "Select a title to search by autofilter:", reply_markup=keyboard_markup)
+        await client.send_message(message.chat.id, "Select a title to search by autofilter:", reply_markup=keyboard_markup)
     except Exception as e:
         logging.error(f"An error occurred during autofiltering: {e}")
 
    # if not spoll:
-        message = msg
+      #  message = msg
         settings = await get_settings(message.chat.id)
         if message.text.startswith("/"): return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
@@ -655,8 +655,8 @@ async def auto_filter(client, msg, keyboard_markup):
         else:
             return
     else:
-        settings = await get_settings(msg.message.chat.id)
-        message = msg.message.reply_to_message  # msg will be callback query
+        settings = await get_settings(message.message.chat.id)
+        message = message.message.reply_to_message  # msg will be callback query
         search, files, offset, total_results = spoll
     pre = 'filep' if settings['file_secure'] else 'file'
     if settings["button"]:
@@ -745,7 +745,7 @@ async def auto_filter(client, msg, keyboard_markup):
     else:
         await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
     if spoll:
-        await msg.message.delete()
+        await message.message.delete()
 
 
 async def advantage_spell_chok(msg):
@@ -757,7 +757,7 @@ async def advantage_spell_chok(msg):
     g_s += await search_gagala(msg.text)
     gs_parsed = []
     if not g_s:
-        k = await msg.reply("𝐇𝐞𝐲! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢,\n 𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 🤷‍♀️!\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 🤦‍♀️... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha .")
+        k = await message.reply("𝐇𝐞𝐲! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢,\n 𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 🤷‍♀️!\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 🤦‍♀️... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha .")
         await asyncio.sleep(8)
         await k.delete()
         return
@@ -773,7 +773,7 @@ async def advantage_spell_chok(msg):
             match = reg.match(mv)
             if match:
                 gs_parsed.append(match.group(1))
-    user = msg.from_user.id if msg.from_user else 0
+    user = message.from_user.id if message.from_user else 0
     movielist = []
     gs_parsed = list(dict.fromkeys(gs_parsed))  # removing duplicates https://stackoverflow.com/a/7961425
     if len(gs_parsed) > 3:
@@ -798,7 +798,7 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    await msg.reply("𝐇𝐞𝐲 𝗕𝗿𝗼! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢, \n𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 !\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 ... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha ",
+    await message.reply("𝐇𝐞𝐲 𝗕𝗿𝗼! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢, \n𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 !\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 ... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha ",
                     reply_markup=InlineKeyboardMarkup(btn))
 
 
@@ -851,16 +851,16 @@ async def manual_filters(client, message, text=False):
         return False
         
 async def perform_imdb_search(client, message):
-    search_text = message.text
+    search = message.text
     logging.info("Received message from user: %s", message.text)
     
-    inline_keyboard = await get_imdb_search(search_text)
+    inline_keyboard = await get_imdb_search(search)
     
     if inline_keyboard:
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        await auto_filter(client, msg, keyboard_markup) # Pass the keyboard_markup to auto_filter
+        await auto_filter(client, title, keyboard_markup) # Pass the keyboard_markup to auto_filter
     else:
-        suggestion_message = "No results found for '{}'.".format(search_text)
+        suggestion_message = "No results found for '{}'.".format(search)
         await message.reply_text(suggestion_message)
 
 async def callback_handler(client, query, keyboard_markup):
@@ -869,7 +869,7 @@ async def callback_handler(client, query, keyboard_markup):
     logging.info("Callback query received.")
 
     try:
-        imdb_search_results = await get_imdb_search_results(title)
+        imdb_search_results = await get_imdb_search(title)
         if imdb_search_results:
             logging.info("Found results for '{}' on IMDb.".format(title))
             reply_message = "Here are the results for '{}' on IMDb:\n".format(title)
@@ -886,9 +886,9 @@ async def callback_handler(client, query, keyboard_markup):
         logging.error(f"An error occurred: {e}")
 
 
-async def get_imdb_search(search_text):
+async def get_imdb_search(search):
     ia = IMDb()
-    search_results = ia.search_movie(search_text)
+    search_results = ia.search_movie(search)
 
     if search_results:
         keyboard = []
@@ -902,19 +902,19 @@ async def get_imdb_search(search_text):
     else:
         return None
 
-async def get_imdb_search_results(title):
-    ia = IMDb()
-    search_results = ia.search_movie(title)
+#async def get_imdb_search_results(title):
+#   ia = IMDb()
+#   search_results = ia.search_movie(title)
 
-    if search_results:
-        results = []
-        for result in search_results:
-            results.append({
-                'title': result['title'],
-                'year': result.get('year', 'N/A')
-            })
+#   if search_results:
+#       results = []
+#       for result in search_results:
+#           results.append({
+#               'title': result['title'],
+#               'year': result.get('year', 'N/A')
+#           })
 
-        return results
-    else:
-        return None
+#       return results
+#   else:
+#       return None
             
