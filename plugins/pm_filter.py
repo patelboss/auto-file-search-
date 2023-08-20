@@ -631,15 +631,15 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, title, keyboard_markup):
+async def auto_filter(client, search, keyboard_markup):
     try:
         
         await client.send_message(message.chat.id, "Select a title to search by autofilter:", reply_markup=keyboard_markup)
     except Exception as e:
         logging.error(f"An error occurred during autofiltering: {e}")
 
-   # if not spoll:
-      #  message = msg
+    if not spoll:
+        message = msg
         settings = await get_settings(message.chat.id)
         if message.text.startswith("/"): return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
@@ -647,9 +647,9 @@ async def auto_filter(client, title, keyboard_markup):
         if 2 < len(message.text) < 100:
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
-            #if not files:
-             #   if settings["spell_check"]:
-              #      return #await advantage_spell_chok(msg)
+            if not files:
+              #  if settings["spell_check"]:
+                    return #await advantage_spell_chok(msg)
                # else:
                 #    return
         else:
@@ -858,7 +858,7 @@ async def perform_imdb_search(client, message):
     
     if inline_keyboard:
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        await auto_filter(client, title, keyboard_markup) # Pass the keyboard_markup to auto_filter
+        await auto_filter(client, search, keyboard_markup) # Pass the keyboard_markup to auto_filter
     else:
         suggestion_message = "No results found for '{}'.".format(search)
         await message.reply_text(suggestion_message)
