@@ -859,7 +859,7 @@ async def perform_imdb_search(client, message):
     
     if inline_keyboard:
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        await auto_filter(client, msg, keyboard_markup, spoll=False) # Pass the keyboard_markup to auto_filter
+        await auto_filter(client, keyboard_markup) # Pass the keyboard_markup to auto_filter
     else:
         suggestion_message = "No results found for '{}'.".format(search)
         await message.reply_text(suggestion_message)
