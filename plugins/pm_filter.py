@@ -105,6 +105,23 @@ async def get_imdb_search(search_text):
     else:
         return None
 
+async def get_imdb_search_results(title):
+    ia = IMDb()
+    search_results = ia.search_movie(title)
+
+    if search_results:
+        results = []
+        for result in search_results:
+            results.append({
+                'title': result['title'],
+                'year': result.get('year', 'N/A')
+            })
+
+        return results
+    else:
+        return None
+
+
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
