@@ -703,7 +703,7 @@ async def auto_filter(client, chat_id, inline_keyboard):
     try:
         await client.send_message(chat_id, "Select a title to search by autofilter:", reply_markup=InlineKeyboardMarkup(inline_keyboard))
     except Exception as e:
-        logging.error(f"An error occurred during autofiltering: {e}"):
+        logging.error(f"An error occurred during autofiltering: {e}")
    # if not spoll:
         message = inline_keyboard
         settings = await get_settings(message.chat.id)
