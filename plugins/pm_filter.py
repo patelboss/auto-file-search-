@@ -55,15 +55,15 @@ async def give_filter(client, message):
 
 async def perform_imdb_search(client, message):
     search_text = message.text
-    word_count = len(re.findall(r'\w+', search_text))
+ #   word_count = len(re.findall(r'\w+', search_text))
     logging.info("Received message from user: %s", message.text)
 
-    if word_count < 20:
-       inline_keyboard = perform_imdb_search(client, message)   
+  #  if word_count < 20:
+ #      inline_keyboard = perform_imdb_search(client, message)   
     
-         if inline_keyboard:
+     #    if inline_keyboard:
             # Create InlineKeyboardMarkup object
-            keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
+  #          keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
             
             async def callback_handler(client, query):
                 title = query.data.lower()
