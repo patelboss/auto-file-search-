@@ -51,7 +51,6 @@ async def give_filter(client, message):
             await perform_imdb_search(client, message)
     except Exception as e:
         logging.error("An error occurred: %s", e)     
-        
 
 async def perform_imdb_search(client, message):
     search_text = message.text
@@ -61,33 +60,32 @@ async def perform_imdb_search(client, message):
     
     if inline_keyboard:
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        
-        async def callback_handler(client, query):
-            title = query.text
-
-            logging.info("Callback query received.")
-
-            try:
-                imdb_search_results = await get_imdb_search_results(title)
-                if imdb_search_results:
-                    logging.info("Found results for '{}' on IMDb.".format(title))
-                    reply_message = "Here are the results for '{}' on IMDb:\n".format(title)
-                    for result in imdb_search_results:
-                        reply_message += "{} ({})\n".format(result['title'], result['year'])
-                    logging.info("Sending message: {}".format(reply_message))
-                    await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
-                else:
-                    logging.info("No results found for '{}' on IMDb.".format(title))
-                    reply_message = "No results found in IMDb for '{}'. Let me autofilter it for you.".format(title)
-                    logging.info("Sending message: {}".format(reply_message))
-                    await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
-            except Exception as e:
-                logging.error(f"An error occurred: {e}")
-
-        await callback_handler(client, message)
+        await callback_handler(client, message, keyboard_markup)
     else:
         suggestion_message = "No results found for '{}'.".format(search_text)
         await message.reply_text(suggestion_message)
+
+async def callback_handler(client, message, keyboard_markup):
+    title = message.text
+
+    logging.info("Callback query received.")
+
+    try:
+        imdb_search_results = await get_imdb_search_results(title)
+        if imdb_search_results:
+            logging.info("Found results for '{}' on IMDb.".format(title))
+            reply_message = "Here are the results for '{}' on IMDb:\n".format(title)
+            for result in imdb_search_results:
+                reply_message += "{} ({})\n".format(result['title'], result['year'])
+            logging.info("Sending message: {}".format(reply_message))
+            await message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+        else:
+            logging.info("No results found for '{}' on IMDb.".format(title))
+            reply_message = "No results found in IMDb for '{}'. Let me autofilter it for you.".format(title)
+            logging.info("Sending message: {}".format(reply_message))
+            await message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
 
 async def get_imdb_search(search_text):
     ia = IMDb()
@@ -120,7 +118,6 @@ async def get_imdb_search_results(title):
         return results
     else:
         return None
-
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
