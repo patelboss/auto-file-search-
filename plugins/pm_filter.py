@@ -81,7 +81,7 @@ async def callback_handler(client, message, keyboard_markup):
                 reply_message += "{} ({})\n".format(result['title'], result['year'])
             reply_message += "Select the title you want to search by autofilter: "
             logging.info("Sending message: {}".format(reply_message))
-            await message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+            await message.reply_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
             await auto_filter(client, message.chat.id, title)  # Start autofilter
         else:
             logging.info("No results found for '{}' on IMDb.".format(title))
