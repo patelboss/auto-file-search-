@@ -631,7 +631,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, search, keyboard_markup):
+async def auto_filter(client, title, msg, spoll=False):
     try:
         
         await client.send_message(message.chat.id, "Select a title to search by autofilter:", reply_markup=keyboard_markup)
@@ -648,15 +648,15 @@ async def auto_filter(client, search, keyboard_markup):
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
-              #  if settings["spell_check"]:
-                    return #await advantage_spell_chok(msg)
-               # else:
-                #    return
+                if settings["spell_check"]:
+                    return await advantage_spell_chok(msg)
+                else:
+                    return
         else:
             return
     else:
-        settings = await get_settings(message.message.chat.id)
-        message = message.message.reply_to_message  # msg will be callback query
+        settings = await get_settings(msg.message.chat.id)
+        message = msg.message.reply_to_message  # msg will be callback query
         search, files, offset, total_results = spoll
     pre = 'filep' if settings['file_secure'] else 'file'
     if settings["button"]:
@@ -745,7 +745,8 @@ async def auto_filter(client, search, keyboard_markup):
     else:
         await message.reply_text(cap, reply_markup=InlineKeyboardMarkup(btn))
     if spoll:
-        await message.message.delete()
+        await msg.message.delete()
+
 
 
 async def advantage_spell_chok(msg):
@@ -858,13 +859,13 @@ async def perform_imdb_search(client, message):
     
     if inline_keyboard:
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        await auto_filter(client, search, keyboard_markup) # Pass the keyboard_markup to auto_filter
+        await auto_filter(client, title, msg, spoll=False) # Pass the keyboard_markup to auto_filter
     else:
         suggestion_message = "No results found for '{}'.".format(search)
         await message.reply_text(suggestion_message)
 
 async def callback_handler(client, query, keyboard_markup):
-    title = query.data  # Use query.data to get the selected movie title
+    title == query.title  # Use query.data to get the selected movie title
 
     logging.info("Callback query received.")
 
