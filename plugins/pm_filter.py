@@ -631,7 +631,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, title, msg, spoll=False):
+async def auto_filter(client, msg, keyboard_markup, spoll=False):
     try:
         
         await client.send_message(message.chat.id, "Select a title to search by autofilter:", reply_markup=keyboard_markup)
@@ -859,13 +859,13 @@ async def perform_imdb_search(client, message):
     
     if inline_keyboard:
         keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-        await auto_filter(client, title, msg, spoll=False) # Pass the keyboard_markup to auto_filter
+        await auto_filter(client, msg, keyboard_markup, spoll=False) # Pass the keyboard_markup to auto_filter
     else:
         suggestion_message = "No results found for '{}'.".format(search)
         await message.reply_text(suggestion_message)
 
 async def callback_handler(client, query, keyboard_markup):
-    title == query.title  # Use query.data to get the selected movie title
+    find == query.title  # Use query.data to get the selected movie title
 
     logging.info("Callback query received.")
 
