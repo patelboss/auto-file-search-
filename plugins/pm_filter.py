@@ -64,35 +64,34 @@ async def perform_imdb_search(client, message):
      #    if inline_keyboard:
             # Create InlineKeyboardMarkup object
   #          keyboard_markup = InlineKeyboardMarkup(inline_keyboard=inline_keyboard)
-            
-            async def callback_handler(client, query):
-                title = query.text
+async def callback_handler(client, query):
+           title = query.text
 
-                logging.info("Callback query received.")
+           logging.info("Callback query received.")
 
-                try:
-                    # First, we search IMDb
-                    imdb_search_results = await get_imdb_search_results(title)
-                    if imdb_search_results:
-                        logging.info("Found results for '{}' on IMDb.".format(title))
-                        # If we find results on IMDb, we don't need to search the database
-                        reply_message = "Here are the results for '{}' on IMDb:\n".format(title)
-                        for result in imdb_search_results:
-                            reply_message += "{} ({})\n".format(result['title'], result['year'])
-                            reply_message += "Select the title you want to search by autofilter: "
-                        logging.info("Sending message: {}".format(reply_message))
-                        # We await autofilter to get the title
-                        title = await auto_filter(client, title)
-                        logging.info("Title received from autofilter: {}".format(title))
-                        await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
-                    else:
-                        logging.info("No results found for '{}' on IMDb.".format(title))
-                        # We don't need to search the database because autofilter can do it
-                        reply_message = "No results found in IMDb. Let me autofilter it for you."
-                        logging.info("Sending message: {}".format(reply_message))
-                        await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
-                except Exception as e:
-                    logging.error(f"An error occurred: {e}")
+           try:
+                # First, we search IMDb
+                imdb_search_results = await get_imdb_search_results(title)
+                if imdb_search_results:
+                    logging.info("Found results for '{}' on IMDb.".format(title))
+                    # If we find results on IMDb, we don't need to search the database
+                    reply_message = "Here are the results for '{}' on IMDb:\n".format(title)
+                    for result in imdb_search_results:
+                        reply_message += "{} ({})\n".format(result['title'], result['year'])
+                        reply_message += "Select the title you want to search by autofilter: "
+                    logging.info("Sending message: {}".format(reply_message))
+                    # We await autofilter to get the title
+                    title = await auto_filter(client, title)
+                    logging.info("Title received from autofilter: {}".format(title))
+                    await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+                else:
+                    logging.info("No results found for '{}' on IMDb.".format(title))
+                    # We don't need to search the database because autofilter can do it
+                    reply_message = "No results found in IMDb. Let me autofilter it for you."
+                    logging.info("Sending message: {}".format(reply_message))
+                    await query.message.edit_text(reply_message, reply_markup=keyboard_markup, disable_web_page_preview=True)
+            except Exception as e:
+                logging.error(f"An error occurred: {e}")
 
             # Properly await callback_handler
             await callback_handler(client, query)
