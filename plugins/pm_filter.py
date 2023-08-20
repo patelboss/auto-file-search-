@@ -48,7 +48,7 @@ async def give_filter(client, message):
         logging.debug("Received message: %s", message.text)
         k = await manual_filters(client, message)
         if k == False:
-            await perform_imdb_search(client, message, search_text)
+            await perform_imdb_search(client, message)
     except Exception as e:
         logging.error("An error occurred: %s", e)     
 
@@ -851,22 +851,28 @@ async def manual_filters(client, message, text=False):
     else:
         return False
         
-def perform_imdb_search(client, message, search_text):
+def perform_imdb_search(client, message):
+    find = message.text
+    try:
     ia = IMDb()
-    search_results = ia.search_movie(search_text)
+    search_results = ia.search_movie(find)
 
-    if search_results:
+    if mila:
         keyboard = []
-        for i, result in enumerate(search_results[:10], start=1):
+        for i, result in enumerate(mila[:10], start=1):
             title = result['title']
             year = result.get('year', 'N/A')
             button_text = f"{i}. {title} - {year}"
             keyboard.append([InlineKeyboardButton(button_text, callback_data=title)])
 
-        return InlineKeyboardMarkup(keyboard)
-    else:
-        return None
-        
+        await message.reply_text("Which one do you want? Choose one:", reply_markup=inline_keyboard)
+        title = result.title
+        await auto_filter(client, title)
+     else:
+            # IMDb search not found, provide a suggestion
+          suggestion_message = "No results found for '{}'.".format(search_text)
+          await message.reply_text(suggestion_message)   
+         
 async def reply_to_text(client, message):
     search_text = message.text
 
@@ -883,7 +889,3 @@ async def reply_to_text(client, message):
             suggestion_message = "No results found for '{}'.".format(search_text)
             await message.reply_text(suggestion_message)   
      
-async def callback_query_handler(client, query):
-    logging.info("Callback query received.")
-    title = query.data.lower()
-    await auto_filter(client, title)
