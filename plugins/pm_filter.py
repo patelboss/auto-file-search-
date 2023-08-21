@@ -856,10 +856,12 @@ async def filmykeedha(client, msg):
             query = callback_query.data
             return await auto_filter(client, msg, spoll={"search": query})
 
-        client.dispatcher.register_callback_query_handler(movie_chosen)
+        client.dispatcher.add_callback_query_handler(movie_chosen)
 
     else:
         # IMDb search not found, provide a suggestion
         suggestion_message = "No results found for '{}'.".format(msg.text)
         await msg.reply_text(suggestion_message)
+
+
 
