@@ -854,8 +854,8 @@ async def filmykeedha(client, msg):
 
         async def movie_chosen(client, callback_query):
             query = callback_query.data
-            print(query)
             return await auto_filter(client, msg, spoll={"search": query})
+
 
         client.on_callback_query(movie_chosen)
 
