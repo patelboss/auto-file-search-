@@ -32,25 +32,18 @@ from database.filters_mdb import (
 )
 import logging
 
-from imdb import IMDb
-from pymongo import MongoClient
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
-logging.basicConfig(level=logging.DEBUG)
 
 BUTTONS = {}
 SPELL_CHECK = {}
 
+
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
-    try:
-        logging.debug("Received message: %s", message.text)
-        k = await manual_filters(client, message)
-        if k == False:
-            await perform_imdb_search(client, message)
-    except Exception as e:
-        logging.error("An error occurred: %s", e)     
+    k = await manual_filters(client, message)
+    if k == False:
+        await auto_filter(client, message)
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
@@ -631,22 +624,20 @@ async def cb_handler(client: Client, query: CallbackQuery):
     await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
-async def auto_filter(client, msg, title, spoll=False):
-    try:
-        
-        await client.send_message(message.chat.id, "Select a title to search by autofilter:", reply_markup=keyboard_markup)
-    except Exception as e:
-        logging.error(f"An error occurred during autofiltering: {e}")
-
+async def auto_filter(client, msg, spoll=False):
     if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
-        if message.text.startswith("/"): return  # ignore commands
+        if message.text.startswith("/"):
+            return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
             return
         if 2 < len(message.text) < 100:
             search = message.text
-            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+            
+            # Perform IMDb search
+            ia = IMDb()
+            await perform_imdb_search(ia, message, client)            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
                 if settings["spell_check"]:
                     return await advantage_spell_chok(msg)
@@ -748,7 +739,6 @@ async def auto_filter(client, msg, title, spoll=False):
         await msg.message.delete()
 
 
-
 async def advantage_spell_chok(msg):
     query = re.sub(
         r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?)",
@@ -758,7 +748,7 @@ async def advantage_spell_chok(msg):
     g_s += await search_gagala(msg.text)
     gs_parsed = []
     if not g_s:
-        k = await message.reply("𝐇𝐞𝐲! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢,\n 𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 🤷‍♀️!\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 🤦‍♀️... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha .")
+        k = await msg.reply("𝐇𝐞𝐲! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢,\n 𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 🤷‍♀️!\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 🤦‍♀️... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha .")
         await asyncio.sleep(8)
         await k.delete()
         return
@@ -774,7 +764,7 @@ async def advantage_spell_chok(msg):
             match = reg.match(mv)
             if match:
                 gs_parsed.append(match.group(1))
-    user = message.from_user.id if message.from_user else 0
+    user = msg.from_user.id if msg.from_user else 0
     movielist = []
     gs_parsed = list(dict.fromkeys(gs_parsed))  # removing duplicates https://stackoverflow.com/a/7961425
     if len(gs_parsed) > 3:
@@ -799,7 +789,7 @@ async def advantage_spell_chok(msg):
         )
     ] for k, movie in enumerate(movielist)]
     btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    await message.reply("𝐇𝐞𝐲 𝗕𝗿𝗼! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢, \n𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 !\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 ... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha ",
+    await msg.reply("𝐇𝐞𝐲 𝗕𝗿𝗼! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢, \n𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 !\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 ... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha ",
                     reply_markup=InlineKeyboardMarkup(btn))
 
 
@@ -850,42 +840,65 @@ async def manual_filters(client, message, text=False):
                 break
     else:
         return False
-        
-def perform_imdb_search(client, message):
-    find = message.text
-    try:
-    ia = IMDb()
-    search_results = ia.search_movie(find)
 
-    if mila:
-        keyboard = []
-        for i, result in enumerate(mila[:10], start=1):
-            title = result['title']
-            year = result.get('year', 'N/A')
-            button_text = f"{i}. {title} - {year}"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=title)])
-
-        await message.reply_text("Which one do you want? Choose one:", reply_markup=inline_keyboard)
-        title = result.title
-        await auto_filter(client, title)
-     else:
-            # IMDb search not found, provide a suggestion
-          suggestion_message = "No results found for '{}'.".format(search_text)
-          await message.reply_text(suggestion_message)   
-         
-async def reply_to_text(client, message):
+def perform_imdb_search(ia, message, client):
     search_text = message.text
 
     # Count the number of words in the search_text
     word_count = len(re.findall(r'\w+', search_text))
 
     if word_count < 20:
-        inline_keyboard = perform_imdb_search(search_text)
+        search_results = ia.search_movie(search_text)
 
-        if inline_keyboard:
+        if search_results:
+            keyboard = []
+            for i, result in enumerate(search_results[:10], start=1):
+                title = result['title']
+                year = result.get('year', 'N/A')
+                button_text = f"{i}. {title} - {year}"
+                keyboard.append([InlineKeyboardButton(button_text, callback_data=title)])
+
+            inline_keyboard = InlineKeyboardMarkup(keyboard)
             await message.reply_text("Which one do you want? Choose one:", reply_markup=inline_keyboard)
         else:
             # IMDb search not found, provide a suggestion
             suggestion_message = "No results found for '{}'.".format(search_text)
-            await message.reply_text(suggestion_message)   
-     
+            await message.reply_text(suggestion_message)
+    else:
+        await message.reply_text("Search query is too long. Please provide a shorter query.")
+
+# Message handler for regular text messages
+@Client.on_message(filters.incoming & filters.group)
+async def reply_to_text(client, message):
+    await perform_imdb_search(IMDb(), message, client)
+    
+@Client.on_callback_query()
+async def callback_query_handler(client, query):
+    logging.info("Callback query received.")
+    title = query.data.lower()
+            
+    try:
+        mongo_client = MongoClient(DATABASE_URI)
+        db = mongo_client['TelegramBot']
+        collection = db['TelegramBot']
+
+        # Use a case-insensitive regular expression to find similar titles in the 'file_name' field
+        similar_titles = collection.find({"file_name": {"$regex": title, "$options": "i"}})
+
+        if similar_titles.count() > 0:
+            reply_message = f"Similar titles found in the database:"
+            buttons = []
+            for movie in similar_titles:
+                # Remove '@' symbol from the title
+                cleaned_title = movie['file_name'].replace('@', '')
+                file_name_link = f"[{cleaned_title}](https://t.me/+MJTE1rPmh0YxN2Y1)"
+                buttons.append([InlineKeyboardButton(cleaned_title, url="https://t.me/+MJTE1rPmh0YxN2Y1")])
+
+            inline_keyboard = InlineKeyboardMarkup(buttons)
+        else:
+            reply_message = f"#Requested_ver {title} ."
+            inline_keyboard = None
+
+        await query.message.edit_text(reply_message, reply_markup=inline_keyboard, disable_web_page_preview=True)
+    except Exception as e:
+        logging.error(f"An error occurred: {e}")
