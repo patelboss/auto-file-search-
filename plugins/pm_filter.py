@@ -850,13 +850,13 @@ async def filmykeedha(client, msg):
             callback_data = f"movie_{title}"
             keyboard.append([InlineKeyboardButton(button_text, callback_data=callback_data)])
 
-        await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
+           await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        def movie_chosen(client, callback_query):
-            query = callback_query.data
-            return await auto_filter(client, msg, spoll={"search": query})
+           def movie_chosen(client, callback_query):
+               query = callback_query.data
+               return await auto_filter(client, msg, spoll={"search": query})
 
-        client.register_callback_query_handler(movie_chosen)
+         client.register_callback_query_handler(movie_chosen)
 
     else:
         # IMDb search not found, provide a suggestion
