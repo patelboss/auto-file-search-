@@ -43,7 +43,7 @@ SPELL_CHECK = {}
 async def give_filter(client, message):
     k = await manual_filters(client, message)
     if k == False:
-        await auto_filter(client, message)
+        await filmykeedha(client, message)
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
@@ -636,8 +636,8 @@ async def auto_filter(client, msg, spoll=False):
             search = message.text
             
             # Perform IMDb search
-            ia = IMDb()
-            await perform_imdb_search(ia, message, client)            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
+       #     ia = IMDb()
+       #     await perform_imdb_search(ia, message, client)            files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
                 if settings["spell_check"]:
                     return await advantage_spell_chok(msg)
@@ -841,64 +841,29 @@ async def manual_filters(client, message, text=False):
     else:
         return False
 
-def perform_imdb_search(ia, message, client):
-    search_text = message.text
+async def filmykeedha(client, msg):
+    ia = IMDb()
+    search_results = ia.search_movie(msg.text)
 
-    # Count the number of words in the search_text
-    word_count = len(re.findall(r'\w+', search_text))
+    if search_results:
+        keyboard = []
+        for i, result in enumerate(search_results[:10], start=1):
+            title = result['title']
+            year = result.get('year', 'N/A')
+            button_text = f"{i}. {title} - {year}"
+            callback_data = f"movie_{title}"
+            keyboard.append([InlineKeyboardButton(button_text, callback_data=callback_data)])
 
-    if word_count < 20:
-        search_results = ia.search_movie(search_text)
+        await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        if search_results:
-            keyboard = []
-            for i, result in enumerate(search_results[:10], start=1):
-                title = result['title']
-                year = result.get('year', 'N/A')
-                button_text = f"{i}. {title} - {year}"
-                keyboard.append([InlineKeyboardButton(button_text, callback_data=title)])
+        def movie_chosen(client, callback_query):
+            query = callback_query.data
+            return await auto_filter(client, msg, spoll={"search": query})
 
-            inline_keyboard = InlineKeyboardMarkup(keyboard)
-            await message.reply_text("Which one do you want? Choose one:", reply_markup=inline_keyboard)
-        else:
-            # IMDb search not found, provide a suggestion
-            suggestion_message = "No results found for '{}'.".format(search_text)
-            await message.reply_text(suggestion_message)
+        client.register_callback_query_handler(movie_chosen)
+
     else:
-        await message.reply_text("Search query is too long. Please provide a shorter query.")
-
-# Message handler for regular text messages
-@Client.on_message(filters.incoming & filters.group)
-async def reply_to_text(client, message):
-    await perform_imdb_search(IMDb(), message, client)
-    
-@Client.on_callback_query()
-async def callback_query_handler(client, query):
-    logging.info("Callback query received.")
-    title = query.data.lower()
-            
-    try:
-        mongo_client = MongoClient(DATABASE_URI)
-        db = mongo_client['TelegramBot']
-        collection = db['TelegramBot']
-
-        # Use a case-insensitive regular expression to find similar titles in the 'file_name' field
-        similar_titles = collection.find({"file_name": {"$regex": title, "$options": "i"}})
-
-        if similar_titles.count() > 0:
-            reply_message = f"Similar titles found in the database:"
-            buttons = []
-            for movie in similar_titles:
-                # Remove '@' symbol from the title
-                cleaned_title = movie['file_name'].replace('@', '')
-                file_name_link = f"[{cleaned_title}](https://t.me/+MJTE1rPmh0YxN2Y1)"
-                buttons.append([InlineKeyboardButton(cleaned_title, url="https://t.me/+MJTE1rPmh0YxN2Y1")])
-
-            inline_keyboard = InlineKeyboardMarkup(buttons)
-        else:
-            reply_message = f"#Requested_ver {title} ."
-            inline_keyboard = None
-
-        await query.message.edit_text(reply_message, reply_markup=inline_keyboard, disable_web_page_preview=True)
-    except Exception as e:
-        logging.error(f"An error occurred: {e}")
+        # IMDb search not found, provide a suggestion
+        suggestion_message = "No results found for '{}'.".format(msg.text)
+        await msg.reply_text(suggestion_message)
+        
