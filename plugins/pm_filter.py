@@ -861,7 +861,7 @@ async def filmykeedha(client, msg):
             return await auto_filter(client, msg, spoll={"search": query})
 
 
-        client.on_callback_query(filters.regex(r"^movie_chosen"))
+        client.on_add_handler(filters.regex(r"^movie_chosen"))
         
 
     else:
