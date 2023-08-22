@@ -625,10 +625,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
 
-async def movie_chosen(client: Client, callback_query: callbac_data):
-    query = callback_query.data
-    logger.info("User clicked on movie: {}".format(query))
-    return await auto_filter(client, msg, spoll={"search": query})
 
     
     
@@ -865,4 +861,9 @@ async def filmykeedha(client: Client, msg: Message):
 
         await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
+        async def movie_chosen(client: Client, callback_query: callbac_data):
+            query = callback_query.data
+            logger.info("User clicked on movie: {}".format(query))
+            return await auto_filter(client, msg, spoll={"search": query})
+    
         
