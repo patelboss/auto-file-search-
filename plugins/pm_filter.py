@@ -624,11 +624,10 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
-    elif
-        async def movie_chosen(client, callback_query):
-          kuery = callback_query.data
-          logger.info("User clicked on movie: {}".format(query))
-          return await auto_filter(client, msg, spoll={"search": kuery})
+     elif async def movie_chosen(client, callback_query):
+           kuery = callback_query.data
+           logger.info("User clicked on movie: {}".format(query))
+           return await auto_filter(client, msg, spoll={"search": kuery})
     await query.answer('♥️  ♥️')
 
 
