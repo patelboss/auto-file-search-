@@ -867,6 +867,6 @@ async def filmykeedha(client: Client, msg: Message):
             logger.info("User clicked on movie: {}".format(query))
             return await auto_filter(client, msg, spoll={"search": query})
 
-return
+    return
     
         
