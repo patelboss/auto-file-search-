@@ -855,18 +855,14 @@ async def filmykeedha(client, msg):
 
         await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        @Client.on_callback_query(filters.regex(r"^filmykeedha"))
-        async def movie_chosen(client, callback_query):
-            query = callback_query.data
-            logger.info("User clicked on movie: {}".format(query))
-            return await auto_filter(client, msg, spoll={"search": query})
-
-
-        
-        
-
     else:
         # IMDb search not found, provide a suggestion
         suggestion_message = "No results found for '{}'.".format(msg.text)
         await msg.reply_text(suggestion_message)
 
+@Client.on_callback_query(filters.regex(r"^filmykeedha"))
+async def movie_chosen(client, callback_query):
+    query = callback_query.data
+    logger.info("User clicked on movie: {}".format(query))
+    return await auto_filter(client, msg, spoll={"search": query})
+    
