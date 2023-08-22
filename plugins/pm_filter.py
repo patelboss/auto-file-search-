@@ -857,7 +857,7 @@ async def filmykeedha(client: Client, msg: Message):
         await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
         @client.on_callback_query(filters.regex(r"^movie_chosen"))
-        async def movie_chosen(client: Client, callback_query: CallbackQuery):
+        async def movie_chosen(client: Client, callback_query: callbac_data):
             query = callback_query.data
             logger.info("User clicked on movie: {}".format(query))
             return await auto_filter(client, msg, spoll={"search": query})
