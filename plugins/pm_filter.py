@@ -624,6 +624,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
+    elif
+        async def movie_chosen(client, callback_query):
+          kuery = callback_query.data
+          logger.info("User clicked on movie: {}".format(query))
+          return await auto_filter(client, msg, spoll={"search": kuery})
     await query.answer('♥️  ♥️')
 
 
@@ -860,9 +865,3 @@ async def filmykeedha(client, msg):
         suggestion_message = "No results found for '{}'.".format(msg.text)
         await msg.reply_text(suggestion_message)
 
-@Client.on_callback_query(filters.regex('filmykeedha'))
-async def movie_chosen(client, callback_query):
-    kuery = callback_query.data
-    logger.info("User clicked on movie: {}".format(query))
-    return await auto_filter(client, msg, spoll={"search": kuery})
-    
