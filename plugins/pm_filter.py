@@ -624,10 +624,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
-     elif async def movie_chosen(client, callback_query):
-           kuery = callback_query.data
-           logger.info("User clicked on movie: {}".format(query))
-           return await auto_filter(client, msg, spoll={"search": kuery})
     await query.answer('♥️  ♥️')
 
 
@@ -844,7 +840,8 @@ async def manual_filters(client, message, text=False):
     else:
         return False
 
-async def filmykeedha(client, msg):
+
+async def filmykeedha(client: Client, msg: Message):
     ia = IMDb()
     search_results = ia.search_movie(msg.text)
 
@@ -859,8 +856,9 @@ async def filmykeedha(client, msg):
 
         await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-    else:
-        # IMDb search not found, provide a suggestion
-        suggestion_message = "No results found for '{}'.".format(msg.text)
-        await msg.reply_text(suggestion_message)
+        @client.on_callback_query(filters.regex(r"^movie_chosen"))
+        async def movie_chosen(client: Client, callback_query: CallbackQuery):
+            query = callback_query.data
+            logger.info("User clicked on movie: {}".format(query))
+            return await auto_filter(client, msg, spoll={"search": query})
 
