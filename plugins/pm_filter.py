@@ -860,7 +860,7 @@ async def filmykeedha(client, msg):
         suggestion_message = "No results found for '{}'.".format(msg.text)
         await msg.reply_text(suggestion_message)
 
-@Client.on_callback_query(filters.regex(r"^filmykeedha"))
+@Client.on_callback_query(filters.regex('filmykeedha'))
 async def movie_chosen(client, callback_query):
     query = callback_query.data
     logger.info("User clicked on movie: {}".format(query))
