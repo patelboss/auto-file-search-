@@ -34,6 +34,9 @@ import logging
 from imdb import IMDb 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.info("Bot started. Listening for commands and messages...")
+
 
 BUTTONS = {}
 SPELL_CHECK = {}
@@ -625,7 +628,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
 
 async def auto_filter(client, msg, spoll):
-    if not spoll:
+    if spoll:
         message = msg
         settings = await get_settings(message.chat.id)
         if message.text.startswith("/"): return  # ignore commands
@@ -859,6 +862,7 @@ async def filmykeedha(client, msg):
 
 
         client.on_callback_query(movie_chosen)
+        logger.info("callback recieved)
 
     else:
         # IMDb search not found, provide a suggestion
