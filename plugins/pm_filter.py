@@ -862,7 +862,7 @@ async def filmykeedha(client, msg):
 
 @Client.on_callback_query(filters.regex('filmykeedha'))
 async def movie_chosen(client, callback_query):
-    query = callback_query.data
+    kuery = callback_query.data
     logger.info("User clicked on movie: {}".format(query))
-    return await auto_filter(client, msg, spoll={"search": query})
+    return await auto_filter(client, msg, spoll={"search": kuery})
     
