@@ -851,19 +851,22 @@ async def filmykeedha(client: Client, msg: Message):
     search_results = ia.search_movie(msg.text)
 
     if search_results:
-        keyboard = []
-        for i, result in enumerate(search_results[:10], start=1):
-            title = result['title']
-            year = result.get('year', 'N/A')
-            button_text = f"{i}. {title} - {year}"
-            callbac_data = f"movie_{title}"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=callbac_data)])
+      keyboard = []
+      for i, result in enumerate(search_results[:10], start=1):
+          title = result['title']
+          year = result.get('year', 'N/A')
+          button_text = f"{i}. {title} - {year}"
+          callbac_data = f"movie_{title}"
+          keyboard.append([InlineKeyboardButton(button_text, callback_data=callbac_data)])
 
-        await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
+    await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        async def movie_chosen(client: Client, callback_query: callbac_data):
-            query = callback_query.data
+    async def movie_chosen(client: Client, callback_query: CallbackQuery):
+        query = callback_query.data
+        if query.startswith("movie_chosen_"):
             logger.info("User clicked on movie: {}".format(query))
             return await auto_filter(client, msg, spoll={"search": query})
+
+return
     
         
