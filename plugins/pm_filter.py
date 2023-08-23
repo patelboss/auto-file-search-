@@ -846,27 +846,26 @@ async def manual_filters(client, message, text=False):
         return False
 
 
+
 async def filmykeedha(client: Client, msg: Message):
     ia = IMDb()
     search_results = ia.search_movie(msg.text)
 
     if search_results:
-      keyboard = []
-      for i, result in enumerate(search_results[:10], start=1):
-          title = result['title']
-          year = result.get('year', 'N/A')
-          button_text = f"{i}. {title} - {year}"
-          callbac_data = f"movie_{title}"
-          keyboard.append([InlineKeyboardButton(button_text, callback_data=callbac_data)])
+        keyboard = []
+        for i, result in enumerate(search_results[:10], start=1):
+            title = result['title']
+            year = result.get('year', 'N/A')
+            button_text = f"{i}. {title} - {year}"
+            callbac_data = f"movie_{title}"
+            keyboard.append([InlineKeyboardButton(button_text, callback_data=callbac_data)])
 
-    await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
+        await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-    async def movie_chosen(client: Client, callback_query: CallbackQuery):
-        query = callback_query.data
-        if query.startswith("movie_chosen_"):
+        async def movie_chosen(client: Client, callback_query: CallbackQuery, message: Message):
+            query = callback_query.data
             logger.info("User clicked on movie: {}".format(query))
-            return await auto_filter(client, msg, spoll={"search": query})
+            if query == "movie_chosen":
+                await auto_filter(client, msg, spoll)
 
-    return
-    
-        
+        client.on_callback_query(filters.regex(r"^movie_chosen"))(movie_chosen)
