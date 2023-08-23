@@ -867,7 +867,7 @@ async def filmykeedha(client: Client, msg: Message):
         async def movie_chosen(client: Client, callback_query: CallbackQuery):
             query = callback_query.data
             logger.info("User clicked on movie: {}".format(query))
-            await callback_query.answer()  # Acknowledge the callback
+            await callback_query.answer("😂")  # Acknowledge the callback
             await auto_filter(client, msg, spoll={"search": query})
             return 
 
