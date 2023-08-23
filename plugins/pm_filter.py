@@ -152,7 +152,7 @@ async def next_page(bot, query):
 #            await k.delete()
 
 
-@Client.on_callback_query()
+@Client.on_callback_query(filters.private)
 async def cb_handler(client: Client, query: CallbackQuery):
     if query.data == "close_data":
         await query.message.delete()
