@@ -863,10 +863,16 @@ async def filmykeedha(client: Client, msg: Message, callback_data: str = "movie_
 
         await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        @Client.on_callback_query(filters.regex('movie_chosen'))
+        @Client.on_callback_query(filters.regex('movie_chosen') & filters)
         async def movie_chosen(client: Client, callback_query: CallbackQuery):
             query = callback_query.data
             logger.info("User clicked on movie: {}".format(query))
-            await callback_query.answer("😂")  # Acknowledge the callback
-            await auto_filter(client, msg, spoll={"search": query})
-            return 
+            try:
+                await auto_filter(client, msg, spoll={"search": query})
+            except Exception as e:
+                logger.error("Error: {}".format(e))
+                await callback_query.answer("Sorry, movie not found!")
+                return 
+    else:
+          await callback_query.answer("Sorry, movie not found on IMDb.")
+          await msg.reply_text("You can try searching for the movie on other websites.")
