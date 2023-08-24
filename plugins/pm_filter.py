@@ -848,7 +848,7 @@ async def manual_filters(client, message, text=False):
 
 
 
-async def filmykeedha(client: Client, msg: Message):
+async def filmykeedha(client: Client, msg: Message, callback_data: str = "movie_chosen"):
     ia = IMDb()
     search_results = ia.search_movie(msg.text)
 
@@ -859,14 +859,14 @@ async def filmykeedha(client: Client, msg: Message):
             year = result.get('year', 'N/A')
             button_text = f"{i}. {title} - {year}"
             callbac_data = f"movie_{title}"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=movie_chosen)])
+            keyboard.append([InlineKeyboardButton(button_text, callback_data=callbac_data)])
 
         await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        @Client.on_callback_query(filters.regex(r"^movie_chosen") & filters.group)
-        async def movie_chosen(client: Client, callback_query: callbac_data):
+        @Client.on_callback_query(filters.regex('movie_chosen'))
+        async def movie_chosen(client: Client, callback_query: CallbackQuery):
             query = callback_query.data
             logger.info("User clicked on movie: {}".format(query))
-            return await auto_filter(client, msg, spoll={"search": query})
-             
-
+            await callback_query.answer("😂")  # Acknowledge the callback
+            await auto_filter(client, msg, spoll={"search": query})
+            return 
