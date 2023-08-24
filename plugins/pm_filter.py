@@ -859,7 +859,7 @@ async def filmykeedha(client: Client, msg: Message):
             year = result.get('year', 'N/A')
             button_text = f"{i}. {title} - {year}"
             callbac_data = f"movie_{title}"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=callbac_data)])
+            keyboard.append([InlineKeyboardButton(button_text, callback_data=movie_chosen)])
 
         await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
