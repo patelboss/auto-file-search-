@@ -858,12 +858,11 @@ async def filmykeedha(client: Client, msg: Message, callback_data: str = "movie_
             title = result['title']
             year = result.get('year', 'N/A')
             button_text = f"{i}. {title} - {year}"
-            callbac_data = f"movie_{title}"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=callbac_data)])
+            callback_data = f"movie_{title}"
+            keyboard.append([InlineKeyboardButton(button_text, callback_data=callback_data)])
 
         await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
 
-        @Client.on_callback_query(filters.regex('movie_chosen'))
         async def movie_chosen(client: Client, callback_query: CallbackQuery):
             query = callback_query.data
             logger.info("User clicked on movie: {}".format(query))
