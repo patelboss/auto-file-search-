@@ -1,10 +1,10 @@
 class script(object):
     START_TXT = """Hello {},
-𝙼𝚈 𝙽𝙰𝙼𝙴 𝙸𝚂 <a href=https://t.me/{}>{}</a>,\n\nमैं आपको मूवीज खोजने में कम समय और मेहनत में सटीक परिणाम देने के लिए समक्ष हूं...🤪"""
+𝙼𝚈 𝙽𝙰𝙼𝙴 𝙸𝚂 <a href=https://t.me/{}>{}</a>,\n\nमैं आपको मूवीज खोजने में कम समय और मेहनत में सटीक परिणाम देने के लिए समक्ष हूं...🤪\n.\nJust follow me on Instagram \n https://www.instagram.com/reel/CzDbEApSkZe"""
     HELP_TXT = """𝙷𝙴𝚈 {}
 𝙷𝙴𝚁𝙴 𝙸𝚂 𝚃𝙷𝙴 𝙷𝙴𝙻𝙿 𝙵𝙾𝚁 𝙼𝚈 𝙲𝙾𝙼𝙼𝙰𝙽𝙳𝚂."""
     ABOUT_TXT = """✯ 𝙼𝚈 𝙽𝙰𝙼𝙴: ᏒᏗᏕᏂᎷᎥ
-✯ 𝙂𝙍𝙊𝙐𝙋: <a href=https://t.me/Filmykeedha_ask>𝐅𝐢𝐥𝐦𝐲𝐤𝐞𝐞𝐝𝐡𝐚_𝐚𝐬𝐤</a>
+✯ 𝙂𝙍𝙊𝙐𝙋: <a href=https://www.instagram.com/reel/CzDbEApSkZe>𝐅𝐢𝐥𝐦𝐲𝐤𝐞𝐞𝐝𝐡𝐚_𝐚𝐬𝐤</a>
 ✯ 𝙈𝘼𝙄𝙉 𝘾𝙃𝘼𝙉𝙉𝙀𝙇: <a href=https://t.me/Filmykeedha>𝐅𝐢𝐥𝐦𝐲𝐤𝐞𝐞𝐝𝐡𝐚</a>
 ✯ 𝘾𝙍𝙀𝘼𝙏𝙀𝙍: <a href=https://t.me/pankaj_patel_p>Ꭾᥲᥒⲕᥲ၂👮🏼❤️🚔</a>
 ✯ 𝗠𝗼𝘃𝗶𝗲 𝗟𝗮𝗻𝗴𝘂𝗮𝗴𝗲:𝐇𝐢𝐧𝐝𝐢, 𝐄𝐧𝐠𝐥𝐢𝐬𝐡, 𝐓𝐚𝐦𝐢𝐥 𝐀𝐧𝐝 𝐌𝐚𝐧𝐲 𝐌𝐨𝐫𝐞 𝐌𝐨𝐯𝐢𝐞 𝐋𝐚𝐧𝐠𝐮𝐚𝐠𝐞
@@ -15,7 +15,7 @@ class script(object):
 -   
 
 <b>DEVS:</b>
-- <a href=https://t.me/pankaj_patel_p>Ꭾᥲᥒⲕᥲ၂👮🏼❤️🚔</a>"""
+- <a href=https://www.instagram.com/reel/CzDbEApSkZe>Ꭾᥲᥒⲕᥲ၂👮🏼❤️🚔</a>"""
     MANUELFILTER_TXT = """Help: <b>Filters</b>
 
 - Filter is the feature were users can set automated replies for a particular keyword and ᏒᏗᏕᏂᎷᎥ will respond whenever that keyword hits the message
@@ -72,7 +72,6 @@ these are the extra features of ᏒᏗᏕᏂᎷᎥ
 <b>Commands and Usage:</b>
 • /id - <code>get id of a specified user.</code>
 • /info  - <code>get information about a user.</code>
-• /imdb  - <code>get the film information from IMDb source.</code>
 • /search  - <code>get the film information from various sources.</code>"""
     ADMIN_TXT = """Help: <b>Admin mods</b>
 
