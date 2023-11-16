@@ -10,7 +10,7 @@ from database.connections_mdb import active_connection, all_connections, delete_
     make_inactive
 from info import ADMINS, AUTH_CHANNEL, AUTH_USERS, CUSTOM_FILE_CAPTION, AUTH_GROUPS, P_TTI_SHOW_OFF, IMDB, \
     SINGLE_BUTTON, SPELL_CHECK_REPLY, IMDB_TEMPLATE
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery, Message
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
@@ -31,12 +31,9 @@ from database.filters_mdb import (
     get_filters,
 )
 import logging
-from imdb import IMDb 
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
 
 BUTTONS = {}
 SPELL_CHECK = {}
@@ -46,7 +43,7 @@ SPELL_CHECK = {}
 async def give_filter(client, message):
     k = await manual_filters(client, message)
     if k == False:
-        await filmykeedha(client, message)
+        await auto_filter(client, message)
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
@@ -128,28 +125,28 @@ async def next_page(bot, query):
     await query.answer()
 
 
-#@Client.on_callback_query(filters.regex(r"^spolling"))
-#async def advantage_spoll_choker(bot, query):
-#    _, user, movie_ = query.data.split('#')
-#    if int(user) != 0 and query.from_user.id != int(user):
-#        return await query.answer("This Message is not for you dear. Don't worry you can send new one !", show_alert=True)
-#    if movie_ == "close_spellcheck":
-#        return await query.message.delete()
-#    movies = SPELL_CHECK.get(query.message.reply_to_message.id)
-#    if not movies:
-#        return await query.answer("You are clicking on an old button which is expired.", show_alert=True)
-#    movie = movies[(int(movie_))]
-#    await query.answer('Checking for Movie in database...')
-#    k = await manual_filters(bot, query.message, text=movie)
-#    if k == False:
-#        files, offset, total_results = await get_search_results(movie, offset=0, filter=True)
-#        if files:
-#            k = (movie, files, offset, total_results)
-#            await auto_filter(bot, query, k)
-#        else:
-#            k = await query.message.edit(' 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐮𝐧𝐚𝐯𝐚𝐢𝐥𝐚𝐛𝐥𝐞 ! 𝐰𝐞 𝐚𝐫𝐞 𝐫𝐞𝐚𝐥𝐥𝐲 𝐬𝐨𝐫𝐫𝐲 𝐟𝐨𝐫 𝐢𝐧𝐜𝐨𝐧𝐯𝐞𝐧𝐢𝐞𝐧𝐜𝐞 !\n 𝐏𝐥𝐞𝐚𝐬𝐞 𝐬𝐞𝐧𝐭 𝐭𝐡𝐢𝐬 𝐌𝐨𝐯𝐢𝐞 𝐨𝐫 𝐖𝐞𝐛𝐬𝐞𝐫𝐢𝐞𝐬 𝐧𝐚𝐦𝐞 𝐢𝐧 #𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐓𝐨𝐩𝐢𝐜 𝐨𝐫 𝐬𝐞𝐧𝐭 𝐮𝐬𝐢𝐧𝐠 "#𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐌𝐨𝐯𝐢𝐞 𝐍𝐚𝐦𝐞 & 𝐑𝐞𝐥𝐞𝐚𝐬𝐞 𝐘𝐞𝐚𝐫.\n 𝐨𝐮𝐫 𝐠𝐫𝐞𝐚𝐭 𝐚𝐝𝐦𝐢𝐧𝐬 𝐰𝐢𝐥𝐥 𝐮𝐩𝐥𝐨𝐚𝐝 𝐢𝐭 𝐚𝐬 𝐬𝐨𝐨𝐧 𝐚𝐬 𝐩𝐨𝐬𝐬𝐢𝐛𝐥𝐞 !')
-#            await asyncio.sleep(10)
-#            await k.delete()
+@Client.on_callback_query(filters.regex(r"^spolling"))
+async def advantage_spoll_choker(bot, query):
+    _, user, movie_ = query.data.split('#')
+    if int(user) != 0 and query.from_user.id != int(user):
+        return await query.answer("This Message is not for you dear. Don't worry you can send new one !", show_alert=True)
+    if movie_ == "close_spellcheck":
+        return await query.message.delete()
+    movies = SPELL_CHECK.get(query.message.reply_to_message.id)
+    if not movies:
+        return await query.answer("You are clicking on an old button which is expired.", show_alert=True)
+    movie = movies[(int(movie_))]
+    await query.answer('Checking for Movie in database...')
+    k = await manual_filters(bot, query.message, text=movie)
+    if k == False:
+        files, offset, total_results = await get_search_results(movie, offset=0, filter=True)
+        if files:
+            k = (movie, files, offset, total_results)
+            await auto_filter(bot, query, k)
+        else:
+            k = await query.message.edit(' 𝐜𝐮𝐫𝐫𝐞𝐧𝐭𝐥𝐲 𝐮𝐧𝐚𝐯𝐚𝐢𝐥𝐚𝐛𝐥𝐞 ! 𝐰𝐞 𝐚𝐫𝐞 𝐫𝐞𝐚𝐥𝐥𝐲 𝐬𝐨𝐫𝐫𝐲 𝐟𝐨𝐫 𝐢𝐧𝐜𝐨𝐧𝐯𝐞𝐧𝐢𝐞𝐧𝐜𝐞 !\n 𝐏𝐥𝐞𝐚𝐬𝐞 𝐬𝐞𝐧𝐭 𝐭𝐡𝐢𝐬 𝐌𝐨𝐯𝐢𝐞 𝐨𝐫 𝐖𝐞𝐛𝐬𝐞𝐫𝐢𝐞𝐬 𝐧𝐚𝐦𝐞 𝐢𝐧 #𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐓𝐨𝐩𝐢𝐜 𝐨𝐫 𝐬𝐞𝐧𝐭 𝐮𝐬𝐢𝐧𝐠 "#𝐑𝐞𝐪𝐮𝐞𝐬𝐭 𝐌𝐨𝐯𝐢𝐞 𝐍𝐚𝐦𝐞 & 𝐑𝐞𝐥𝐞𝐚𝐬𝐞 𝐘𝐞𝐚𝐫.\n 𝐨𝐮𝐫 𝐠𝐫𝐞𝐚𝐭 𝐚𝐝𝐦𝐢𝐧𝐬 𝐰𝐢𝐥𝐥 𝐮𝐩𝐥𝐨𝐚𝐝 𝐢𝐭 𝐚𝐬 𝐬𝐨𝐨𝐧 𝐚𝐬 𝐩𝐨𝐬𝐬𝐢𝐛𝐥𝐞 !')
+            await asyncio.sleep(10)
+            await k.delete()
 
 
 @Client.on_callback_query()
@@ -624,30 +621,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
             ]
             reply_markup = InlineKeyboardMarkup(buttons)
             await query.message.edit_reply_markup(reply_markup)
-
-    if 
-       async def movie_chosen(client: Client, callback_query: CallbackQuery):
-            query = callback_query.data
-            logger.info("User clicked on movie: {}".format(query))
-            try:
-                await auto_filter(client, msg, spoll={"search": query})
-            except Exception as e:
-                logger.error("Error: {}".format(e))
-                await callback_query.answer("Sorry, movie not found!")
-                return 
-       else:
-           await callback_query.answer("Sorry, movie not found on IMDb.")
-           await msg.reply_text("You can try searching for the movie on other websites.")
-        
-    
-    else:
-          return 
-    
-    
+    await query.answer('♥️ 𝚃𝚑𝚊𝚗𝚔 𝚈𝚘𝚞  @Filmykeedha ♥️')
 
 
 async def auto_filter(client, msg, spoll):
-    if spoll:
+    if not spoll:
         message = msg
         settings = await get_settings(message.chat.id)
         if message.text.startswith("/"): return  # ignore commands
@@ -858,22 +836,3 @@ async def manual_filters(client, message, text=False):
                 break
     else:
         return False
-
-
-
-async def filmykeedha(client: Client, msg: Message, callback_data: str = "movie_chosen"):
-    ia = IMDb()
-    search_results = ia.search_movie(msg.text)
-
-    if search_results:
-        keyboard = []
-        for i, result in enumerate(search_results[:10], start=1):
-            title = result['title']
-            year = result.get('year', 'N/A')
-            button_text = f"{i}. {title} - {year}"
-            callback_data = f"movie_{title}"
-            keyboard.append([InlineKeyboardButton(button_text, callback_data=callback_data)])
-
-        await msg.reply_text("Which movie do you want? Choose one:", reply_markup=InlineKeyboardMarkup(keyboard))
-
-       
