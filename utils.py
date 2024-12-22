@@ -49,7 +49,7 @@ from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Fetch the channel IDs from environment variables
 AUTH_CHANNELS = os.getenv("AUTH_CHANNELS", "").split(",")  # Get the list of channel IDs
-
+REQUEST_TO_JOIN_MODE = 'False'
 import logging
 
 async def is_subscribed(bot, query):
