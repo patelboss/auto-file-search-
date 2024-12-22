@@ -82,7 +82,8 @@ async def give_filter(client, message):
                             text=f"<b>Reporter: {mention} ({user_id})\n\nMessage: {search}</b>",
                             reply_markup=InlineKeyboardMarkup(btn)
                         )
-                    except Exception as e:
+                   # except Exception as e:
+                       # print f"{e}"
                         #await send_error_log(client, "119", e)
                         #await send_error_log(client, "GFILTER", e)
                 else:
