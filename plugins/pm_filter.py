@@ -41,9 +41,10 @@ SPELL_CHECK = {}
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
-    k = await manual_filters(client, message)
+    await message.reply_text(" Bro join Private Group also because this may ban anytime")
+    await manual_filters(client, message)
     #if k == False:
-        await auto_filter(client, message)
+    await auto_filter(client, message)
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
@@ -82,7 +83,7 @@ async def next_page(bot, query):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{clean_file_name(file.file_name)}", callback_data=f'files#{file.file_id}'
+                    text=f"☞{clean_file_name(file.file_name)}", callback_data=f'files#{file.file_id}'
                 ),
                 InlineKeyboardButton(
                     text=f"☞{get_size(file.file_size)}",
@@ -389,7 +390,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if not files_:
             return await query.answer('No such file exist.')
         files = files_[0]
-        title = files.file_name
+        title = clean_file_name(files.file_name)
         size = get_size(files.file_size)
         f_caption = files.caption
         if CUSTOM_FILE_CAPTION:
@@ -655,6 +656,11 @@ async def auto_filter(client, msg, spoll=False):
             ]
             for file in files
         ]
+        btn.insert(0, [
+            InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
+            #InlineKeyboardButton("ʟanguage", callback_data=f"languages#{key}"),
+            #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
+        ])
     else:
         btn = [
             [
@@ -667,8 +673,15 @@ async def auto_filter(client, msg, spoll=False):
                     callback_data=f'{pre}#{file.file_id}',
                 ),
             ]
+            
+        
             for file in files
         ]
+        btn.insert(0, [
+            InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
+           # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
+            #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
+        ])
 
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
