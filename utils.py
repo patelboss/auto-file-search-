@@ -132,27 +132,54 @@ async def get_poster(query, bulk=False, id=False, file=None):
         'url':f'https://www.imdb.com/title/tt{movieid}'
     }
 # https://github.com/odysseusmax/animated-lamp/blob/2ef4730eb2b5f0596ed6d03e7b05243d93e3415b/bot/utils/broadcast.py#L37
-
-async def broadcast_messages(user_id, message):
+async def broadcast_messages(user_id, message, forward=False):
     try:
-        await message.copy(chat_id=user_id)
+        if forward:
+            await message.forward(chat_id=user_id)
+        else:
+            await message.copy(chat_id=user_id)
         return True, "Success"
     except FloodWait as e:
+        logger.warning(f"FloodWait: Sleeping for {e.x} seconds.")
         await asyncio.sleep(e.x)
-        return await broadcast_messages(user_id, message)
+        return await broadcast_messages(user_id, message, forward)
     except InputUserDeactivated:
+        # Delete the user only if the account is deactivated
         await db.delete_user(int(user_id))
-        logging.info(f"{user_id}-Removed from Database, since deleted account.")
+        logger.info(f"{user_id} - Removed from database (deleted account).")
         return False, "Deleted"
     except UserIsBlocked:
-        logging.info(f"{user_id} -Blocked the bot.")
+        # Do not delete, just log that the user has blocked the bot
+        logger.info(f"{user_id} - Blocked the bot.")
         return False, "Blocked"
     except PeerIdInvalid:
-        await db.delete_user(int(user_id))
-        logging.info(f"{user_id} - PeerIdInvalid")
+        # Do not delete, just log that the PeerId is invalid
+        logger.info(f"{user_id} - PeerIdInvalid.")
         return False, "Error"
     except Exception as e:
+        logger.error(f"Error broadcasting to {user_id}: {e}")
         return False, "Error"
+    
+
+async def broadcast_messages_group(chat_id, message, forward=False):
+    try:
+        if forward:
+            await message.forward(chat_id=chat_id)
+        else:
+            msg = await message.copy(chat_id=chat_id)
+            try:
+                await msg.pin()  # Attempt to pin the message
+            except Exception as e:
+                logger.warning(f"Could not pin message in group {chat_id}: {e}")
+        return True, "Success"
+    except FloodWait as e:
+        logger.warning(f"FloodWait: Sleeping for {e.x} seconds.")
+        await asyncio.sleep(e.x)
+        return await broadcast_messages_group(chat_id, message, forward)
+    except Exception as e:
+        logger.error(f"Error broadcasting to group {chat_id}: {e}")
+        return False, "Error"
+
 
 async def search_gagala(text):
     usr_agent = {
@@ -375,3 +402,14 @@ def humanbytes(size):
         size /= power
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
+
+FILTER_KEYWORDS = ['[', '@', 'www.', 'movie', 'www', 'telegram', 'tg']
+#from config import FILTER_KEYWORDS
+
+def clean_file_name(file_name):
+    return ' '.join(filter(lambda x: not any(keyword in x for keyword in FILTER_KEYWORDS), file_name.split()))
+
+#InlineKeyboardButton(
+#    text=f"☞{get_size(file['file_size'])} ◉ {clean_file_name(file['file_name'])}",
+#    callback_data=f'{pre}#{file["file_id"]}'
+#)
