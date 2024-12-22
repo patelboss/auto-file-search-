@@ -158,6 +158,49 @@ async def start(client, message):
             await asyncio.sleep(1) 
         await sts.delete()
         return
+
+    elif data.split("-", 1)[0] == "verify":
+        userid = data.split("-", 2)[1]
+        token = data.split("-", 3)[2]
+        if str(message.from_user.id) != str(userid):
+            return await message.reply_text(
+                text="<b>Invalid link or Expired link !</b>",
+                protect_content=True
+            )
+        is_valid = await check_token(client, userid, token)
+        if is_valid == True:
+            await message.reply_text(
+                text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.</b>",
+                protect_content=True
+            )
+            await verify_user(client, userid, token)
+        else:
+            return await message.reply_text(
+                text="<b>Invalid link or Expired link !</b>",
+                protect_content=True
+            )
+
+        
+    if data.startswith("sendfiles"):
+        chat_id = int("-" + file_id.split("-")[1])
+        userid = message.from_user.id if message.from_user else None
+        settings = await get_settings(chat_id)
+       # g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=allfiles_{file_id}")
+        k = await client.send_message(chat_id=message.from_user.id,text=f"<b>Get All Files in a Single Click!!!\n\n📂 ʟɪɴᴋ ➠ : {g}</i></b>", reply_markup=InlineKeyboardMarkup(
+                [
+                    [
+                        InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)
+                    ], [
+                        InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')
+                    ]
+                ]
+            )
+        )
+        #await asyncio.sleep(DLTTM)
+        #await k.edit("<b>Your message is successfully deleted!!!</b>")
+        return
+        
+    
     elif data.split("-", 1)[0] == "DSTORE":
         sts = await message.reply("Please wait")
         b_string = data.split("-", 1)[1]
