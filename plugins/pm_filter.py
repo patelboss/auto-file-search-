@@ -42,7 +42,7 @@ SPELL_CHECK = {}
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
     k = await manual_filters(client, message)
-    if k == False:
+    #if k == False:
         await auto_filter(client, message)
 
 
@@ -73,7 +73,7 @@ async def next_page(bot, query):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'files#{file.file_id}'
+                    text=f"☞{get_size(file.file_size)} ⊙ {clean_file_name(file.file_name)}", callback_data=f'files#{file.file_id}'
                 ),
             ]
             for file in files
@@ -82,10 +82,10 @@ async def next_page(bot, query):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
+                    text=f"{clean_file_name(file.file_name)}", callback_data=f'files#{file.file_id}'
                 ),
                 InlineKeyboardButton(
-                    text=f"{get_size(file.file_size)}",
+                    text=f"☞{get_size(file.file_size)}",
                     callback_data=f'files_#{file.file_id}',
                 ),
             ]
@@ -344,7 +344,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if not files_:
             return await query.answer('No such file exist.')
         files = files_[0]
-        title = files.file_name
+        title = clean_file_name(files.file_name)
         size = get_size(files.file_size)
         f_caption = files.caption
         settings = await get_settings(query.message.chat.id)
@@ -650,7 +650,7 @@ async def auto_filter(client, msg, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'{pre}#{file.file_id}'
+                    text=f"☞{get_size(file.file_size)} ⊙ {clean_file_name(file.file_name)}", callback_data=f'{pre}#{file.file_id}'
                 ),
             ]
             for file in files
@@ -659,7 +659,7 @@ async def auto_filter(client, msg, spoll=False):
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{file.file_name}",
+                    text=f"{clean_file_name(file.file_name)}",
                     callback_data=f'{pre}#{file.file_id}',
                 ),
                 InlineKeyboardButton(
@@ -717,7 +717,7 @@ async def auto_filter(client, msg, spoll=False):
             **locals()
         )
     else:
-        cap = f"𝐒𝐚𝐡𝐞𝐛! 𝐌𝐮𝐣𝐡𝐞 𝐊𝐮𝐜𝐡 𝐌𝐢𝐥𝐚 𝐇𝐚𝐢 {search}\nJust follow me on Instagram\nhttps://www.instagram.com/reel/CzDbEApSkZe \n this is required to continue service as long as i can."
+        cap = f"𝐒𝐚𝐡𝐞𝐛! 𝐌𝐮𝐣𝐡𝐞 𝐊𝐮𝐜𝐡 𝐌𝐢𝐥𝐚 𝐇𝐚𝐢 {search}\n\n"
     if imdb and imdb.get('poster'):
         try:
             await message.reply_photo(photo=imdb.get('poster'), caption=cap[:1024],
