@@ -45,56 +45,60 @@ async def give_filter(client, message):
     user = message.from_user  # Get the user object
     user_id = user.id if user else 0  # Fallback to 0 if no user ID is available
 
+    # Check if the user is an anonymous admin
     if user_id == 0:
-        await message.reply_text("<b>You are an anonymous admin. I can't work with it. Search Will Work Only If user Has User Id So Turn Off remain Anonymous from admin rights</b>", parse_mode=ParseMode.HTML)
-        return            
+        await message.reply_text(
+            "<b>You are an anonymous admin. I can't process your request. "
+            "Please disable 'Remain Anonymous' in admin rights to continue.</b>",
+            parse_mode=ParseMode.HTML
+        )
+        return
+
     try:
-        # If not from the support chat
+        # If not in the support chat, execute manual and auto-filter logic
         if chat_id != SUPPORT_CHAT_ID:
-            await message.reply_text(" Bro join Private Group also because this may ban anytime")
+            await message.reply_text("Please join the private group as this chat may be banned anytime.")
             await manual_filters(client, message)
             await auto_filter(client, message)
-            
+            return
 
-        else:    
-            search = message.text
-            temp_files, temp_offset, total_results = await get_search_results(
-                chat_id=chat_id, query=search.lower(), offset=0, filter=True
+        # If in the support chat, perform search and reply with results
+        search = message.text
+        if not search:  # Ensure a valid search query
+            await message.reply_text("Please provide a search query.")
+            return
+
+        # Get search results from the database
+        temp_files, temp_offset, total_results = await get_search_results(
+            chat_id=chat_id, query=search.lower(), offset=0, filter=True
+        )
+
+        # If results are found, reply with the count and search group link
+        if total_results > 0:
+            mention = user.mention if user else "Anonymous User"
+            await message.reply_text(
+                f"<b>Hey {mention}, {total_results} results found for '{search}'.\n\n"
+                "This is a support group, so you can't access files here.\n\n"
+                "Please use the search group: https://t.me/Filmykeedha/306</b>",
+                disable_web_page_preview=True
             )
-            if total_results > 0:
-                mention = user.mention if user else "Anonymous User"
-                await message.reply_text(
-                    f"<b>Hey {mention}, {total_results} results found for '{search}'.\n\n"
-                    "This is a support group, so you can't get files here.\n\n"
-                    "Search Group Link: https://t.me/Filmykeedha/306</b>",
-                    disable_web_page_preview=True
-                )
-            else:
-                if REQST_CHANNEL:
-                    btn = [[
-                        InlineKeyboardButton('View Request', url=message.link),
-                        InlineKeyboardButton('Show Options', callback_data=f'show_option#{user_id}')
-                    ]]
-                    try:
-                        mention = user.mention if user else "Anonymous User"
-                        await client.send_message(
-                            chat_id=REQST_CHANNEL,
-                            text=f"<b>Reporter: {mention} ({user_id})\n\nMessage: {search}</b>",
-                            reply_markup=InlineKeyboardMarkup(btn)
-                        )
-                   # except Exception as e:
-                       # print f"{e}"
-                        #await send_error_log(client, "119", e)
-                        #await send_error_log(client, "GFILTER", e)
-                else:
-                    await message.reply_text("<b>Request channel is not configured. Please contact the admin.</b>")
-                    return 
+        else:
+            # If no results, inform the user
+            await message.reply_text("<b>No results found for your query. Please try again.</b>", parse_mode=ParseMode.HTML)
+
     except FloodWait as e:
-        await asyncio.sleep(e.x)
-        await message.reply_text(f"<b>Due to Flood Wait i am not able to search. Wait {e} second before new search</b>", parse_mode=ParseMode.HTML)
-        return
-        #await message.reply_text(
-    
+        # Handle FloodWait exception
+        await asyncio.sleep(e.value)
+        await message.reply_text(
+            f"<b>FloodWait detected. Please wait {e.value} seconds before trying again.</b>",
+            parse_mode=ParseMode.HTML
+        )
+    except Exception as e:
+        # Handle generic exceptions
+        await message.reply_text(
+            f"<b>An unexpected error occurred. Please try again later.\n\nDetails: {str(e)}</b>",
+            parse_mode=ParseMode.HTML
+        )    
    # except Exception as e:
     #    await send_error_log(client, "123", e)
         #await send_error_log(client, "GFILTER", e)
