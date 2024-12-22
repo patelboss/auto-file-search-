@@ -128,6 +128,11 @@ async def next_page(bot, query):
     except:
         offset = 0
     search = BUTTONS.get(key)
+    key = f"{message.chat.id}-{message.id}"
+    req = message.from_user.id if message.from_user else 0
+    FRESH[key] = search
+    temp.GETALL[key] = files
+    temp.SHORT[message.from_user.id] = message.chat.id
     if not search:
         await query.answer("You are using one of my old messages, please send the request again.", show_alert=True)
         return
@@ -150,6 +155,11 @@ async def next_page(bot, query):
             ]
             for file in files
         ]
+        btn.insert(0, [
+            InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
+           # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
+            #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
+        ])
     else:
         btn = [
             [
@@ -163,6 +173,11 @@ async def next_page(bot, query):
             ]
             for file in files
         ]
+        btn.insert(0, [
+            InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
+           # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
+            #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
+        ])
 
     if 0 < offset <= 10:
         off_set = 0
