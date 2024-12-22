@@ -14,7 +14,7 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
-from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS
+from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS, SUPPORT_CHAT_ID
 from database.users_chats_db import db
 from database.ia_filterdb import Media
 from utils import get_size, temp, get_settings, clean_file_name
@@ -41,6 +41,65 @@ SPELL_CHECK = {}
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
+    chat_id = message.chat.id
+    user = message.from_user  # Get the user object
+    user_id = user.id if user else 0  # Fallback to 0 if no user ID is available
+
+    if user_id == 0:
+        await message.reply_text("<b>You are an anonymous admin. I can't work with it. Search Will Work Only If user Has User Id So Turn Off remain Anonymous from admin rights</b>", parse_mode=ParseMode.HTML)
+        return            
+    try:
+        # If not from the support chat
+        if chat_id != SUPPORT_CHAT_ID:
+            await message.reply_text(" Bro join Private Group also because this may ban anytime")
+            await manual_filters(client, message)
+            await auto_filter(client, message)
+            
+
+        else:    
+            search = message.text
+            temp_files, temp_offset, total_results = await get_search_results(
+                chat_id=chat_id, query=search.lower(), offset=0, filter=True
+            )
+            if total_results > 0:
+                mention = user.mention if user else "Anonymous User"
+                await message.reply_text(
+                    f"<b>Hey {mention}, {total_results} results found for '{search}'.\n\n"
+                    "This is a support group, so you can't get files here.\n\n"
+                    "Search Group Link: https://t.me/Filmykeedha/306</b>",
+                    disable_web_page_preview=True
+                )
+            else:
+                if REQST_CHANNEL:
+                    btn = [[
+                        InlineKeyboardButton('View Request', url=message.link),
+                        InlineKeyboardButton('Show Options', callback_data=f'show_option#{user_id}')
+                    ]]
+                    try:
+                        mention = user.mention if user else "Anonymous User"
+                        await client.send_message(
+                            chat_id=REQST_CHANNEL,
+                            text=f"<b>Reporter: {mention} ({user_id})\n\nMessage: {search}</b>",
+                            reply_markup=InlineKeyboardMarkup(btn)
+                        )
+                    except Exception as e:
+                        #await send_error_log(client, "119", e)
+                        #await send_error_log(client, "GFILTER", e)
+                else:
+                    await message.reply_text("<b>Request channel is not configured. Please contact the admin.</b>")
+                    return 
+    except FloodWait as e:
+        await asyncio.sleep(e.x)
+        await message.reply_text(f"<b>Due to Flood Wait i am not able to search. Wait {e} second before new search</b>", parse_mode=ParseMode.HTML)
+        return
+        #await message.reply_text(
+    
+   # except Exception as e:
+    #    await send_error_log(client, "123", e)
+        #await send_error_log(client, "GFILTER", e)
+
+            #settings = await get_settings(chat_id)
+            
     await message.reply_text(" Bro join Private Group also because this may ban anytime")
     await manual_filters(client, message)
     #if k == False:
