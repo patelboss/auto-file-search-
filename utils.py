@@ -14,7 +14,7 @@ from database.users_chats_db import db
 from bs4 import BeautifulSoup
 import requests
 import logging, asyncio, os, re, random, pytz, aiohttp, requests, string, json, http.client
-from info import *
+from info import AUTH_CHANNELS, 
 from imdb import Cinemagoer 
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from pyrogram import enums
