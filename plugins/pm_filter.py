@@ -31,7 +31,7 @@ from database.filters_mdb import (
     get_filters,
 )
 import logging
-from pyrogram.enums import Parsemode
+from pyrogram.enums import ParseMode
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
