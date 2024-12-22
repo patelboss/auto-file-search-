@@ -35,7 +35,14 @@ from pyrogram.enums import ParseMode
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
+#BUTTONS = {}
+#SPELL_CHECK = {}
+BUTTON = {}
 BUTTONS = {}
+FRESH = {}
+BUTTONS0 = {}
+BUTTONS1 = {}
+BUTTONS2 = {}
 SPELL_CHECK = {}
 
 
