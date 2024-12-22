@@ -40,18 +40,92 @@ class temp(object):
     B_NAME = None
     SETTINGS = {}
 
-async def is_subscribed(bot, query):
-    try:
-        user = await bot.get_chat_member(AUTH_CHANNEL, query.from_user.id)
-    except UserNotParticipant:
-        pass
-    except Exception as e:
-        logger.exception(e)
-    else:
-        if user.status != 'kicked':
-            return True
+import os
+from pyrogram.errors import UserNotParticipant
+from pyrogram import enums
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-    return False
+# Fetch the channel IDs from environment variables
+AUTH_CHANNELS = os.getenv("AUTH_CHANNELS", "").split(",")  # Get the list of channel IDs
+
+import logging
+
+async def is_subscribed(bot, query):
+    missing_channels = []
+    
+    if REQUEST_TO_JOIN_MODE == True and join_db().isActive():
+        try:
+            user = await join_db().get_user(query.from_user.id)
+            if user and user["user_id"] == query.from_user.id:
+                return True
+            else:
+                for channel_id in AUTH_CHANNELS:
+                    try:
+                        user_data = await bot.get_chat_member(int(channel_id), query.from_user.id)
+                    except UserNotParticipant:
+                        channel = await bot.get_chat(int(channel_id))
+                        missing_channels.append(
+                            InlineKeyboardButton(f"Join {channel.title}", url=channel.invite_link)
+                        )
+                    except Exception as e:
+                        return False  # Return False if there's an error
+
+                # Send missing channels if needed
+                if missing_channels:
+                    reply_markup = InlineKeyboardMarkup([missing_channels])
+                    
+                    # Adjust based on object type
+                    if isinstance(query, CallbackQuery):
+                        await query.answer(
+                            text="Please join all required channels & Unmute Them to use the bot.\nTap on Files Again",
+                            show_alert=True
+                        )
+                        await query.message.reply("Join the channels using the buttons below.\nTap on Join Then Unmute\nTap On Files Again To Get Files", reply_markup=reply_markup)
+                    else:
+                        await query.reply(
+                            "You need to join all the required channels & Unmute Them to get the files.",
+                            reply_markup=reply_markup
+                        )
+                    return False
+
+                return True
+
+        except Exception as e:
+            return False
+    else:
+        for channel_id in AUTH_CHANNELS:
+            try:
+                user = await bot.get_chat_member(int(channel_id), query.from_user.id)
+                if user.status == enums.ChatMemberStatus.BANNED:
+                    return False
+            except UserNotParticipant:
+                missing_channels.append(channel_id)
+                continue
+
+        if missing_channels:
+            join_buttons = []
+            for channel_id in missing_channels:
+                channel = await bot.get_chat(int(channel_id))
+                join_buttons.append(
+                    InlineKeyboardButton(f"Join {channel.title}", url=channel.invite_link)
+                )
+            reply_markup = InlineKeyboardMarkup([join_buttons])
+
+            # Adjust based on object type
+            if isinstance(query, CallbackQuery):
+                await query.answer(
+                    text="Please join all required channels & Unmute Them to use the bot.\nTap on Files Again",
+                    show_alert=True
+                )
+                await query.message.reply("Join the channels using the buttons below.\nTap on Join Then Unmute\nTap On Files Again To Get Files", reply_markup=reply_markup)
+            else:
+                await query.reply(
+                    "You need to join all the required channels & Unmute Them to get the files.",
+                    reply_markup=reply_markup
+                )
+            return False
+
+    return True
 
 async def get_poster(query, bulk=False, id=False, file=None):
     if not id:
@@ -132,27 +206,54 @@ async def get_poster(query, bulk=False, id=False, file=None):
         'url':f'https://www.imdb.com/title/tt{movieid}'
     }
 # https://github.com/odysseusmax/animated-lamp/blob/2ef4730eb2b5f0596ed6d03e7b05243d93e3415b/bot/utils/broadcast.py#L37
-
-async def broadcast_messages(user_id, message):
+async def broadcast_messages(user_id, message, forward=False):
     try:
-        await message.copy(chat_id=user_id)
+        if forward:
+            await message.forward(chat_id=user_id)
+        else:
+            await message.copy(chat_id=user_id)
         return True, "Success"
     except FloodWait as e:
+        logger.warning(f"FloodWait: Sleeping for {e.x} seconds.")
         await asyncio.sleep(e.x)
-        return await broadcast_messages(user_id, message)
+        return await broadcast_messages(user_id, message, forward)
     except InputUserDeactivated:
+        # Delete the user only if the account is deactivated
         await db.delete_user(int(user_id))
-        logging.info(f"{user_id}-Removed from Database, since deleted account.")
+        logger.info(f"{user_id} - Removed from database (deleted account).")
         return False, "Deleted"
     except UserIsBlocked:
-        logging.info(f"{user_id} -Blocked the bot.")
+        # Do not delete, just log that the user has blocked the bot
+        logger.info(f"{user_id} - Blocked the bot.")
         return False, "Blocked"
     except PeerIdInvalid:
-        await db.delete_user(int(user_id))
-        logging.info(f"{user_id} - PeerIdInvalid")
+        # Do not delete, just log that the PeerId is invalid
+        logger.info(f"{user_id} - PeerIdInvalid.")
         return False, "Error"
     except Exception as e:
+        logger.error(f"Error broadcasting to {user_id}: {e}")
         return False, "Error"
+    
+
+async def broadcast_messages_group(chat_id, message, forward=False):
+    try:
+        if forward:
+            await message.forward(chat_id=chat_id)
+        else:
+            msg = await message.copy(chat_id=chat_id)
+            try:
+                await msg.pin()  # Attempt to pin the message
+            except Exception as e:
+                logger.warning(f"Could not pin message in group {chat_id}: {e}")
+        return True, "Success"
+    except FloodWait as e:
+        logger.warning(f"FloodWait: Sleeping for {e.x} seconds.")
+        await asyncio.sleep(e.x)
+        return await broadcast_messages_group(chat_id, message, forward)
+    except Exception as e:
+        logger.error(f"Error broadcasting to group {chat_id}: {e}")
+        return False, "Error"
+        
 
 async def search_gagala(text):
     usr_agent = {
