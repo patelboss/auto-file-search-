@@ -31,7 +31,7 @@ from database.filters_mdb import (
     get_filters,
 )
 import logging
-
+from pyrogram.enums import Parsemode
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
@@ -105,10 +105,10 @@ async def give_filter(client, message):
 
             #settings = await get_settings(chat_id)
             
-    await message.reply_text(" Bro join Private Group also because this may ban anytime")
-    await manual_filters(client, message)
+   # await message.reply_text(" Bro join Private Group also because this may ban anytime")
+   # await manual_filters(client, message)
     #if k == False:
-    await auto_filter(client, message)
+   # await auto_filter(client, message)
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
