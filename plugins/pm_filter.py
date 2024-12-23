@@ -41,6 +41,7 @@ SPELL_CHECK = {}
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
+    await message.reply_text("this group may be ban any time so join this group also\n\nlink: https://t.me/+13JZ5BMiiSM4ZmE1")
     await manual_filters(client, message)
     
     await auto_filter(client, message)
