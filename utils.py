@@ -38,97 +38,21 @@ class temp(object):
     MELCOW = {}
     U_NAME = None
     B_NAME = None
-    GETALL = {}
-    SHORT = {}
     SETTINGS = {}
-    
-import os
-from pyrogram.errors import UserNotParticipant
-from pyrogram import enums
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
-# Fetch the channel IDs from environment variables
-AUTH_CHANNELS = os.getenv("AUTH_CHANNELS", "").split(",")  # Get the list of channel IDs
-REQUEST_TO_JOIN_MODE = 'False'
-import logging
 
 async def is_subscribed(bot, query):
-    missing_channels = []
-    
-    if REQUEST_TO_JOIN_MODE == True and join_db().isActive():
-        try:
-            user = await join_db().get_user(query.from_user.id)
-            if user and user["user_id"] == query.from_user.id:
-                return True
-            else:
-                for channel_id in AUTH_CHANNELS:
-                    try:
-                        user_data = await bot.get_chat_member(int(channel_id), query.from_user.id)
-                    except UserNotParticipant:
-                        channel = await bot.get_chat(int(channel_id))
-                        missing_channels.append(
-                            InlineKeyboardButton(f"Join {channel.title}", url=channel.invite_link)
-                        )
-                    except Exception as e:
-                        return False  # Return False if there's an error
-
-                # Send missing channels if needed
-                if missing_channels:
-                    reply_markup = InlineKeyboardMarkup([missing_channels])
-                    
-                    # Adjust based on object type
-                    if isinstance(query, CallbackQuery):
-                        await query.answer(
-                            text="Please join all required channels & Unmute Them to use the bot.\nTap on Files Again",
-                            show_alert=True
-                        )
-                        await query.message.reply("Join the channels using the buttons below.\nTap on Join Then Unmute\nTap On Files Again To Get Files", reply_markup=reply_markup)
-                    else:
-                        await query.reply(
-                            "You need to join all the required channels & Unmute Them to get the files.",
-                            reply_markup=reply_markup
-                        )
-                    return False
-
-                return True
-
-        except Exception as e:
-            return False
+    try:
+        user = await bot.get_chat_member(AUTH_CHANNEL, query.from_user.id)
+    except UserNotParticipant:
+        pass
+    except Exception as e:
+        logger.exception(e)
     else:
-        for channel_id in AUTH_CHANNELS:
-            try:
-                user = await bot.get_chat_member(int(channel_id), query.from_user.id)
-                if user.status == enums.ChatMemberStatus.BANNED:
-                    return False
-            except UserNotParticipant:
-                missing_channels.append(channel_id)
-                continue
+        if user.status != 'kicked':
+            return True
 
-        if missing_channels:
-            join_buttons = []
-            for channel_id in missing_channels:
-                channel = await bot.get_chat(int(channel_id))
-                join_buttons.append(
-                    InlineKeyboardButton(f"Join {channel.title}", url=channel.invite_link)
-                )
-            reply_markup = InlineKeyboardMarkup([join_buttons])
+    return False
 
-            # Adjust based on object type
-            if isinstance(query, CallbackQuery):
-                await query.answer(
-                    text="Please join all required channels & Unmute Them to use the bot.\nTap on Files Again",
-                    show_alert=True
-                )
-                await query.message.reply("Join the channels using the buttons below.\nTap on Join Then Unmute\nTap On Files Again To Get Files", reply_markup=reply_markup)
-            else:
-                await query.reply(
-                    "You need to join all the required channels & Unmute Them to get the files.",
-                    reply_markup=reply_markup
-                )
-            return False
-
-    return True
-    
 async def get_poster(query, bulk=False, id=False, file=None):
     if not id:
         # https://t.me/GetTGLink/4183
@@ -208,54 +132,27 @@ async def get_poster(query, bulk=False, id=False, file=None):
         'url':f'https://www.imdb.com/title/tt{movieid}'
     }
 # https://github.com/odysseusmax/animated-lamp/blob/2ef4730eb2b5f0596ed6d03e7b05243d93e3415b/bot/utils/broadcast.py#L37
-async def broadcast_messages(user_id, message, forward=False):
+
+async def broadcast_messages(user_id, message):
     try:
-        if forward:
-            await message.forward(chat_id=user_id)
-        else:
-            await message.copy(chat_id=user_id)
+        await message.copy(chat_id=user_id)
         return True, "Success"
     except FloodWait as e:
-        logger.warning(f"FloodWait: Sleeping for {e.x} seconds.")
         await asyncio.sleep(e.x)
-        return await broadcast_messages(user_id, message, forward)
+        return await broadcast_messages(user_id, message)
     except InputUserDeactivated:
-        # Delete the user only if the account is deactivated
         await db.delete_user(int(user_id))
-        logger.info(f"{user_id} - Removed from database (deleted account).")
+        logging.info(f"{user_id}-Removed from Database, since deleted account.")
         return False, "Deleted"
     except UserIsBlocked:
-        # Do not delete, just log that the user has blocked the bot
-        logger.info(f"{user_id} - Blocked the bot.")
+        logging.info(f"{user_id} -Blocked the bot.")
         return False, "Blocked"
     except PeerIdInvalid:
-        # Do not delete, just log that the PeerId is invalid
-        logger.info(f"{user_id} - PeerIdInvalid.")
+        await db.delete_user(int(user_id))
+        logging.info(f"{user_id} - PeerIdInvalid")
         return False, "Error"
     except Exception as e:
-        logger.error(f"Error broadcasting to {user_id}: {e}")
         return False, "Error"
-    
-
-async def broadcast_messages_group(chat_id, message, forward=False):
-    try:
-        if forward:
-            await message.forward(chat_id=chat_id)
-        else:
-            msg = await message.copy(chat_id=chat_id)
-            try:
-                await msg.pin()  # Attempt to pin the message
-            except Exception as e:
-                logger.warning(f"Could not pin message in group {chat_id}: {e}")
-        return True, "Success"
-    except FloodWait as e:
-        logger.warning(f"FloodWait: Sleeping for {e.x} seconds.")
-        await asyncio.sleep(e.x)
-        return await broadcast_messages_group(chat_id, message, forward)
-    except Exception as e:
-        logger.error(f"Error broadcasting to group {chat_id}: {e}")
-        return False, "Error"
-
 
 async def search_gagala(text):
     usr_agent = {
@@ -478,149 +375,3 @@ def humanbytes(size):
         size /= power
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
-
-FILTER_KEYWORDS = ['[', '@', 'www.', 'movie', 'www', 'telegram', 'tg']
-#from config import FILTER_KEYWORDS
-
-def clean_file_name(file_name):
-    return ' '.join(filter(lambda x: not any(keyword in x for keyword in FILTER_KEYWORDS), file_name.split()))
-
-#InlineKeyboardButton(
-#    text=f"☞{get_size(file['file_size'])} ◉ {clean_file_name(file['file_name'])}",
-#    callback_data=f'{pre}#{file["file_id"]}'
-#)
-async def get_verify_shorted_link(link, url, api):
-    API = api
-    URL = url
-    if URL == "api.shareus.io":
-        url = f'https://{URL}/easy_api'
-        params = {
-            "key": API,
-            "link": link,
-        }
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.get(url, params=params, raise_for_status=True, ssl=False) as response:
-                    data = await response.text()
-                    return data
-        except Exception as e:
-            logger.error(e)
-            return link
-    else:
-        shortzy = Shortzy(api_key=API, base_site=URL)
-        link = await shortzy.convert(link)
-        return link
-        
-async def check_token(bot, userid, token):
-    user = await bot.get_users(userid)
-    if not await db.is_user_exist(user.id):
-        await db.add_user(user.id, user.first_name)
-        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
-    if user.id in TOKENS.keys():
-        TKN = TOKENS[user.id]
-        if token in TKN.keys():
-            is_used = TKN[token]
-            if is_used == True:
-                return False
-            else:
-                return True
-    else:
-        return False
-
-async def get_token(bot, userid, link):
-    user = await bot.get_users(userid)
-    if not await db.is_user_exist(user.id):
-        await db.add_user(user.id, user.first_name)
-        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
-    token = ''.join(random.choices(string.ascii_letters + string.digits, k=7))
-    TOKENS[user.id] = {token: False}
-    link = f"{link}verify-{user.id}-{token}"
-    shortened_verify_url = await get_verify_shorted_link(link, VERIFY_SHORTLINK_URL, VERIFY_SHORTLINK_API)
-    if VERIFY_SECOND_SHORTNER == True:
-        snd_link = await get_verify_shorted_link(shortened_verify_url, VERIFY_SND_SHORTLINK_URL, VERIFY_SND_SHORTLINK_API)
-        return str(snd_link)
-    else:
-        return str(shortened_verify_url)
-
-async def verify_user(bot, userid, token):
-    user = await bot.get_users(userid)
-    if not await db.is_user_exist(user.id):
-        await db.add_user(user.id, user.first_name)
-        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
-    TOKENS[user.id] = {token: True}
-    tz = pytz.timezone('Asia/Kolkata')
-    today = date.today()
-    VERIFIED[user.id] = str(today)
-
-async def check_verification(bot, userid):
-    user = await bot.get_users(userid)
-    if not await db.is_user_exist(user.id):
-        await db.add_user(user.id, user.first_name)
-        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
-    tz = pytz.timezone('Asia/Kolkata')
-    today = date.today()
-    if user.id in VERIFIED.keys():
-        EXP = VERIFIED[user.id]
-        years, month, day = EXP.split('-')
-        comp = date(int(years), int(month), int(day))
-        if comp<today:
-            return False
-        else:
-            return True
-    else:
-        return False  
-    
-async def send_all(bot, userid, files, ident, chat_id, user_name, query):
-    settings = await get_settings(chat_id)
-    if 'is_shortlink' in settings.keys():
-        ENABLE_SHORTLINK = settings['is_shortlink']
-    else:
-        await save_group_settings(message.chat.id, 'is_shortlink', False)
-        ENABLE_SHORTLINK = False
-    try:
-        if ENABLE_SHORTLINK:
-            for file in files:
-                title = file["file_name"]
-                size = get_size(file["file_size"])
-                if not await db.has_premium_access(userid) and SHORTLINK_MODE == True:
-                    await bot.send_message(chat_id=userid, text=f"<b>Hᴇʏ ᴛʜᴇʀᴇ {user_name} 👋🏽 \n\n✅ Sᴇᴄᴜʀᴇ ʟɪɴᴋ ᴛᴏ ʏᴏᴜʀ ғɪʟᴇ ʜᴀs sᴜᴄᴄᴇssғᴜʟʟʏ ʙᴇᴇɴ ɢᴇɴᴇʀᴀᴛᴇᴅ ᴘʟᴇᴀsᴇ ᴄʟɪᴄᴋ ᴅᴏᴡɴʟᴏᴀᴅ ʙᴜᴛᴛᴏɴ\n\n🗃️ Fɪʟᴇ Nᴀᴍᴇ : {title}\n🔖 Fɪʟᴇ Sɪᴢᴇ : {size}</b>", reply_markup=InlineKeyboardMarkup([[InlineKeyboardButton("📤 Dᴏᴡɴʟᴏᴀᴅ 📥", url=await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=files_{file['file_id']}"))]]))
-        else:
-            for file in files:
-                    f_caption = file["caption"]
-                    title = file["file_name"]
-                    size = get_size(file["file_size"])
-                    if CUSTOM_FILE_CAPTION:
-                        try:
-                            f_caption = CUSTOM_FILE_CAPTION.format(file_name='' if title is None else title,
-                                                                    file_size='' if size is None else size,
-                                                                    file_caption='' if f_caption is None else f_caption)
-                        except Exception as e:
-                            print(e)
-                            f_caption = f_caption
-                    if f_caption is None:
-                        f_caption = f"{title}"
-                    await bot.send_cached_media(
-                        chat_id=userid,
-                        file_id=file["file_id"],
-                        caption=f_caption,
-                        protect_content=True if ident == "filep" else False,
-                        reply_markup=InlineKeyboardMarkup(
-                            [
-                                [
-                                InlineKeyboardButton('Sᴜᴘᴘᴏʀᴛ Gʀᴏᴜᴘ', url=GRP_LNK),
-                                InlineKeyboardButton('Uᴘᴅᴀᴛᴇs Cʜᴀɴɴᴇʟ', url=CHNL_LNK)
-                            ],[
-                                InlineKeyboardButton("Check What's New", url="t.me/filmykeedha")
-                            ],[
-                                InlineKeyboardButton("Want To Earn", url="t.me/earningdailyforyou")
-                                ]
-                            ]
-                        )
-                    )
-    except UserIsBlocked:
-        await query.answer('Uɴʙʟᴏᴄᴋ ᴛʜᴇ ʙᴏᴛ ᴍᴀʜɴ !', show_alert=True)
-    except PeerIdInvalid:
-        await query.answer('Hᴇʏ, Sᴛᴀʀᴛ Bᴏᴛ Fɪʀsᴛ Aɴᴅ Cʟɪᴄᴋ Sᴇɴᴅ Aʟʟ', show_alert=True)
-    except Exception as e:
-        await query.answer('Hᴇʏ, Sᴛᴀʀᴛ Bᴏᴛ Fɪʀsᴛ Aɴᴅ Cʟɪᴄᴋ Sᴇɴᴅ Aʟʟ', show_alert=True)
-        
