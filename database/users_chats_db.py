@@ -108,13 +108,29 @@ class Database:
     
     async def get_settings(self, id):
         default = {
-            'button': SINGLE_BUTTON,
-            'botpm': P_TTI_SHOW_OFF,
-            'file_secure': PROTECT_CONTENT,
-            'imdb': IMDB,
-            'spell_check': SPELL_CHECK_REPLY,
-            'welcome': MELCOW_NEW_USERS,
-            'template': IMDB_TEMPLATE
+        'button': SINGLE_BUTTON,
+        'botpm': P_TTI_SHOW_OFF,
+        'file_secure': PROTECT_CONTENT,
+        'imdb': IMDB,
+        'spell_check': SPELL_CHECK_REPLY,
+        'welcome': MELCOW_NEW_USERS,
+        'auto_delete': AUTO_DELETE,
+        'auto_ffilter': AUTO_FFILTER,
+        'max_btn': MAX_BTN,
+        'template': IMDB_TEMPLATE,
+        'caption': CUSTOM_FILE_CAPTION,
+        'shortlink': SHORTLINK_URL,
+        'shortlink_api': SHORTLINK_API,
+        'is_shortlink': IS_SHORTLINK,
+        'fsub': None,
+        'tutorial': TUTORIAL,
+        'is_tutorial': IS_TUTORIAL,
+        'vj': None,
+        'techvj': None,
+        'tech_vj': None,
+        'vjtech': None,
+        'vj_tech': None
+            
         }
         chat = await self.grp.find_one({'id':int(id)})
         if chat:
@@ -137,6 +153,47 @@ class Database:
 
     async def get_all_chats(self):
         return self.grp.find({})
+
+    async def has_premium_access(self, user_id):
+        user_data = await self.get_user(user_id)
+        if user_data:
+            expiry_time = user_data.get("expiry_time")
+            if expiry_time is None:
+                # User previously used the free trial, but it has ended.
+                return False
+            elif isinstance(expiry_time, datetime.datetime) and datetime.datetime.now() <= expiry_time:
+                return True
+            else:
+                await self.users.update_one({"id": user_id}, {"$set": {"expiry_time": None}})
+        return False
+    
+    async def check_remaining_uasge(self, userid):
+        user_id = userid
+        user_data = await self.get_user(user_id)        
+        expiry_time = user_data.get("expiry_time")
+        # Calculate remaining time
+        remaining_time = expiry_time - datetime.datetime.now()
+        return remaining_time
+
+    async def get_free_trial_status(self, user_id):
+        user_data = await self.get_user(user_id)
+        if user_data:
+            return user_data.get("has_free_trial", False)
+        return False
+
+    async def give_free_trail(self, userid):        
+        user_id = userid
+        seconds = 5*60         
+        expiry_time = datetime.datetime.now() + datetime.timedelta(seconds=seconds)
+        user_data = {"id": user_id, "expiry_time": expiry_time, "has_free_trial": True}
+        await self.users.update_one({"id": user_id}, {"$set": user_data}, upsert=True)
+    
+    
+    async def all_premium_users(self):
+        count = await self.users.count_documents({
+        "expiry_time": {"$gt": datetime.datetime.now()}
+        })
+        return count
 
 
     async def get_db_size(self):
