@@ -13,6 +13,7 @@ from utils import get_settings, get_size, is_subscribed, save_group_settings, te
 from utils import *
 from database.connections_mdb import active_connection
 import re
+from info import *
 import json
 import base64
 logger = logging.getLogger(__name__)
