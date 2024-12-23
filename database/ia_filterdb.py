@@ -118,7 +118,7 @@ async def get_file_details1(query):
         filter = {'file_id': query}
         logger.info(f" filter or file id : {filter}")
         cursor = Media.find(filter)
-        filedetails = await cursor.to_list(length=1)  # Use `await` to fetch results
+        filedetails = await cursor.to_list(length=None)  # Use `await` to fetch results
         if filedetails:
             logger.info(f"File details fetched successfully for query: {query}")
         else:
