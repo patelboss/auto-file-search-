@@ -235,7 +235,7 @@ async def start(client, message):
             logger.debug(f"File details retrieved: {files_}.")
                 
             files1 = files_
-            title = clean_file_name(files1.file_name)
+            title = files1.file_name
             size = get_size(files1.file_size)
             f_caption = files1.caption
                 
