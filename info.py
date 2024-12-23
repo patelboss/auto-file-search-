@@ -20,6 +20,9 @@ BOT_TOKEN = environ['BOT_TOKEN']
 CACHE_TIME = int(environ.get('CACHE_TIME', 300))
 USE_CAPTION_FILTER = bool(environ.get('USE_CAPTION_FILTER', False))
 PICS = (environ.get('PICS', 'https://telegra.ph/Music-06-11-2 https://telegra.ph/file/53b15340d899be1451aeb.jpg https://telegra.ph/Non-05-21')).split()
+PAYMENT_QR = environ.get('PAYMENT_QR', 'https://envs.sh/3wu.jpg')
+PAYMENT_TEXT = environ.get('PAYMENT_TEXT', '<b> Thank You For Donating Us \nYou can Donate any amount you want. your donation amount will be used in bots future.</b>')
+OWNER_USERNAME = environ.get('OWNER_USERNAME', 'Pankaj_patel_p') # owner username without @
 
 # Admins, Channels & Users
 ADMINS = [int(admin) if id_pattern.search(admin) else admin for admin in environ.get('ADMINS', '').split()]
