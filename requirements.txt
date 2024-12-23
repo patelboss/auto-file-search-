@@ -11,3 +11,7 @@ aiohttp
 urllib3
 python-telegram-bot==12.0.0b1
 shortzy
+ujson
+datetime 
+pytz 
+aiohttp
