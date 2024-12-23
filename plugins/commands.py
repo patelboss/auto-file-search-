@@ -231,13 +231,14 @@ async def start(client, message):
             file_id = file["file_id"]
             logger.info(f"Processing file with file_id: {file_id}.")
                 
+            logger.info(f"awaiting get files details")
             files_ = await get_file_details1(file_id)
             logger.debug(f"File details retrieved: {files_}.")
                 
             files1 = files_
             title = files1['file_name']
-            size = get_size(files1[file_size])
-            f_caption = files1[caption]
+            size = get_size(files1['file_size'])
+            f_caption = files1['caption']
                 
             logger.info(f"File details: title={title}, size={size}.")
                 
