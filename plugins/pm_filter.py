@@ -49,15 +49,23 @@ AUTO_DELETE = 'False'
 VERIFY = 'False'
 SUPPORT_CHAT_ID = '-1001337819633'
 import logging
+import sys
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
-# Set up logging to ensure it outputs to the console
-logging.basicConfig(
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    level=logging.INFO  # Use INFO level for better visibility
-)
+# Configure logging explicitly to write to stdout
 logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
+# Create a stream handler for stdout
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
 
+# Set a formatter for better readability
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+stdout_handler.setFormatter(formatter)
+
+# Add the handler to the logger
+logger.addHandler(stdout_handler)
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
     chat_id = message.chat.id
@@ -66,14 +74,16 @@ async def give_filter(client, message):
 
     # Log received message details
     logger.info(f"Received message in chat {chat_id} from user {user_id}. Message text: {message.text}")
+    print(f"Received message in chat {chat_id} from user {user_id}. Message text: {message.text}")
 
     # Check if the user is an anonymous admin
     if user_id == 0:
         logger.info("User is an anonymous admin. Request will not be processed.")
+        print("User is an anonymous admin. Request will not be processed.")
         await message.reply_text(
             "<b>You are an anonymous admin. I can't process your request. "
             "Please disable 'Remain Anonymous' in admin rights to continue.</b>",
-            parse_mode=ParseMode.HTML
+            parse_mode="HTML"
         )
         return
 
@@ -81,6 +91,7 @@ async def give_filter(client, message):
         # If in the support chat, inform the user and provide a link to the search group
         if chat_id == SUPPORT_CHAT_ID:
             logger.info(f"User is in the support chat (chat_id: {chat_id}). Sending search group link.")
+            print(f"User is in the support chat (chat_id: {chat_id}). Sending search group link.")
             # Inline button to join the search group
             inline_button = InlineKeyboardButton("Join Search Group", url="https://t.me/Filmykeedha/306")
             reply_markup = InlineKeyboardMarkup([[inline_button]])
@@ -94,25 +105,27 @@ async def give_filter(client, message):
 
         # If not in the support chat, execute manual and auto-filter logic
         logger.info(f"User is not in the support chat (chat_id: {chat_id}). Executing filters.")
+        print(f"User is not in the support chat (chat_id: {chat_id}). Executing filters.")
         await manual_filters(client, message)
         await auto_filter(client, message)
 
     except FloodWait as e:
         # Handle FloodWait exception
         logger.error(f"FloodWait exception: {e.value} seconds")
+        print(f"FloodWait exception: {e.value} seconds")
         await asyncio.sleep(e.value)
         await message.reply_text(
             f"<b>FloodWait detected. Please wait {e.value} seconds before trying again.</b>",
-            parse_mode=ParseMode.HTML
+            parse_mode="HTML"
         )
     except Exception as e:
         # Handle generic exceptions
         logger.error(f"Unexpected exception: {str(e)}")
+        print(f"Unexpected exception: {str(e)}")
         await message.reply_text(
             f"<b>An unexpected error occurred. Please try again later.\n\nDetails: {str(e)}</b>",
-            parse_mode=ParseMode.HTML
-        )
-
+            parse_mode="HTML"
+)
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
