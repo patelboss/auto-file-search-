@@ -114,11 +114,20 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
     
     
 async def get_file_details1(query):
-    filter = {'file_id': query}
-    cursor = Media.find(filter)
-    filedetails = cursor.to_list
-    return filedetails
-
+    try:
+        filter = {'file_id': query}
+        logger.info(f" filter or file id : {filter}")
+        cursor = Media.find(filter)
+        filedetails = await cursor.to_list(length=1)  # Use `await` to fetch results
+        if filedetails:
+            logger.info(f"File details fetched successfully for query: {query}")
+        else:
+            logger.warning(f"No file details found for query: {query}")
+        return filedetails
+    except Exception as e:
+        logger.error(f"Error while fetching file details for query {query}: {e}")
+        return None
+        
 async def get_file_details(query):
     filter = {'file_id': query}
     cursor = Media.find(filter)
