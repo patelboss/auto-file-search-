@@ -210,8 +210,8 @@ async def start(client, message):
                 ]
             )
         )
-        #await asyncio.sleep(DLTTM)
-        #await k.edit("<b>Your message is successfully deleted!!!</b>")
+        await asyncio.sleep(120)
+        await k.edit("<b>Your message is successfully deleted!!!</b>")
         return
 
     elif data.startswith("all"):
@@ -227,6 +227,8 @@ async def start(client, message):
         for file in files:
             file_id = file["file_id"]
             files_ = await get_file_details(file_id)
+           # files_ = await get_file_details(file_id)
+            print(type(files_), files_)  # Debug: Check the type and value of files_
             files1 = files_
             title = {clean_file_name(files1['file_name'])}
             size=get_size(files1['file_size'])
