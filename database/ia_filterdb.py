@@ -116,7 +116,7 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
 async def get_file_details(query):
     filter = {'file_id': query}
     cursor = Media.find(filter)
-    filedetails = await cursor.to_list
+    filedetails = cursor.to_list
     return filedetails
 
 
