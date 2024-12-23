@@ -216,9 +216,9 @@ async def start(client, message):
 
     elif data.startswith("all"):
         random_sticker = get_random_sticker()
-        m = await message.reply_sticker(random_sticker)
-        await asyncio.sleep(3)
-        await m.delete()
+        #m = await message.reply_sticker(random_sticker)
+        #await asyncio.sleep(1)
+        #await m.delete()
 
         files = temp.GETALL.get(file_id)
         if not files:
@@ -228,9 +228,9 @@ async def start(client, message):
             file_id = file["file_id"]
             files_ = await get_file_details(file_id)
             files1 = files_
-            title = {clean_file_name(files1.file_name)}
-            size=get_size(files1.file_size)
-            f_caption=files1.caption
+            title = {clean_file_name(files1['file_name'])}
+            size=get_size(files1['file_size'])
+            f_caption=files1['caption']
             if CUSTOM_FILE_CAPTION:
                 try:
                     f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
