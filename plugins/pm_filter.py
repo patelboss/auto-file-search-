@@ -44,6 +44,8 @@ BUTTONS0 = {}
 BUTTONS1 = {}
 BUTTONS2 = {}
 SPELL_CHECK = {}
+AUTO_DELETE = 'False'
+VERIFY = 'False'
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
