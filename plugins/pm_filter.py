@@ -50,8 +50,6 @@ VERIFY = 'False'
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-
 async def give_filter(client, message):
     chat_id = message.chat.id
     user = message.from_user  # Get the user object
