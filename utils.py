@@ -489,6 +489,9 @@ def clean_file_name(file_name):
 #    text=f"☞{get_size(file['file_size'])} ◉ {clean_file_name(file['file_name'])}",
 #    callback_data=f'{pre}#{file["file_id"]}'
 #)
+URL = "https://cuty.io/filmykeedha"
+SHORTLINK_API = "0618ee0660a1f05d8fd5c98bf"
+VERIFY_SECOND_SHORTNER = "False"
 async def get_verify_shorted_link(link, url, api):
     API = api
     URL = url
