@@ -494,7 +494,38 @@ async def cb_handler(client: Client, query: CallbackQuery):
         await query.answer(f"Hey {query.from_user.first_name}, All files on this page has been sent successfully to your PM !", show_alert=True)
             
     
-    
+    elif query.data.startswith("sendfiles"):
+        clicked = query.from_user.id
+        ident, key = query.data.split("#")
+        settings = await get_settings(query.message.chat.id)
+        
+        try:
+            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
+            
+            #if settings['is_shortlink'] and not await db.has_premium_access(query.from_user.id):
+            #    if SHORTLINK_MODE == True:
+            #        await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles1_{key}")
+                    
+             #   else:
+            #        await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
+            #elif settings['is_shortlink'] and await db.has_premium_access(query.from_user.id):
+             #   await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
+             #   return 
+           # else:
+            #    await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
+                
+            
+                
+        except UserIsBlocked:
+            await query.answer('Uɴʙʟᴏᴄᴋ ᴛʜᴇ ʙᴏᴛ ᴍᴀʜɴ !', show_alert=True)
+        except PeerIdInvalid:
+            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles3_{key}")
+        except Exception as e:
+            #await send_error_log(client, "1497", e)
+            logger.exception(e)
+            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles4_{key}")
+            #await send_error_log(client, "1500", e)
+            
     elif query.data.startswith("checksub"):
         if AUTH_CHANNEL and not await is_subscribed(client, query):
             await query.answer("𝐈𝐬𝐤𝐨 𝐉𝐨𝐢𝐧 𝐊𝐚𝐫 𝐏𝐡𝐥𝐞 ✋🏻", show_alert=True)
