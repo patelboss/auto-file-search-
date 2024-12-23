@@ -14,10 +14,10 @@ from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, CallbackQ
 from pyrogram import Client, filters, enums
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from pyrogram.errors.exceptions.bad_request_400 import MessageTooLong, PeerIdInvalid
-from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS, SUPPORT_CHAT_ID
+from info import ADMINS, LOG_CHANNEL, SUPPORT_CHAT, MELCOW_NEW_USERS
 from database.users_chats_db import db
 from database.ia_filterdb import Media
-from utils import get_size, temp, get_settings, clean_file_name
+from utils import get_size, temp, get_settings
 from Script import script
 from pyrogram.errors import ChatAdminRequired
 from pyrogram import Client, filters, enums
@@ -31,93 +31,19 @@ from database.filters_mdb import (
     get_filters,
 )
 import logging
-from pyrogram.enums import ParseMode
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
-#BUTTONS = {}
-#SPELL_CHECK = {}
-BUTTON = {}
 BUTTONS = {}
-FRESH = {}
-BUTTONS0 = {}
-BUTTONS1 = {}
-BUTTONS2 = {}
 SPELL_CHECK = {}
-AUTO_DELETE = 'False'
-VERIFY = 'False'
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
-    chat_id = message.chat.id
-    user = message.from_user  # Get the user object
-    user_id = user.id if user else 0  # Fallback to 0 if no user ID is available
-
-    # Check if the user is an anonymous admin
-    if user_id == 0:
-        await message.reply_text(
-            "<b>You are an anonymous admin. I can't process your request. "
-            "Please disable 'Remain Anonymous' in admin rights to continue.</b>",
-            parse_mode=ParseMode.HTML
-        )
-        return
-
-    try:
-        # If not in the support chat, execute manual and auto-filter logic
-        if chat_id != SUPPORT_CHAT_ID:
-            await message.reply_text("Please join the private group as this chat may be banned anytime.")
-            await manual_filters(client, message)
-            await auto_filter(client, message)
-            return
-
-        # If in the support chat, perform search and reply with results
-        search = message.text
-        if not search:  # Ensure a valid search query
-            await message.reply_text("Please provide a search query.")
-            return
-
-        # Get search results from the database
-        temp_files, temp_offset, total_results = await get_search_results(
-            chat_id=chat_id, query=search.lower(), offset=0, filter=True
-        )
-
-        # If results are found, reply with the count and search group link
-        if total_results > 0:
-            mention = user.mention if user else "Anonymous User"
-            await message.reply_text(
-                f"<b>Hey {mention}, {total_results} results found for '{search}'.\n\n"
-                "This is a support group, so you can't access files here.\n\n"
-                "Please use the search group: https://t.me/Filmykeedha/306</b>",
-                disable_web_page_preview=True
-            )
-        else:
-            # If no results, inform the user
-            await message.reply_text("<b>No results found for your query. Please try again.</b>", parse_mode=ParseMode.HTML)
-
-    except FloodWait as e:
-        # Handle FloodWait exception
-        await asyncio.sleep(e.value)
-        await message.reply_text(
-            f"<b>FloodWait detected. Please wait {e.value} seconds before trying again.</b>",
-            parse_mode=ParseMode.HTML
-        )
-    except Exception as e:
-        # Handle generic exceptions
-        await message.reply_text(
-            f"<b>An unexpected error occurred. Please try again later.\n\nDetails: {str(e)}</b>",
-            parse_mode=ParseMode.HTML
-        )    
-   # except Exception as e:
-    #    await send_error_log(client, "123", e)
-        #await send_error_log(client, "GFILTER", e)
-
-            #settings = await get_settings(chat_id)
-            
-   # await message.reply_text(" Bro join Private Group also because this may ban anytime")
-   # await manual_filters(client, message)
-    #if k == False:
-   # await auto_filter(client, message)
+    k = await manual_filters(client, message)
+    if k == False:
+        await auto_filter(client, message)
 
 
 @Client.on_callback_query(filters.regex(r"^next"))
@@ -142,44 +68,29 @@ async def next_page(bot, query):
 
     if not files:
         return
-
-    temp.GETALL[key] = files
-    temp.SHORT[query.from_user.id] = query.message.chat.id
-    settings = await get_settings(query.message.chat.id)
-    pre = 'filep' if settings['file_secure'] else 'file'
     settings = await get_settings(query.message.chat.id)
     if settings['button']:
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"☞{get_size(file.file_size)} ⊙ {clean_file_name(file.file_name)}", callback_data=f'files#{file.file_id}'
+                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'files#{file.file_id}'
                 ),
             ]
             for file in files
         ]
-        btn.insert(0, [
-            InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
-           # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
-            #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
-        ])
     else:
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"☞{clean_file_name(file.file_name)}", callback_data=f'files#{file.file_id}'
+                    text=f"{file.file_name}", callback_data=f'files#{file.file_id}'
                 ),
                 InlineKeyboardButton(
-                    text=f"☞{get_size(file.file_size)}",
+                    text=f"{get_size(file.file_size)}",
                     callback_data=f'files_#{file.file_id}',
                 ),
             ]
             for file in files
         ]
-        btn.insert(0, [
-            InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
-           # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
-            #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
-        ])
 
     if 0 < offset <= 10:
         off_set = 0
@@ -433,7 +344,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if not files_:
             return await query.answer('No such file exist.')
         files = files_[0]
-        title = clean_file_name(files.file_name)
+        title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.caption
         settings = await get_settings(query.message.chat.id)
@@ -469,65 +380,6 @@ async def cb_handler(client: Client, query: CallbackQuery):
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
         except Exception as e:
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
-    elif query.data.startswith("send_fsall"):
-        temp_var, ident, key, offset = query.data.split("#")
-        search = BUTTON0.get(key)
-        if not search:
-            await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name),show_alert=True)
-            return
-        files, n_offset, total = await get_search_results(query.message.chat.id, search, offset=int(offset), filter=True)
-        await send_all(client, query.from_user.id, files, ident, query.message.chat.id, query.from_user.first_name, query)
-        search = BUTTONS1.get(key)
-        files, n_offset, total = await get_search_results(query.message.chat.id, search, offset=int(offset), filter=True)
-        await send_all(client, query.from_user.id, files, ident, query.message.chat.id, query.from_user.first_name, query)
-        search = BUTTONS2.get(key)
-        files, n_offset, total = await get_search_results(query.message.chat.id, search, offset=int(offset), filter=True)
-        await send_all(client, query.from_user.id, files, ident, query.message.chat.id, query.from_user.first_name, query)
-        await query.answer(f"Hey {query.from_user.first_name}, All files on this page has been sent successfully to your PM !", show_alert=True)
-        
-    elif query.data.startswith("send_fall"):
-        temp_var, ident, key, offset = query.data.split("#")
-        search = FRESH.get(key)
-        if not search:
-            await query.answer(script.OLD_ALRT_TXT.format(query.from_user.first_name),show_alert=True)
-            return
-        files, n_offset, total = await get_search_results(query.message.chat.id, search, offset=int(offset), filter=True)
-        await send_all(client, query.from_user.id, files, ident, query.message.chat.id, query.from_user.first_name, query)
-        await query.answer(f"Hey {query.from_user.first_name}, All files on this page has been sent successfully to your PM !", show_alert=True)
-            
-    
-    elif query.data.startswith("sendfiles"):
-        clicked = query.from_user.id
-        ident, key = query.data.split("#")
-        settings = await get_settings(query.message.chat.id)
-        
-        try:
-            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
-            
-            if settings['is_shortlink'] and not await db.has_premium_access(query.from_user.id):
-                if SHORTLINK_MODE == True:
-                    await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles1_{key}")
-                    
-                else:
-                    await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
-            elif settings['is_shortlink'] and await db.has_premium_access(query.from_user.id):
-                await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
-                return 
-            else:
-                await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
-                
-            
-                
-        except UserIsBlocked:
-            await query.answer('Uɴʙʟᴏᴄᴋ ᴛʜᴇ ʙᴏᴛ ᴍᴀʜɴ !', show_alert=True)
-        except PeerIdInvalid:
-            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles3_{key}")
-        except Exception as e:
-            #await send_error_log(client, "1497", e)
-            logger.exception(e)
-            await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles4_{key}")
-            #await send_error_log(client, "1500", e)
-            
     elif query.data.startswith("checksub"):
         if AUTH_CHANNEL and not await is_subscribed(client, query):
             await query.answer("𝐈𝐬𝐤𝐨 𝐉𝐨𝐢𝐧 𝐊𝐚𝐫 𝐏𝐡𝐥𝐞 ✋🏻", show_alert=True)
@@ -537,7 +389,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
         if not files_:
             return await query.answer('No such file exist.')
         files = files_[0]
-        title = clean_file_name(files.file_name)
+        title = files.file_name
         size = get_size(files.file_size)
         f_caption = files.caption
         if CUSTOM_FILE_CAPTION:
@@ -794,30 +646,20 @@ async def auto_filter(client, msg, spoll=False):
         message = msg.message.reply_to_message  # msg will be callback query
         search, files, offset, total_results = spoll
     pre = 'filep' if settings['file_secure'] else 'file'
-    key = f"{message.chat.id}-{message.id}"
-    req = message.from_user.id if message.from_user else 0
-    FRESH[key] = search
-    temp.GETALL[key] = files
-    temp.SHORT[message.from_user.id] = message.chat.id
     if settings["button"]:
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"☞{get_size(file.file_size)} ⊙ {clean_file_name(file.file_name)}", callback_data=f'{pre}#{file.file_id}'
+                    text=f"[{get_size(file.file_size)}] {file.file_name}", callback_data=f'{pre}#{file.file_id}'
                 ),
             ]
             for file in files
         ]
-        btn.insert(0, [
-            InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
-            #InlineKeyboardButton("ʟanguage", callback_data=f"languages#{key}"),
-            #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
-        ])
     else:
         btn = [
             [
                 InlineKeyboardButton(
-                    text=f"{clean_file_name(file.file_name)}",
+                    text=f"{file.file_name}",
                     callback_data=f'{pre}#{file.file_id}',
                 ),
                 InlineKeyboardButton(
@@ -825,15 +667,8 @@ async def auto_filter(client, msg, spoll=False):
                     callback_data=f'{pre}#{file.file_id}',
                 ),
             ]
-            
-        
             for file in files
         ]
-        btn.insert(0, [
-            InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
-           # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
-            #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
-        ])
 
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
@@ -882,7 +717,7 @@ async def auto_filter(client, msg, spoll=False):
             **locals()
         )
     else:
-        cap = f"𝐒𝐚𝐡𝐞𝐛! 𝐌𝐮𝐣𝐡𝐞 𝐊𝐮𝐜𝐡 𝐌𝐢𝐥𝐚 𝐇𝐚𝐢 {search}\n\n"
+        cap = f"𝐒𝐚𝐡𝐞𝐛! 𝐌𝐮𝐣𝐡𝐞 𝐊𝐮𝐜𝐡 𝐌𝐢𝐥𝐚 𝐇𝐚𝐢 {search}\nJust follow me on Instagram\nhttps://www.instagram.com/reel/CzDbEApSkZe \n this is required to continue service as long as i can."
     if imdb and imdb.get('poster'):
         try:
             await message.reply_photo(photo=imdb.get('poster'), caption=cap[:1024],

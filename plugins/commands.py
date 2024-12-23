@@ -6,11 +6,10 @@ from Script import script
 from pyrogram import Client, filters, enums
 from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from database.ia_filterdb import Media, get_file_details, unpack_new_file_id, get_file_details1
+from database.ia_filterdb import Media, get_file_details, unpack_new_file_id
 from database.users_chats_db import db
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
-from utils import *
 from database.connections_mdb import active_connection
 import re
 import json
@@ -18,20 +17,7 @@ import base64
 logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
-STREAM_MODE = "False"
-VERIFY = "False"
-AUTO_DELETE = "False"
 
-sticker_ids = [
-    "CAACAgIAAxkBAAItAmdbY-9IY20HNfLFeeboOOex74M0AAL9AQACFkJrCqSvYaKm6vLJHgQ",
-    "CAACAgIAAxkBAAIs1GdbWBhGfsD2U3Z2pGiR-d64z08mAAJvAAPb234AAZlbUKh7k4B0HgQ",
-    "CAACAgIAAxkBAAIsz2dbV_286mg26Vx67MOWmyG-WvK7AAJtAAPb234AAXUe7IXy-0SlHgQ",
-    "CAACAgQAAxkBAAIs_mdbY-Zk1JR7yRLoWsi8NbJEMFerAALVGAACOqGIUIer-Up9iv5aHgQ",
-    "CAACAgQAAxkBAAIs-mdbY96brNo0bbqiAT0h9aHmGjfZAAISDgACQln9BFRvgD6jmKybHgQ"
-]
-
-def get_random_sticker():
-    return random.choice(sticker_ids)
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
@@ -172,129 +158,6 @@ async def start(client, message):
             await asyncio.sleep(1) 
         await sts.delete()
         return
-
-    elif data.split("-", 1)[0] == "verify":
-        userid = data.split("-", 2)[1]
-        token = data.split("-", 3)[2]
-        if str(message.from_user.id) != str(userid):
-            return await message.reply_text(
-                text="<b>Invalid link or Expired link !</b>",
-                protect_content=True
-            )
-        is_valid = await check_token(client, userid, token)
-        if is_valid == True:
-            await message.reply_text(
-                text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.</b>",
-                protect_content=True
-            )
-            await verify_user(client, userid, token)
-        else:
-            return await message.reply_text(
-                text="<b>Invalid link or Expired link !</b>",
-                protect_content=True
-            )
-
-        
-    if data.startswith("sendfiles"):
-        chat_id = int("-" + file_id.split("-")[1])
-        userid = message.from_user.id if message.from_user else None
-        settings = await get_settings(chat_id)
-        #g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=allfiles_{file_id}")
-        k = await client.send_message(chat_id=message.from_user.id,text=f"<b>Get All Files in a Single Click!!!\n\n📂 ʟɪɴᴋ ➠ : {g}</i></b>", reply_markup=InlineKeyboardMarkup(
-                [
-                    [
-                        InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)
-                    ], [
-                        InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')
-                    ]
-                ]
-            )
-        )
-        await asyncio.sleep(120)
-        await k.edit("<b>Your message is successfully deleted!!!</b>")
-        return
-
-    elif data.startswith("all"):
-        
-        logger.info("Processing 'all' command.")
-        random_sticker = get_random_sticker()
-        logger.info("Random sticker selected.")
-            
-        files = temp.GETALL.get(file_id)
-        if not files:
-            logger.warning("No such file exists for the given file_id.")
-            return await message.reply('<b><i>No such file exist.</b></i>')
-            
-        logger.info(f"Found {len(files)} files associated with file_id: {file_id}.")
-        filesarr = []
-        for file in files:
-            file_id = file["file_id"]
-            logger.info(f"Processing file with file_id: {file_id}.")
-                
-            files_ = await get_file_details1(file_id)
-            logger.debug(f"File details retrieved: {files_}.")
-                
-            files1 = files_
-            title = clean_file_name(files1.file_name)
-            size = get_size(files1.file_size)
-            f_caption = files1.caption
-                
-            logger.info(f"File details: title={title}, size={size}.")
-                
-            if CUSTOM_FILE_CAPTION:
-                try:
-                    f_caption = CUSTOM_FILE_CAPTION.format(
-                        file_name=title,
-                        file_size=size,
-                        file_caption=f_caption
-                    )
-                    logger.info("Custom caption applied successfully.")
-                except Exception as e:
-                    logger.exception("Error applying custom caption.")
-                    f_caption = f_caption or title
-                
-            if not f_caption:
-                f_caption = title
-                logger.info("Fallback caption applied.")
-                
-            if STREAM_MODE:
-                button = [
-                    [InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)],
-                    [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
-                ]
-                logger.info("Stream mode enabled. Buttons configured.")
-            else:
-                button = [
-                    [InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)],
-                    [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
-                ]
-                logger.info("Default mode enabled. Buttons configured.")
-                
-            msg = await client.send_cached_media(
-                chat_id=message.from_user.id,
-                file_id=file_id,
-                caption=f_caption,
-                protect_content=True if pre == 'filep' else False,
-                reply_markup=InlineKeyboardMarkup(button)
-            )
-            logger.info(f"File sent to user: {message.from_user.id}, message_id: {msg.id}.")
-            filesarr.append(msg)
-            
-        logger.info("All files sent. Sending confirmation message.")
-        k = await client.send_message(chat_id=message.from_user.id, text="waah yar 😛")
-        await asyncio.sleep(30)
-            
-        logger.info("Deleting sent files after delay.")
-        for x in filesarr:
-            await x.delete()
-            logger.info(f"Deleted message: {x.id}.")
-            
-        await k.edit_text("<b>Your All Files/Videos is successfully deleted!!!</b>")
-        logger.info("Confirmation message edited to indicate deletion.")
-        return
-
-    
-    
     elif data.split("-", 1)[0] == "DSTORE":
         sts = await message.reply("Please wait")
         b_string = data.split("-", 1)[1]
