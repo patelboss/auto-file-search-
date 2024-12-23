@@ -6,7 +6,7 @@ from pyrogram.errors import FloodWait, InputUserDeactivated, UserIsBlocked, Peer
 from info import ADMINS
 from database.users_chats_db import db
 from utils import broadcast_messages, broadcast_messages_group
-from plugins.pm_filter import send_error_log
+#from plugins.pm_filter import send_error_log
 logger = logging.getLogger("broadcast")
 
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS))
@@ -61,7 +61,7 @@ async def pm_broadcast(bot, message):
                     logger.warning(f"Invalid peer ID for user {user['id']}.")
                     failed += 1
                 except Exception as e:
-                    await send_error_log(client, f"Error broadcasting to user {user['id']}", e)
+                #    await send_error_log(client, f"Error broadcasting to user {user['id']}", e)
                     logger.error(f"Error broadcasting to user {user['id']}: {e}")
                     failed += 1
 
