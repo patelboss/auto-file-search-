@@ -499,6 +499,54 @@ SHORTLINK_API = "xLsXcbTQX2fPiDCCA1Wmh5eCLnp1"
 VERIFY_SECOND_SHORTNER = "False"
 VERIFY_SHORTLINK_API = "xLsXcbTQX2fPiDCCA1Wmh5eCLnp1"
 VERIFY_SHORTLINK_URL = "api.shareus.io"
+
+
+from datetime import datetime, timedelta
+import random
+import string
+import pytz
+import aiohttp
+
+# Ensure a unique token by checking the existing tokens
+def generate_unique_token(user_id):
+    token = ''.join(random.choices(string.ascii_letters + string.digits, k=7))
+    # Check if the token already exists in the TOKENS dictionary (or database)
+    while any(token == tkn for u, tokens in TOKENS.items() for tkn in tokens.keys()):
+        token = ''.join(random.choices(string.ascii_letters + string.digits, k=7))
+    return token
+
+# Generate token and store it in the TOKENS dictionary
+async def get_token(bot, userid, link):
+    user = await bot.get_users(userid)
+
+    # Check if user is already verified
+    if await check_verification(bot, userid):
+        return "You are already verified."
+
+    if not await db.is_user_exist(user.id):
+        await db.add_user(user.id, user.first_name)
+        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
+
+    # Generate a unique token
+    token = generate_unique_token(user.id)
+    TOKENS[user.id] = {
+        token: {
+            'is_used': False,
+            'created_at': datetime.utcnow()  # Store creation time of the token
+        }
+    }
+
+    # Generate the verification link
+    verification_link = f"{link}verify-{user.id}-{token}"
+    shortened_verify_url = await get_verify_shorted_link(verification_link, VERIFY_SHORTLINK_URL, VERIFY_SHORTLINK_API)
+
+    if VERIFY_SECOND_SHORTNER:
+        second_shortened_url = await get_verify_shorted_link(shortened_verify_url, VERIFY_SND_SHORTLINK_URL, VERIFY_SND_SHORTLINK_API)
+        return str(second_shortened_url)
+    else:
+        return str(shortened_verify_url)
+
+# Shortener URL function
 async def get_verify_shorted_link(link, url, api):
     API = api
     URL = url
@@ -520,66 +568,72 @@ async def get_verify_shorted_link(link, url, api):
         shortzy = Shortzy(api_key=API, base_site=URL)
         link = await shortzy.convert(link)
         return link
-        
-async def check_token(bot, userid, token):
-    user = await bot.get_users(userid)
-    if not await db.is_user_exist(user.id):
-        await db.add_user(user.id, user.first_name)
-        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
-    if user.id in TOKENS.keys():
-        TKN = TOKENS[user.id]
-        if token in TKN.keys():
-            is_used = TKN[token]
-            if is_used == True:
-                return False
-            else:
-                return True
-    else:
-        return False
 
-async def get_token(bot, userid, link):
-    user = await bot.get_users(userid)
-    if not await db.is_user_exist(user.id):
-        await db.add_user(user.id, user.first_name)
-        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
-    token = ''.join(random.choices(string.ascii_letters + string.digits, k=7))
-    TOKENS[user.id] = {token: False}
-    link = f"{link}verify-{user.id}-{token}"
-    shortened_verify_url = await get_verify_shorted_link(link, VERIFY_SHORTLINK_URL, VERIFY_SHORTLINK_API)
-    if VERIFY_SECOND_SHORTNER == True:
-        snd_link = await get_verify_shorted_link(shortened_verify_url, VERIFY_SND_SHORTLINK_URL, VERIFY_SND_SHORTLINK_API)
-        return str(snd_link)
-    else:
-        return str(shortened_verify_url)
-
+# Verify user function with a 24-hour expiration for verification
 async def verify_user(bot, userid, token):
     user = await bot.get_users(userid)
     if not await db.is_user_exist(user.id):
         await db.add_user(user.id, user.first_name)
         await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
-    TOKENS[user.id] = {token: True}
-    tz = pytz.timezone('Asia/Kolkata')
-    today = date.today()
-    VERIFIED[user.id] = str(today)
 
+    # Saving the verification status in the database with timestamp
+    verification_data = VerifiedUser(
+        user_id=userid,
+        verified_at=datetime.utcnow()  # UTC time is stored to avoid timezone issues
+    )
+    await verification_data.commit()
+
+    # Mark the token as used
+    TOKENS[user.id] = {token: {'is_used': True, 'created_at': datetime.utcnow()}}
+
+# Check if the token is valid and hasn't expired
+async def check_token(bot, userid, token):
+    user = await bot.get_users(userid)
+
+    # Ensure user exists in the database before checking the token
+    if not await db.is_user_exist(user.id):
+        await db.add_user(user.id, user.first_name)
+        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
+
+    # Check if the token exists and is valid
+    if user.id in TOKENS.keys():
+        TKN = TOKENS[user.id]
+        if token in TKN.keys():
+            token_data = TKN[token]
+            is_used = token_data['is_used']
+            created_at = token_data['created_at']
+            
+            # Check if the token is expired (24 hours expiration)
+            expiration_time = created_at + timedelta(hours=24)
+            if is_used:
+                return False  # Token already used
+            elif datetime.utcnow() > expiration_time:
+                return False  # Token expired
+            else:
+                return True  # Token valid and not used
+    return False  # Token not found
+
+# Check if the user is verified and whether the verification is still valid (within 24 hours)
 async def check_verification(bot, userid):
     user = await bot.get_users(userid)
     if not await db.is_user_exist(user.id):
         await db.add_user(user.id, user.first_name)
         await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
-    tz = pytz.timezone('Asia/Kolkata')
-    today = date.today()
-    if user.id in VERIFIED.keys():
-        EXP = VERIFIED[user.id]
-        years, month, day = EXP.split('-')
-        comp = date(int(years), int(month), int(day))
-        if comp<today:
-            return False
-        else:
-            return True
-    else:
-        return False  
+
+    # Check if the user is in the verified_users collection
+    verified_user = await VerifiedUser.find_one({'user_id': userid})
     
+    if verified_user:
+        # If the user is found, check if the verification is still valid (within 24 hours)
+        if verified_user.verified_at + timedelta(seconds=86400) > datetime.utcnow():  # 24 hours
+            return True
+        else:
+            # The verification expired, delete from the database
+            await verified_user.remove()
+            return False
+    else:
+        return False  # Not verified
+
 async def send_all(bot, userid, files, ident, chat_id, user_name, query):
     settings = await get_settings(chat_id)
     if 'is_shortlink' in settings.keys():
