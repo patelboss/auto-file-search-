@@ -10,13 +10,13 @@ from utils import broadcast_messages, broadcast_messages_group
 logger = logging.getLogger("broadcast")
 
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS))
-async def pm_broadcast(bot, message):
+async def pm_broadcast(client, message):
     try:
         # Ask admin for broadcast message with a timeout
         await message.reply_text("You have 120 seconds (2 minutes ) to send your broadcast message (type or forward).")
         try:
             b_msg = await asyncio.wait_for(
-                bot.ask(chat_id=message.from_user.id, text="Send your broadcast message (type or forward)."),
+                client.ask(chat_id=message.from_user.id, text="Send your broadcast message (type or forward)."),
                 timeout=120
             )
         except asyncio.TimeoutError:
@@ -84,7 +84,7 @@ async def broadcast_group(bot, message):
         await message.reply_text("You have 120 seconds(2 minutes)to send your broadcast message (type or forward).")
         try:
             b_msg = await asyncio.wait_for(
-                bot.ask(chat_id=message.from_user.id, text="Send your broadcast message (type or forward)."),
+                client.ask(chat_id=message.from_user.id, text="Send your broadcast message (type or forward)."),
                 timeout=120
             )
         except asyncio.TimeoutError:
