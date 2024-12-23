@@ -215,34 +215,53 @@ async def start(client, message):
         await k.edit("<b>Your message is successfully deleted!!!</b>")
         return
 
+    
     elif data.startswith("all"):
-        
         logger.info("Processing 'all' command.")
         random_sticker = get_random_sticker()
         logger.info("Random sticker selected.")
-            
+        
         files = temp.GETALL.get(file_id)
         if not files:
             logger.warning("No such file exists for the given file_id.")
             return await message.reply('<b><i>No such file exist.</b></i>')
-            
+        
         logger.info(f"Found {len(files)} files associated with file_id: {file_id}.")
         filesarr = []
+    
+    # Check verification status first, outside the loop
+        if VERIFY:
+            is_verified = await check_verification(client, message.from_user.id)
+            if not is_verified:
+                btn = [[
+                    InlineKeyboardButton("Verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start="))
+                ],[
+                    InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
+                ]]
+                await message.reply_text(
+                    text="<b>You are not verified!\nKindly verify to continue!</b>",
+                    protect_content=True,
+                    reply_markup=InlineKeyboardMarkup(btn)
+                )
+                logger.info(f"User {message.from_user.id} is not verified. Verification prompt sent.")
+                return  # Stop further execution if user is not verified
+    
+    # Process files if verified
         for file in files:
             file_id = file["file_id"]
             logger.info(f"Processing file with file_id: {file_id}.")
-                
-            logger.info(f"awaiting get files details")
+            
+            logger.info(f"Awaiting file details.")
             files_ = await get_file_details1(file_id)
             logger.debug(f"File details retrieved: {files_}.")
-                
+            
             files1 = files_
             title = files1['file_name']
             size = get_size(files1['file_size'])
             f_caption = files1['caption']
-                
+            
             logger.info(f"File details: title={title}, size={size}.")
-                
+            
             if CUSTOM_FILE_CAPTION:
                 try:
                     f_caption = CUSTOM_FILE_CAPTION.format(
@@ -254,25 +273,11 @@ async def start(client, message):
                 except Exception as e:
                     logger.exception("Error applying custom caption.")
                     f_caption = f_caption or title
-                
+            
             if not f_caption:
                 f_caption = title
                 logger.info("Fallback caption applied.")
 
-            if VERIFY == True:
-                await check_verification(client, message.from_user.id)
-                btn = [[
-                    InlineKeyboardButton("Verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start="))
-                ],[
-                    InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
-                ]]
-                await message.reply_text(
-                    text="<b>You are not verified !\nKindly verify to continue !</b>",
-                    protect_content=True,
-                    reply_markup=InlineKeyboardMarkup(btn)
-                )
-                return
-                
             if STREAM_MODE:
                 button = [
                     [InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)],
@@ -285,7 +290,7 @@ async def start(client, message):
                     [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
                 ]
                 logger.info("Default mode enabled. Buttons configured.")
-                
+            
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
                 file_id=file_id,
@@ -295,21 +300,19 @@ async def start(client, message):
             )
             logger.info(f"File sent to user: {message.from_user.id}, message_id: {msg.id}.")
             filesarr.append(msg)
-            
+        
         logger.info("All files sent. Sending confirmation message.")
         k = await client.send_message(chat_id=message.from_user.id, text="waah yar 😛")
         await asyncio.sleep(30)
-            
+        
         logger.info("Deleting sent files after delay.")
         for x in filesarr:
             await x.delete()
             logger.info(f"Deleted message: {x.id}.")
-            
+        
         await k.edit_text("<b>Your All Files/Videos is successfully deleted!!!</b>")
         logger.info("Confirmation message edited to indicate deletion.")
         return
-
-    
     
     elif data.split("-", 1)[0] == "DSTORE":
         sts = await message.reply("Please wait")
