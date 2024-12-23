@@ -47,13 +47,16 @@ BUTTONS2 = {}
 SPELL_CHECK = {}
 AUTO_DELETE = 'False'
 VERIFY = 'False'
-
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+SUPPORT_CHAT_ID = '-1001337819633'
 import logging
 
-# Set up basic logging for debugging purposes
-logging.basicConfig(level=logging.DEBUG)
+# Set up logging to ensure it outputs to the console
+logging.basicConfig(
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO  # Use INFO level for better visibility
+)
 logger = logging.getLogger(__name__)
+
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
@@ -61,11 +64,12 @@ async def give_filter(client, message):
     user = message.from_user  # Get the user object
     user_id = user.id if user else 0  # Fallback to 0 if no user ID is available
 
-    logger.debug(f"Received message from user {user_id} in chat {chat_id}. Message text: {message.text}")
+    # Log received message details
+    logger.info(f"Received message in chat {chat_id} from user {user_id}. Message text: {message.text}")
 
     # Check if the user is an anonymous admin
     if user_id == 0:
-        logger.debug("User is an anonymous admin, not processing request.")
+        logger.info("User is an anonymous admin. Request will not be processed.")
         await message.reply_text(
             "<b>You are an anonymous admin. I can't process your request. "
             "Please disable 'Remain Anonymous' in admin rights to continue.</b>",
@@ -76,7 +80,7 @@ async def give_filter(client, message):
     try:
         # If in the support chat, inform the user and provide a link to the search group
         if chat_id == SUPPORT_CHAT_ID:
-            logger.debug(f"User is in the support chat (chat_id: {chat_id}). Sending search group link.")
+            logger.info(f"User is in the support chat (chat_id: {chat_id}). Sending search group link.")
             # Inline button to join the search group
             inline_button = InlineKeyboardButton("Join Search Group", url="https://t.me/Filmykeedha/306")
             reply_markup = InlineKeyboardMarkup([[inline_button]])
@@ -89,7 +93,7 @@ async def give_filter(client, message):
             return
 
         # If not in the support chat, execute manual and auto-filter logic
-        logger.debug(f"User is not in the support chat (chat_id: {chat_id}). Proceeding with filters.")
+        logger.info(f"User is not in the support chat (chat_id: {chat_id}). Executing filters.")
         await manual_filters(client, message)
         await auto_filter(client, message)
 
