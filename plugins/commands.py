@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 BATCH_FILES = {}
 STREAM_MODE = "False"
 VERIFY = "False"
+AUTO_DELETE = "False"
 
 sticker_ids = [
     "CAACAgIAAxkBAAItAmdbY-9IY20HNfLFeeboOOex74M0AAL9AQACFkJrCqSvYaKm6vLJHgQ",
