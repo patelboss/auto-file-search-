@@ -199,7 +199,7 @@ async def start(client, message):
         chat_id = int("-" + file_id.split("-")[1])
         userid = message.from_user.id if message.from_user else None
         settings = await get_settings(chat_id)
-       # g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=allfiles_{file_id}")
+        #g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=allfiles_{file_id}")
         k = await client.send_message(chat_id=message.from_user.id,text=f"<b>Get All Files in a Single Click!!!\n\n📂 ʟɪɴᴋ ➠ : {g}</i></b>", reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -228,9 +228,9 @@ async def start(client, message):
             file_id = file["file_id"]
             files_ = await get_file_details(file_id)
             files1 = files_
-            title = {clean_file_name(files1['file_name'])}
-            size=get_size(files1["file_size"])
-            f_caption=files1["caption"]
+            title = {clean_file_name(files1.file_name)}
+            size=get_size(files1.file_size)
+            f_caption=files1.caption
             if CUSTOM_FILE_CAPTION:
                 try:
                     f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
@@ -273,9 +273,9 @@ async def start(client, message):
             )
             filesarr.append(msg)
         k = await client.send_message(chat_id = message.from_user.id, text = "waah yar 😛")
-        #await asyncio.sleep(DLTTM)
-        #for x in filesarr:
-        #    await x.delete()
+        await asyncio.sleep(30)
+        for x in filesarr:
+            await x.delete()
         await k.edit_text("<b>Your All Files/Videos is successfully deleted!!!</b>")
         return    
     
