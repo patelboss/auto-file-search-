@@ -48,6 +48,12 @@ SPELL_CHECK = {}
 AUTO_DELETE = 'False'
 VERIFY = 'False'
 
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+import logging
+
+# Set up basic logging for debugging purposes
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
 async def give_filter(client, message):
@@ -55,8 +61,11 @@ async def give_filter(client, message):
     user = message.from_user  # Get the user object
     user_id = user.id if user else 0  # Fallback to 0 if no user ID is available
 
+    logger.debug(f"Received message from user {user_id} in chat {chat_id}. Message text: {message.text}")
+
     # Check if the user is an anonymous admin
     if user_id == 0:
+        logger.debug("User is an anonymous admin, not processing request.")
         await message.reply_text(
             "<b>You are an anonymous admin. I can't process your request. "
             "Please disable 'Remain Anonymous' in admin rights to continue.</b>",
@@ -67,6 +76,7 @@ async def give_filter(client, message):
     try:
         # If in the support chat, inform the user and provide a link to the search group
         if chat_id == SUPPORT_CHAT_ID:
+            logger.debug(f"User is in the support chat (chat_id: {chat_id}). Sending search group link.")
             # Inline button to join the search group
             inline_button = InlineKeyboardButton("Join Search Group", url="https://t.me/Filmykeedha/306")
             reply_markup = InlineKeyboardMarkup([[inline_button]])
@@ -79,12 +89,13 @@ async def give_filter(client, message):
             return
 
         # If not in the support chat, execute manual and auto-filter logic
-        await message.reply_text("Please Join Backup Group")
+        logger.debug(f"User is not in the support chat (chat_id: {chat_id}). Proceeding with filters.")
         await manual_filters(client, message)
         await auto_filter(client, message)
 
     except FloodWait as e:
         # Handle FloodWait exception
+        logger.error(f"FloodWait exception: {e.value} seconds")
         await asyncio.sleep(e.value)
         await message.reply_text(
             f"<b>FloodWait detected. Please wait {e.value} seconds before trying again.</b>",
@@ -92,6 +103,7 @@ async def give_filter(client, message):
         )
     except Exception as e:
         # Handle generic exceptions
+        logger.error(f"Unexpected exception: {str(e)}")
         await message.reply_text(
             f"<b>An unexpected error occurred. Please try again later.\n\nDetails: {str(e)}</b>",
             parse_mode=ParseMode.HTML
