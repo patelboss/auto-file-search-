@@ -128,11 +128,6 @@ async def next_page(bot, query):
     except:
         offset = 0
     search = BUTTONS.get(key)
-    key = f"{message.chat.id}-{message.id}"
-    req = message.from_user.id if message.from_user else 0
-    FRESH[key] = search
-    temp.GETALL[key] = files
-    temp.SHORT[message.from_user.id] = message.chat.id
     if not search:
         await query.answer("You are using one of my old messages, please send the request again.", show_alert=True)
         return
@@ -145,6 +140,11 @@ async def next_page(bot, query):
 
     if not files:
         return
+
+    temp.GETALL[key] = files
+    temp.SHORT[query.from_user.id] = query.message.chat.id
+    settings = await get_settings(query.message.chat.id)
+    pre = 'filep' if settings['file_secure'] else 'file'
     settings = await get_settings(query.message.chat.id)
     if settings['button']:
         btn = [
