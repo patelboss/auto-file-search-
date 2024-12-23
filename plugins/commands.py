@@ -215,57 +215,61 @@ async def start(client, message):
         return
 
     elif data.startswith("all"):
+        
+        logger.info("Processing 'all' command.")
         random_sticker = get_random_sticker()
-        #m = await message.reply_sticker(random_sticker)
-        #await asyncio.sleep(1)
-        #await m.delete()
-
+        logger.info("Random sticker selected.")
+            
         files = temp.GETALL.get(file_id)
         if not files:
+            logger.warning("No such file exists for the given file_id.")
             return await message.reply('<b><i>No such file exist.</b></i>')
+            
+        logger.info(f"Found {len(files)} files associated with file_id: {file_id}.")
         filesarr = []
         for file in files:
             file_id = file["file_id"]
+            logger.info(f"Processing file with file_id: {file_id}.")
+                
             files_ = await get_file_details(file_id)
-           # files_ = await get_file_details(file_id)
-            print(type(files_), files_)  # Debug: Check the type and value of files_
+            logger.debug(f"File details retrieved: {files_}.")
+                
             files1 = files_
-            title = {clean_file_name(files1['file_name'])}
-            size=get_size(files1['file_size'])
-            f_caption=files1['caption']
+            title = clean_file_name(files1.get('file_name', 'Unknown File'))
+            size = get_size(files1.get('file_size', 0))
+            f_caption = files1.get('caption', '')
+                
+            logger.info(f"File details: title={title}, size={size}.")
+                
             if CUSTOM_FILE_CAPTION:
                 try:
-                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
-                except Exception as e:
-                    logger.exception(e)
-                    f_caption=f_caption
-            if f_caption is None:
-                f_caption = f"{clean_file_name(files1['file_name'])}"
-            if not await db.has_premium_access(message.from_user.id):
-                if not await check_verification(client, message.from_user.id) and VERIFY == True:
-                    btn = [[
-                        InlineKeyboardButton("Verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start="))
-                    ],[
-                        InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
-                    ]]
-                    await message.reply_text(
-                        text="<b>You are not verified !\nKindly verify to continue !</b>",
-                        protect_content=True,
-                        reply_markup=InlineKeyboardMarkup(btn)
+                    f_caption = CUSTOM_FILE_CAPTION.format(
+                        file_name=title,
+                        file_size=size,
+                        file_caption=f_caption
                     )
-                    return
-            if STREAM_MODE == True:
-                button = [[
-                        InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)
-                    ],[
-                        InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')
-                    ]]
+                    logger.info("Custom caption applied successfully.")
+                except Exception as e:
+                    logger.exception("Error applying custom caption.")
+                    f_caption = f_caption or title
+                
+            if not f_caption:
+                f_caption = title
+                logger.info("Fallback caption applied.")
+                
+            if STREAM_MODE:
+                button = [
+                    [InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)],
+                    [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
+                ]
+                logger.info("Stream mode enabled. Buttons configured.")
             else:
-                button = [[
-                        InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)
-                    ],[
-                        InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')
-                    ]]
+                button = [
+                    [InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)],
+                    [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
+                ]
+                logger.info("Default mode enabled. Buttons configured.")
+                
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
                 file_id=file_id,
@@ -273,13 +277,23 @@ async def start(client, message):
                 protect_content=True if pre == 'filep' else False,
                 reply_markup=InlineKeyboardMarkup(button)
             )
+            logger.info(f"File sent to user: {message.from_user.id}, message_id: {msg.id}.")
             filesarr.append(msg)
-        k = await client.send_message(chat_id = message.from_user.id, text = "waah yar 😛")
+            
+        logger.info("All files sent. Sending confirmation message.")
+        k = await client.send_message(chat_id=message.from_user.id, text="waah yar 😛")
         await asyncio.sleep(30)
+            
+        logger.info("Deleting sent files after delay.")
         for x in filesarr:
             await x.delete()
+            logger.info(f"Deleted message: {x.id}.")
+            
         await k.edit_text("<b>Your All Files/Videos is successfully deleted!!!</b>")
-        return    
+        logger.info("Confirmation message edited to indicate deletion.")
+        return
+
+    
     
     elif data.split("-", 1)[0] == "DSTORE":
         sts = await message.reply("Please wait")
