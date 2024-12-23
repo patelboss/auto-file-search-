@@ -504,17 +504,17 @@ async def cb_handler(client: Client, query: CallbackQuery):
         try:
             await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
             
-            #if settings['is_shortlink'] and not await db.has_premium_access(query.from_user.id):
-            #    if SHORTLINK_MODE == True:
-            #        await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles1_{key}")
+            if settings['is_shortlink'] and not await db.has_premium_access(query.from_user.id):
+                if SHORTLINK_MODE == True:
+                    await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=sendfiles1_{key}")
                     
-             #   else:
-            #        await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
-            #elif settings['is_shortlink'] and await db.has_premium_access(query.from_user.id):
-             #   await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
-             #   return 
-           # else:
-            #    await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
+                else:
+                    await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
+            elif settings['is_shortlink'] and await db.has_premium_access(query.from_user.id):
+                await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
+                return 
+            else:
+                await query.answer(url=f"https://telegram.me/{temp.U_NAME}?start=allfiles_{key}")
                 
             
                 
