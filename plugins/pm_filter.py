@@ -47,7 +47,6 @@ BUTTONS2 = {}
 SPELL_CHECK = {}
 AUTO_DELETE = 'False'
 VERIFY = 'False'
-SUPPORT_CHAT_ID = "-1001337819633"
 import logging
 import sys
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
