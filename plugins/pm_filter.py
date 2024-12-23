@@ -50,6 +50,8 @@ VERIFY = 'False'
 
 
 @Client.on_message(filters.group & filters.text & filters.incoming)
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+
 async def give_filter(client, message):
     chat_id = message.chat.id
     user = message.from_user  # Get the user object
@@ -65,36 +67,23 @@ async def give_filter(client, message):
         return
 
     try:
-        # If not in the support chat, execute manual and auto-filter logic
-        if chat_id != SUPPORT_CHAT_ID:
-            await message.reply_text("Please join the private group as this chat may be banned anytime.")
-            await manual_filters(client, message)
-            await auto_filter(client, message)
-            return
+        # If in the support chat, inform the user and provide a link to the search group
+        if chat_id == SUPPORT_CHAT_ID:
+            # Inline button to join the search group
+            inline_button = InlineKeyboardButton("Join Search Group", url="https://t.me/Filmykeedha/306")
+            reply_markup = InlineKeyboardMarkup([[inline_button]])
 
-        # If in the support chat, perform search and reply with results
-        search = message.text
-        if not search:  # Ensure a valid search query
-            await message.reply_text("Please provide a search query.")
-            return
-
-        # Get search results from the database
-        temp_files, temp_offset, total_results = await get_search_results(
-            chat_id=chat_id, query=search.lower(), offset=0, filter=True
-        )
-
-        # If results are found, reply with the count and search group link
-        if total_results > 0:
-            mention = user.mention if user else "Anonymous User"
             await message.reply_text(
-                f"<b>Hey {mention}, {total_results} results found for '{search}'.\n\n"
-                "This is a support group, so you can't access files here.\n\n"
-                "Please use the search group: https://t.me/Filmykeedha/306</b>",
+                "<b>This is not the search group. Please join the search group by tapping the button below:</b>",
+                reply_markup=reply_markup,  # Add the inline button
                 disable_web_page_preview=True
             )
-        else:
-            # If no results, inform the user
-            await message.reply_text("<b>No results found for your query. Please try again.</b>", parse_mode=ParseMode.HTML)
+            return
+
+        # If not in the support chat, execute manual and auto-filter logic
+        await message.reply_text("Please Join Backup Group")
+        await manual_filters(client, message)
+        await auto_filter(client, message)
 
     except FloodWait as e:
         # Handle FloodWait exception
@@ -108,18 +97,7 @@ async def give_filter(client, message):
         await message.reply_text(
             f"<b>An unexpected error occurred. Please try again later.\n\nDetails: {str(e)}</b>",
             parse_mode=ParseMode.HTML
-        )    
-   # except Exception as e:
-    #    await send_error_log(client, "123", e)
-        #await send_error_log(client, "GFILTER", e)
-
-            #settings = await get_settings(chat_id)
-            
-   # await message.reply_text(" Bro join Private Group also because this may ban anytime")
-   # await manual_filters(client, message)
-    #if k == False:
-   # await auto_filter(client, message)
-
+        )
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
