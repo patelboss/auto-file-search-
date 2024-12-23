@@ -72,12 +72,12 @@ async def give_filter(client, message):
     user_id = user.id if user else 0  # Fallback to 0 if no user ID is available
 
     # Debugging: Log both the chat_id and SUPPORT_CHAT_ID
-    logger.info(f"Received message in chat {chat_id} from user {user_id}. SUPPORT_CHAT_ID: {SUPPORT_CHAT_ID}")
-    logger.info(f"Type of chat_id: {type(chat_id)}, Type of SUPPORT_CHAT_ID: {type(SUPPORT_CHAT_ID)}")
+#    logger.info(f"Received message in chat {chat_id} from user {user_id}. SUPPORT_CHAT_ID: {SUPPORT_CHAT_ID}")
+#    logger.info(f"Type of chat_id: {type(chat_id)}, Type of SUPPORT_CHAT_ID: {type(SUPPORT_CHAT_ID)}")
 
     # Check if the user is an anonymous admin
     if user_id == 0:
-        logger.info("User is an anonymous admin. Request will not be processed.")
+ #       logger.info("User is an anonymous admin. Request will not be processed.")
         await message.reply_text(
             "<b>You are an anonymous admin. I can't process your request. "
             "Please disable 'Remain Anonymous' in admin rights to continue.</b>",
@@ -88,7 +88,7 @@ async def give_filter(client, message):
     try:
         # Check if this is the support chat
         if chat_id == SUPPORT_CHAT_ID:
-            logger.info(f"User is in the support chat (chat_id: {chat_id}). Sending search group link.")
+  #          logger.info(f"User is in the support chat (chat_id: {chat_id}). Sending search group link.")
             # Inline button to join the search group
             inline_button = InlineKeyboardButton("Join Search Group", url="https://t.me/Filmykeedha/306")
             reply_markup = InlineKeyboardMarkup([[inline_button]])
@@ -101,7 +101,8 @@ async def give_filter(client, message):
             return
 
         # If not in the support chat, execute manual and auto-filter logic
-        logger.info(f"User is not in the support chat (chat_id: {chat_id}). Executing filters.")
+        #logger.info(f"User is not in the support chat (chat_id: {chat_id}). Executing filters.")
+        await message.reply_text("<b>This Group Ban Anytime so Join Another Private Group.</b> <i> Link : https://t.me/+13JZ5BMiiSM4ZmE1 </i>")
         await manual_filters(client, message)
         await auto_filter(client, message)
 
