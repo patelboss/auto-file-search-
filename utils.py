@@ -26,7 +26,8 @@ BTN_URL_REGEX = re.compile(
 )
 
 imdb = IMDb() 
-
+TOKENS = {}
+VERIFIED = {}
 BANNED = {}
 SMART_OPEN = '“'
 SMART_CLOSE = '”'
