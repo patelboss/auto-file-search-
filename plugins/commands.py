@@ -17,7 +17,8 @@ import base64
 logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
-
+STREAM_MODE = "False"
+VERIFY = "False"
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
@@ -199,7 +200,71 @@ async def start(client, message):
         #await asyncio.sleep(DLTTM)
         #await k.edit("<b>Your message is successfully deleted!!!</b>")
         return
-        
+
+    elif data.startswith("all"):
+        random_sticker = get_random_sticker()
+        m = await message.reply_sticker(random_sticker)
+        await asyncio.sleep(3)
+        await m.delete()
+
+        files = temp.GETALL.get(file_id)
+        if not files:
+            return await message.reply('<b><i>No such file exist.</b></i>')
+        filesarr = []
+        for file in files:
+            file_id = file["file_id"]
+            files_ = await get_file_details(file_id)
+            files1 = files_
+            title = {clean_file_name(files1['file_name'])}
+            size=get_size(files1["file_size"])
+            f_caption=files1["caption"]
+            if CUSTOM_FILE_CAPTION:
+                try:
+                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+                except Exception as e:
+                    logger.exception(e)
+                    f_caption=f_caption
+            if f_caption is None:
+                f_caption = f"{clean_file_name(files1['file_name'])}"
+            if not await db.has_premium_access(message.from_user.id):
+                if not await check_verification(client, message.from_user.id) and VERIFY == True:
+                    btn = [[
+                        InlineKeyboardButton("Verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start="))
+                    ],[
+                        InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
+                    ]]
+                    await message.reply_text(
+                        text="<b>You are not verified !\nKindly verify to continue !</b>",
+                        protect_content=True,
+                        reply_markup=InlineKeyboardMarkup(btn)
+                    )
+                    return
+            if STREAM_MODE == True:
+                button = [[
+                        InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)
+                    ],[
+                        InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')
+                    ]]
+            else:
+                button = [[
+                        InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)
+                    ],[
+                        InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')
+                    ]]
+            msg = await client.send_cached_media(
+                chat_id=message.from_user.id,
+                file_id=file_id,
+                caption=f_caption,
+                protect_content=True if pre == 'filep' else False,
+                reply_markup=InlineKeyboardMarkup(button)
+            )
+            filesarr.append(msg)
+        k = await client.send_message(chat_id = message.from_user.id, text = "waah yar 😛")
+        #await asyncio.sleep(DLTTM)
+        #for x in filesarr:
+        #    await x.delete()
+        await k.edit_text("<b>Your All Files/Videos is successfully deleted!!!</b>")
+        return    
     
     elif data.split("-", 1)[0] == "DSTORE":
         sts = await message.reply("Please wait")
