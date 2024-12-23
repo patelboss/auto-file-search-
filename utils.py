@@ -497,6 +497,8 @@ def clean_file_name(file_name):
 URL = "api.shareus.io"
 SHORTLINK_API = "xLsXcbTQX2fPiDCCA1Wmh5eCLnp1"
 VERIFY_SECOND_SHORTNER = "False"
+VERIFY_SHORTLINK_API = "xLsXcbTQX2fPiDCCA1Wmh5eCLnp1"
+VERIFY_SHORTLINK_URL = "api.shareus.io"
 async def get_verify_shorted_link(link, url, api):
     API = api
     URL = url
