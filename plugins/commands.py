@@ -23,6 +23,7 @@ STREAM_MODE = "False"
 VERIFY = "True"
 AUTO_DELETE = "False"
 OFR_CNL = "https://t.me/+4dWp2gDjwC43YmJl"
+VERIFY_TUTORIAL = "https://t.me/c/1735967079/884"
 sticker_ids = [
     "CAACAgIAAxkBAAItAmdbY-9IY20HNfLFeeboOOex74M0AAL9AQACFkJrCqSvYaKm6vLJHgQ",
     "CAACAgIAAxkBAAIs1GdbWBhGfsD2U3Z2pGiR-d64z08mAAJvAAPb234AAZlbUKh7k4B0HgQ",
