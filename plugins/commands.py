@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
 STREAM_MODE = "False"
-VERIFY = "False"
+VERIFY = "True"
 AUTO_DELETE = "False"
 OFR_CNL = "https://t.me/+4dWp2gDjwC43YmJl"
 sticker_ids = [
@@ -258,6 +258,20 @@ async def start(client, message):
             if not f_caption:
                 f_caption = title
                 logger.info("Fallback caption applied.")
+
+            if VERIFY == True:
+                await check_verification(client, message.from_user.id)
+                    btn = [[
+                        InlineKeyboardButton("Verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start="))
+                    ],[
+                        InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
+                    ]]
+                    await message.reply_text(
+                        text="<b>You are not verified !\nKindly verify to continue !</b>",
+                        protect_content=True,
+                        reply_markup=InlineKeyboardMarkup(btn)
+                    )
+                    return
                 
             if STREAM_MODE:
                 button = [
