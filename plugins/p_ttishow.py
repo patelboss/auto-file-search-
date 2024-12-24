@@ -235,38 +235,77 @@ async def unban_a_user(bot, message):
         await message.reply(f"𝐒𝐮𝐜𝐜𝐞𝐬𝐬𝐟𝐮𝐥𝐥𝐲 𝐔𝐧𝐛𝐚𝐧𝐧𝐞𝐝 ! सुबह का भूला अगर शाम को घर आ जाए तो उसे भुला नहीं कहते। {k.mention}")
 
 
-    
 @Client.on_message(filters.command('users') & filters.user(ADMINS))
 async def list_users(bot, message):
-    # https://t.me/GetTGLink/4184
-    raju = await message.reply('𝐆𝐞𝐭𝐭𝐢𝐧𝐠 𝐋𝐢𝐬𝐭 𝐎𝐟 𝐔𝐬𝐞𝐫 𝐁𝐚𝐛𝐲 !')
+    raju = await message.reply('Getting List Of Users')
     users = await db.get_all_users()
     out = "Users Saved In DB Are:\n\n"
     async for user in users:
-        out += f"<a href=tg://user?id={user['id']}>{user['name']}</a>"
+        # Include user id in the output
+        out += f"User ID: `{user['id']}`\n"
+        out += f"Name: <a href=tg://user?id={user['id']}>{user['name']}</a>"
         if user['ban_status']['is_banned']:
-            out += '( Banned User )'
+            out += ' (Banned User)'
         out += '\n'
-    try:
-        await raju.edit_text(out)
-    except MessageTooLong:
-        with open('users.txt', 'w+') as outfile:
-            outfile.write(out)
-        await message.reply_document('users.txt', caption="List Of Users")
 
+    # Save the output to a .txt file
+    with open('users.txt', 'w+') as outfile:
+        outfile.write(out)
+
+    # Send the .txt file to the user
+    await message.reply_document('users.txt', caption="List Of Users")
 @Client.on_message(filters.command('chats') & filters.user(ADMINS))
 async def list_chats(bot, message):
-    raju = await message.reply('𝐆𝐞𝐭𝐭𝐢𝐧𝐠 𝐋𝐢𝐬𝐭 𝐎𝐟 𝐂𝐡𝐚𝐭𝐬 𝐁𝐄𝐁𝐒 !')
+    raju = await message.reply('Getting List Of Chats')
     chats = await db.get_all_chats()
     out = "Chats Saved In DB Are:\n\n"
     async for chat in chats:
-        out += f"**Title:** `{chat['title']}`\n**- ID:** `{chat['id']}`"
+        # Include chat id in the output
+        out += f"Chat ID: `{chat['id']}`\n"
+        out += f"**Title:** `{chat['title']}`\n"
         if chat['chat_status']['is_disabled']:
-            out += '( Disabled Chat )'
+            out += ' (Disabled Chat)'
         out += '\n'
-    try:
-        await raju.edit_text(out)
-    except MessageTooLong:
-        with open('chats.txt', 'w+') as outfile:
-            outfile.write(out)
-        await message.reply_document('chats.txt', caption="List Of Chats")
+
+    # Save the output to a .txt file
+    with open('chats.txt', 'w+') as outfile:
+        outfile.write(out)
+
+    # Send the .txt file to the user
+    await message.reply_document('chats.txt', caption="List Of Chats")
+    
+@Client.on_message(filters.command("getfileid") & (filters.reply))
+async def get_file_id(bot, message):
+    # Check if the message is a reply with media
+    if message.reply_to_message:
+        media = message.reply_to_message.video or \
+                message.reply_to_message.photo or \
+                message.reply_to_message.document or \
+                message.reply_to_message.audio or \
+                message.reply_to_message.voice
+        
+        if media:
+            file_id = media.file_id
+            file_type = type(media).__name__.capitalize()
+            await message.reply(
+                f"**File ID:** `{file_id}`\n"
+                f"**File Type:** {file_type}\n"
+                f"**File Size:** {media.file_size} bytes",
+                quote=True
+            )
+        else:
+            await message.reply("Please reply to a media file (video, photo, document, etc.) to get its file ID.", quote=True)
+    
+    # Handle direct media messages (e.g., channels without replies)
+    elif message.video or message.photo or message.document or message.audio or message.voice:
+        media = message.video or message.photo or message.document or message.audio or message.voice
+        file_id = media.file_id
+        file_type = type(media).__name__.capitalize()
+        await message.reply(
+            f"**File ID:** `{file_id}`\n"
+            f"**File Type:** {file_type}\n"
+            f"**File Size:** {media.file_size} bytes",
+            quote=True
+        )
+    else:
+        await message.reply("Please reply to a media file or send a media message directly to get its file ID.", quote=True)
