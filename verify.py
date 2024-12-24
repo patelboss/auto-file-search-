@@ -8,13 +8,13 @@ from database.users_chats_db import db
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-imdb = IMDb() 
+#imdb = IMDb() 
 TOKENS = {}
 VERIFIED = {}
 BANNED = {}
-SMART_OPEN = '“'
-SMART_CLOSE = '”'
-START_CHAR = ('\'', '"', SMART_OPEN)
+#SMART_OPEN = '“'
+#SMART_CLOSE = '”'
+#START_CHAR = ('\'', '"', SMART_OPEN)
 
 
 
