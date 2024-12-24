@@ -1,3 +1,23 @@
+import logging, asyncio, os, re, random, pytz, aiohttp, requests, string, json, http.client
+from info import *
+from datetime import datetime, date
+import logging
+from shortzy import Shortzy
+from database.users_chats_db import db
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+imdb = IMDb() 
+TOKENS = {}
+VERIFIED = {}
+BANNED = {}
+SMART_OPEN = '“'
+SMART_CLOSE = '”'
+START_CHAR = ('\'', '"', SMART_OPEN)
+
+
+
 URL = "api.shareus.io"
 SHORTLINK_API = "xLsXcbTQX2fPiDCCA1Wmh5eCLnp1"
 VERIFY_SECOND_SHORTNER = "False"
