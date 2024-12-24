@@ -11,6 +11,7 @@ from database.users_chats_db import db
 from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp
 from utils import *
+from verify import *
 from database.connections_mdb import active_connection
 import re
 from info import *
@@ -257,7 +258,7 @@ async def start(client, message):
             logger.debug(f"File details retrieved: {files_}.")
             
             files1 = files_
-            title = files1['file_name']
+            title = clean_file_name(files1['file_name'])
             size = get_size(files1['file_size'])
             f_caption = files1['caption']
             
