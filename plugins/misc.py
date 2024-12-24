@@ -13,48 +13,65 @@ logger.setLevel(logging.ERROR)
 @Client.on_message(filters.command('id'))
 async def showid(client, message):
     chat_type = message.chat.type
+
     if chat_type == enums.ChatType.PRIVATE:
-        user_id = message.chat.id
-        first = message.from_user.first_name
-        last = message.from_user.last_name or ""
-        username = message.from_user.username
-        dc_id = message.from_user.dc_id or ""
-        await message.reply_text(
-            f"<b>➲ First Name:</b> {first}\n<b>➲ Last Name:</b> {last}\n<b>➲ Username:</b> {username}\n<b>➲ Telegram ID:</b> <code>{user_id}</code>\n<b>➲ Data Centre:</b> <code>{dc_id}</code>",
-            quote=True
-        )
+        # Check if the user replied to a forwarded message
+        if message.reply_to_message and message.reply_to_message.forward_from_chat:
+            forwarded_chat = message.reply_to_message.forward_from_chat
+            if forwarded_chat.type == enums.ChatType.CHANNEL:
+                # Extract details for forwarded message
+                channel_name = forwarded_chat.title
+                channel_id = forwarded_chat.id
+                user_id = message.from_user.id
+                await message.reply_text(
+                    f"<b>➲ User ID:</b> <code>{user_id}</code>\n"
+                    f"<b>➲ Forwarded Message From Channel ID:</b> <code>{channel_id}</code>",
+                    quote=True
+                )
+            else:
+                await message.reply_text("This message is not forwarded from a channel.", quote=True)
+        else:
+            # For private chat without a forwarded message
+            user_id = message.chat.id
+            first = message.from_user.first_name
+            last = message.from_user.last_name or ""
+            username = message.from_user.username
+            dc_id = message.from_user.dc_id or ""
+            await message.reply_text(
+                f"<b>➲ First Name:</b> {first}\n"
+                f"<b>➲ Last Name:</b> {last}\n"
+                f"<b>➲ Username:</b> {username}\n"
+                f"<b>➲ Telegram ID:</b> <code>{user_id}</code>\n"
+                f"<b>➲ Data Centre:</b> <code>{dc_id}</code>",
+                quote=True
+            )
 
     elif chat_type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
-        _id = ""
-        _id += (
-            "<b>➲ Chat ID</b>: "
-            f"<code>{message.chat.id}</code>\n"
-        )
-        if message.reply_to_message:
-            _id += (
-                "<b>➲ User ID</b>: "
-                f"<code>{message.from_user.id if message.from_user else 'Anonymous'}</code>\n"
-                "<b>➲ Replied User ID</b>: "
-                f"<code>{message.reply_to_message.from_user.id if message.reply_to_message.from_user else 'Anonymous'}</code>\n"
-            )
-            file_info = get_file_id(message.reply_to_message)
+        # For groups or supergroups
+        if message.reply_to_message and message.reply_to_message.forward_from_chat:
+            forwarded_chat = message.reply_to_message.forward_from_chat
+            if forwarded_chat.type == enums.ChatType.CHANNEL:
+                # Extract details for forwarded message
+                channel_name = forwarded_chat.title
+                channel_id = forwarded_chat.id
+                user_id = message.from_user.id
+                await message.reply_text(
+                    f"<b>➲ User ID:</b> <code>{user_id}</code>\n"
+                    f"<b>➲ Forwarded Message From <b>{channel_name}</b> Channel ID:</b> <code>{channel_id}</code>",
+                    quote=True
+                )
+            else:
+                await message.reply_text("This message is not forwarded from a channel.", quote=True)
         else:
+            # General group or supergroup ID details
+            _id = f"<b>➲ Chat ID:</b> <code>{message.chat.id}</code>\n"
             _id += (
-                "<b>➲ User ID</b>: "
+                f"<b>➲ User ID:</b> "
                 f"<code>{message.from_user.id if message.from_user else 'Anonymous'}</code>\n"
             )
-            file_info = get_file_id(message)
-        if file_info:
-            _id += (
-                f"<b>{file_info.message_type}</b>: "
-                f"<code>{file_info.file_id}</code>\n"
-            )
-        await message.reply_text(
-            _id,
-            quote=True
-        )
-
-@Client.on_message(filters.command(["imfo"]))
+            await message.reply_text(_id, quote=True)     
+            
+@Client.on_message(filters.command(["info"]))
 async def who_is(client, message):
     # https://github.com/SpEcHiDe/PyroGramBot/blob/master/pyrobot/plugins/admemes/whois.py#L19
     status_message = await message.reply_text(
