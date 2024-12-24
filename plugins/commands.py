@@ -360,9 +360,24 @@ async def start(client, message):
                     continue
             await asyncio.sleep(1) 
         return await sts.delete()
-        
 
-    files_ = await get_file_details(file_id)           
+    files_ = await get_file_details(file_id)
+    if VERIFY:
+        is_verified = await check_verification(client, message.from_user.id)
+        if not is_verified:
+            btn = [[
+                InlineKeyboardButton("Verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start="))
+            ] #, [
+                InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
+            ]#]
+            await message.reply_text(
+                text="<b>You are not verified!\nKindly verify to continue!</b>",
+                protect_content=True,
+                reply_markup=InlineKeyboardMarkup(btn)
+            )
+            logger.info(f"User {message.from_user.id} is not verified. Verification prompt sent.")
+            return  # Stop execution if the user is not verified
+
     if not files_:
         pre, file_id = ((base64.urlsafe_b64decode(data + "=" * (-len(data) % 4))).decode("ascii")).split("_", 1)
         try:
@@ -370,15 +385,19 @@ async def start(client, message):
                 chat_id=message.from_user.id,
                 file_id=file_id,
                 protect_content=True if pre == 'filep' else False,
-                )
+            )
             filetype = msg.media
             file = getattr(msg, filetype.value)
             title = clean_file_name(file.file_name)
-            size=get_size(file.file_size)
+            size = get_size(file.file_size)
             f_caption = f"<code>{title}</code>"
             if CUSTOM_FILE_CAPTION:
                 try:
-                    f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='')
+                    f_caption = CUSTOM_FILE_CAPTION.format(
+                        file_name='' if title is None else title,
+                        file_size='' if size is None else size,
+                        file_caption=''
+                    )
                 except:
                     return
             await msg.edit_caption(f_caption)
@@ -388,23 +407,36 @@ async def start(client, message):
         return await message.reply('𝗡𝗼 𝘀𝘂𝗰𝗵 𝗳𝗶𝗹𝗲 𝗲𝘅𝗶𝘀𝘁.')
     files = files_[0]
     title = clean_file_name(files.file_name)
-    size=get_size(files.file_size)
-    f_caption=files.caption
+    size = get_size(files.file_size)
+    f_caption = files.caption
     if CUSTOM_FILE_CAPTION:
         try:
-            f_caption=CUSTOM_FILE_CAPTION.format(file_name= '' if title is None else title, file_size='' if size is None else size, file_caption='' if f_caption is None else f_caption)
+            f_caption = CUSTOM_FILE_CAPTION.format(
+                file_name='' if title is None else title,
+                file_size='' if size is None else size,
+                file_caption='' if f_caption is None else f_caption
+            )
         except Exception as e:
             logger.exception(e)
-            f_caption=f_caption
-    if f_caption is None:
+            f_caption = f_caption
+    if f_caption is None:    
         f_caption = f"{files.file_name}"
+
+    button = [
+        [InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)],
+        [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
+    ]
+    logger.info("Default mode enabled. Buttons configured.")
+            
     await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
         caption=f_caption,
         protect_content=True if pre == 'filep' else False,
+        reply_markup=InlineKeyboardMarkup(button)
         )
-                    
+
+                     
 
 @Client.on_message(filters.command('channel') & filters.user(ADMINS))
 async def channel_info(bot, message):
