@@ -12,9 +12,9 @@ logger.setLevel(logging.INFO)
 TOKENS = {}
 VERIFIED = {}
 BANNED = {}
-#SMART_OPEN = '“'
-#SMART_CLOSE = '”'
-#START_CHAR = ('\'', '"', SMART_OPEN)
+SMART_OPEN = '“'
+SMART_CLOSE = '”'
+START_CHAR = ('\'', '"', SMART_OPEN)
 
 
 
