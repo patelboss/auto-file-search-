@@ -99,7 +99,7 @@ async def give_filter(client, message):
                 disable_web_page_preview=True
             )
             await asyncio.sleep(300)
-            await delete(T)
+            await T.delete() # await delete(T)
             return
 
         # If not in the support chat, execute manual and auto-filter logic
@@ -108,7 +108,7 @@ async def give_filter(client, message):
         await manual_filters(client, message)
         await auto_filter(client, message)
         await asyncio.sleep(60)
-        await delete (L)
+        await L.delete() #await delete (L)
     except FloodWait as e:
         # Handle FloodWait exception
         logger.error(f"FloodWait exception: {e.value} seconds")
