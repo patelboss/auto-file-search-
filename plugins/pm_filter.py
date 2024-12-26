@@ -1004,7 +1004,7 @@ async def advantage_spell_chok(client, msg):
 
     try:
         buttons = [
-            [InlineKeyboardButton(movie.strip(), callback_data=f"spell#{user_id}#{idx}")]
+            [InlineKeyboardButton(movie.strip(), callback_data=f"spolling#{user_id}#{idx}")]
             for idx, movie in enumerate(movielist)
         ]
         buttons.append([InlineKeyboardButton("Close", callback_data=f'spell#{user_id}#close')])
