@@ -93,33 +93,36 @@ async def give_filter(client, message):
             inline_button = InlineKeyboardButton("Join Search Group", url="https://t.me/Filmykeedha/306")
             reply_markup = InlineKeyboardMarkup([[inline_button]])
 
-            await message.reply_text(
+            T = await message.reply_text(
                 "<b>This is not the search group. Please join the search group by tapping the button below:</b>",
                 reply_markup=reply_markup,  # Add the inline button
                 disable_web_page_preview=True
             )
+            await asyncio.sleep(300)
+            await delete(T)
             return
 
         # If not in the support chat, execute manual and auto-filter logic
         #logger.info(f"User is not in the support chat (chat_id: {chat_id}). Executing filters.")
-        await message.reply_text("<b>This Group Ban Anytime so Join Another Private Group.</b> <i> Link : https://t.me/+13JZ5BMiiSM4ZmE1 </i>\n Wait 10 second Bot is finding Movie", disable_web_page_preview=True)
+        L = await message.reply_text("<b>This Group Ban Anytime so Join Another Private Group.</b> <i> Link : https://t.me/+13JZ5BMiiSM4ZmE1 </i>\n Wait 10 second Bot is finding Movie", disable_web_page_preview=True)
         await manual_filters(client, message)
         await auto_filter(client, message)
-
+        await asyncio.sleep(60)
+        await delete (L)
     except FloodWait as e:
         # Handle FloodWait exception
         logger.error(f"FloodWait exception: {e.value} seconds")
         await asyncio.sleep(e.value)
         await message.reply_text(
             f"<b>FloodWait detected. Please wait {e.value} seconds before trying again.</b>",
-            parse_mode="HTML"
+            parse_mode=ParseMode.HTML
         )
     except Exception as e:
         # Handle generic exceptions
         logger.error(f"Unexpected exception: {str(e)}")
         await message.reply_text(
             f"<b>An unexpected error occurred. Please try again later.\n\nDetails: {str(e)}</b>",
-            parse_mode="HTML"
+            parse_mode=ParseMode.HTML
             )
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
