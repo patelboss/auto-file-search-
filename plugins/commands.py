@@ -23,8 +23,9 @@ BATCH_FILES = {}
 STREAM_MODE = "False"
 VERIFY = "True"
 AUTO_DELETE = "False"
+GRP_LNK = "https://t.me/Filmykeedha/306"
 OFR_CNL = "https://t.me/+4dWp2gDjwC43YmJl"
-VERIFY_TUTORIAL = "https://t.me/c/1735967079/884"
+VERIFY_TUTORIAL = "https://t.me/Filmykeedha/394"
 sticker_ids = [
     "CAACAgIAAxkBAAItAmdbY-9IY20HNfLFeeboOOex74M0AAL9AQACFkJrCqSvYaKm6vLJHgQ",
     "CAACAgIAAxkBAAIs1GdbWBhGfsD2U3Z2pGiR-d64z08mAAJvAAPb234AAZlbUKh7k4B0HgQ",
@@ -62,7 +63,7 @@ async def start(client, message):
             InlineKeyboardButton('➕↖️ 𝗔𝗱𝗱 𝗠𝗲 𝗧𝗼 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽𝘀\nमुझे GROUP में add करे। ↗️➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
             ],[
             InlineKeyboardButton('🔎 𝗦𝗲𝗮𝗿𝗰𝗵 🧐', switch_inline_query_current_chat=''),
-            InlineKeyboardButton('✪𝙂𝙍𝙊𝙐𝙋✪', url='https://t.me/Filmykeedha_search')
+            InlineKeyboardButton('✪𝙂𝙍𝙊𝙐𝙋✪', url=GRP_LNK)
             ],[
             InlineKeyboardButton('🙆🏻 𝗛𝗲𝗹𝗽 🦾', callback_data='help'),
             InlineKeyboardButton('♥️ 𝗔𝗯𝗼𝘂𝘁 ♥️', callback_data='about')
@@ -367,9 +368,9 @@ async def start(client, message):
         if not is_verified:
             btn = [[
                 InlineKeyboardButton("Verify", url=await get_token(client, message.from_user.id, f"https://telegram.me/{temp.U_NAME}?start="))
-            ]] #, [
-               # InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
-           # ]]
+            ], [
+                InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
+            ]]
             await message.reply_text(
                 text="<b>You are not verified!\nKindly verify to continue!</b>",
                 protect_content=True,
