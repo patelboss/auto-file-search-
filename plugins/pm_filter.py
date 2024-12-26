@@ -987,7 +987,7 @@ async def advantage_spell_chok(client, msg):
 
         if matched_movie:
             logger.info(f"Spell check found a match: {matched_movie}")
-            await auto_filter(client, matched_movie, msg)
+            await auto_filter(client, msg, matched_movie)
         else:
             logger.info(f"No close matches found for query '{query}'.")
             search_query = query.replace(" ", "+")
