@@ -903,59 +903,118 @@ async def auto_filter(client, msg, spoll=False):
     if spoll:
         await msg.message.delete()
 
+import asyncio
+import re
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from fuzzywuzzy import fuzz  # Assuming fuzzywuzzy is used for spell-checking
 
-async def advantage_spell_chok(msg):
+# Define required functions like get_poster, send_error_log, and others
+import logging
+async def advantage_spell_chok(client, msg):
+    """Handles spell check for movie queries."""
+    mv_id = msg.id
+    user_id = msg.from_user.id if msg.from_user else 0
+    req_user = await client.get_users(user_id)
+    logger.info(f"Received spell check request from user {req_user.username or user_id} (User ID: {user_id}).")
+
     query = re.sub(
         r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?)",
-        "", msg.text, flags=re.IGNORECASE)  # plis contribute some common words
-    query = query.strip() + " movie"
-    g_s = await search_gagala(query)
-    g_s += await search_gagala(msg.text)
-    gs_parsed = []
-    if not g_s:
-        k = await msg.reply("𝐇𝐞𝐲! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢,\n 𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 🤷‍♀️!\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 🤦‍♀️... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha .")
-        await asyncio.sleep(8)
-        await k.delete()
-        return
-    regex = re.compile(r".*(imdb|wikipedia).*", re.IGNORECASE)  # look for imdb / wiki results
-    gs = list(filter(regex.match, g_s))
-    gs_parsed = [re.sub(
-        r'\b(\-([a-zA-Z-\s])\-\simdb|(\-\s)?imdb|(\-\s)?wikipedia|\(|\)|\-|reviews|full|all|episode(s)?|film|movie|series)',
-        '', i, flags=re.IGNORECASE) for i in gs]
-    if not gs_parsed:
-        reg = re.compile(r"watch(\s[a-zA-Z0-9_\s\-\(\)]*)*\|.*",
-                         re.IGNORECASE)  # match something like Watch Niram | Amazon Prime
-        for mv in g_s:
-            match = reg.match(mv)
-            if match:
-                gs_parsed.append(match.group(1))
-    user = msg.from_user.id if msg.from_user else 0
-    movielist = []
-    gs_parsed = list(dict.fromkeys(gs_parsed))  # removing duplicates https://stackoverflow.com/a/7961425
-    if len(gs_parsed) > 3:
-        gs_parsed = gs_parsed[:3]
-    if gs_parsed:
-        for mov in gs_parsed:
-            imdb_s = await get_poster(mov.strip(), bulk=True)  # searching each keyword in imdb
-            if imdb_s:
-                movielist += [movie.get('title') for movie in imdb_s]
-    movielist += [(re.sub(r'(\-|\(|\)|_)', '', i, flags=re.IGNORECASE)).strip() for i in gs_parsed]
-    movielist = list(dict.fromkeys(movielist))  # removing duplicates
-    if not movielist:
-        k = await msg.reply("𝐇𝐞𝐲 𝗕𝗿𝗼! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢, \n𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 !\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 ... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha ")
-        await asyncio.sleep(8)
-        await k.delete()
-        return
-    SPELL_CHECK[msg.id] = movielist
-    btn = [[
-        InlineKeyboardButton(
-            text=movie.strip(),
-            callback_data=f"spolling#{user}#{k}",
+        "", msg.text, flags=re.IGNORECASE
+    ).strip() + " movie"
+
+    logger.info(f"Processed query: {query}")
+
+    try:
+        # Fetch movie suggestions
+        logger.info(f"check by get poster {query}")
+        movies = await get_poster(query, bulk=True)
+        if not movies:
+            logger.warning(f"No movies found for query: {query}")
+            search_query = query.replace(" ", "+")
+            buttons = [
+                [InlineKeyboardButton("Search Google", url=f"https://www.google.com/search?q={search_query}")],
+                [InlineKeyboardButton("Request Group", url="https://t.me/+GXTgHzS9LtViN2U9")]
+            ]
+            await msg.reply(
+                f"I couldn't find any movies related to **{query}**. Try searching on Google or in the request group.",
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+            return
+    except Exception as e:
+        logger.error(f"Error fetching movies for query '{query}': {e}")
+        search_query = query.replace(" ", "+")
+        buttons = [
+            [InlineKeyboardButton("Search Google", url=f"https://www.google.com/search?q={search_query}")],
+            [InlineKeyboardButton("Request Group", url="https://t.me/+GXTgHzS9LtViN2U9")]
+        ]
+        await msg.reply(
+            "An error occurred while processing your request. Please try again or check the request group.",
+            reply_markup=InlineKeyboardMarkup(buttons)
         )
-    ] for k, movie in enumerate(movielist)]
-    btn.append([InlineKeyboardButton(text="Close", callback_data=f'spolling#{user}#close_spellcheck')])
-    await msg.reply("𝐇𝐞𝐲 𝗕𝗿𝗼! 𝐌𝐮𝐣𝐡𝐞 𝐢𝐬 𝐧𝐚𝐚𝐦 𝐬𝐞 𝐤𝐨𝐢 𝐦𝐨𝐯𝐢𝐞 𝐧𝐡𝐢 𝐦𝐢𝐥𝐢, \n𝐌𝐮𝐣𝐡𝐞 𝐥𝐠𝐭𝐚 𝐡𝐚𝐢 𝐤𝐢 𝐚𝐚𝐩𝐧𝐞 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐠𝐚𝐥𝐚𝐭 𝐥𝐢𝐤𝐡 𝐝𝐢𝐢 𝐡 !\n𝐏𝐥𝐞𝐚𝐬𝐞 𝐜𝐡𝐞𝐜𝐤 𝐲𝐨𝐮𝐫 𝐬𝐩𝐞𝐥𝐥𝐢𝐧𝐠 𝐨𝐧𝐜𝐞 𝐚𝐠𝐚𝐢𝐧 ... 𝐨𝐫 \n 𝐉𝐨𝐢𝐧 @Filmykeedha ",
-                    reply_markup=InlineKeyboardMarkup(btn))
+        return
+
+    # Ensure movies have valid titles and years
+    movielist = [
+        movie.get('title') for movie in movies if movie.get('title')
+    ] + [
+        f"{movie.get('title')} {movie.get('year')}" for movie in movies if movie.get('title') and movie.get('year')
+    ]
+
+    if not movielist:
+        logger.warning(f"No valid movie titles found for query '{query}'.")
+        search_query = query.replace(" ", "+")
+        buttons = [
+            [InlineKeyboardButton("Search Google", url=f"https://www.google.com/search?q={search_query}")],
+            [InlineKeyboardButton("Request Group", url="https://t.me/+GXTgHzS9LtViN2U9")]
+        ]
+        await msg.reply(
+            f"No valid movie titles found for **{query}**. Try searching on Google or in the request group.",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+        return
+
+    logger.info(f"Found {len(movielist)} movies for query '{query}'.")
+    SPELL_CHECK[mv_id] = movielist
+
+    try:
+        matched_movie = None
+        for title in movielist:
+            ratio = fuzz.ratio(query.lower(), title.lower())
+            logger.debug(f"Matching '{query}' with '{title}', Ratio: {ratio}")
+            if ratio > 60:  # Consider adjusting the threshold
+                matched_movie = title
+                break
+
+        if matched_movie:
+            logger.info(f"Spell check found a match: {matched_movie}")
+            await auto_filter(client, matched_movie, msg)
+        else:
+            logger.info(f"No close matches found for query '{query}'.")
+            search_query = query.replace(" ", "+")
+            buttons = [
+                [InlineKeyboardButton("Search Google", url=f"https://www.google.com/search?q={search_query}")],
+                [InlineKeyboardButton("Request Group", url="https://t.me/+GXTgHzS9LtViN2U9")]
+            ]
+            await msg.reply(
+                f"<b>No close matches found for **{query}**. Try searching on Google or request in the group.</b>",
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+    except Exception as e:
+        logger.error(f"Error during spell check for query '{query}': {e}")
+
+    try:
+        buttons = [
+            [InlineKeyboardButton(movie.strip(), callback_data=f"spell#{user_id}#{idx}")]
+            for idx, movie in enumerate(movielist)
+        ]
+        buttons.append([InlineKeyboardButton("Close", callback_data=f'spell#{user_id}#close')])
+        await msg.reply(
+            f"Here are some suggestions for **{query}**:",
+            reply_markup=InlineKeyboardMarkup(buttons)
+        )
+        logger.info(f"Displayed suggestions for query '{query}'.")
+    except Exception as e:
+        logger.error(f"Error displaying movie suggestions for query '{query}': {e}")
 
 
 async def manual_filters(client, message, text=False):
