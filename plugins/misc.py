@@ -25,6 +25,7 @@ async def showid(client, message):
                 user_id = message.from_user.id
                 await message.reply_text(
                     f"<b>➲ User ID:</b> <code>{user_id}</code>\n"
+                    f"<b>➲ Forwarded From {channel_name} </b>\n"
                     f"<b>➲ Forwarded Message From Channel ID:</b> <code>{channel_id}</code>",
                     quote=True
                 )
