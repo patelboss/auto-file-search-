@@ -41,6 +41,7 @@ Share_msg = environ.get('Share_msg', 'https://t.me/share/url??start=share&text=ð
 DATABASE_URI = environ.get('DATABASE_URI', "")
 DATABASE_NAME = environ.get('DATABASE_NAME', "LazyDeveloper")
 COLLECTION_NAME = environ.get('COLLECTION_NAME', 'Telegram_files')
+FILE_DB_URI = environ.get('FILE_DB_URI', "") #if MULTIPLE_DATABASE else DATABASE_URI
 
 # Others
 LOG_CHANNEL = int(environ.get('LOG_CHANNEL', 0))
