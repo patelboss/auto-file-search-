@@ -474,6 +474,17 @@ async def start(client, message):
                 except:
                     return
             await msg.edit_caption(f_caption)
+            btn = [[
+                InlineKeyboardButton("Get File Again", callback_data=f'del#{file_id}')
+            ]]
+            k = await msg.reply(script.DELETEMSG ,quote=True)
+            await asyncio.sleep(4200)
+            await msg.delete()
+            await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>",reply_markup=InlineKeyboardMarkup(btn))
+            return
+        except:
+            pass
+        return await message.reply('No such file exist.')
             return
         except:
             pass
@@ -501,13 +512,21 @@ async def start(client, message):
     ]
     logger.info("Default mode enabled. Buttons configured.")
             
-    G = await client.send_cached_media(
+    msg = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
         caption=f_caption,
         protect_content=True if pre == 'filep' else False,
         reply_markup=InlineKeyboardMarkup(button)
         )
+    btn = [[
+        InlineKeyboardButton("Get File Again", callback_data=f'del#{file_id}')
+    ]]
+    k = await msg.reply(script.DELETEMSG ,quote=True)
+    await asyncio.sleep(4200)
+    await mag.delete()
+    await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>",reply_markup=InlineKeyboardMarkup(btn))
+    return
     
 
                      
