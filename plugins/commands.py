@@ -16,7 +16,7 @@ from database.connections_mdb import active_connection
 import re
 from info import *
 import json
-from database.batchdb import *
+from database.batch_filedb import *
 import base64
 logger = logging.getLogger(__name__)
 
