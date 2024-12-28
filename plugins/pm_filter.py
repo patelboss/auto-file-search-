@@ -33,6 +33,7 @@ from database.filters_mdb import (
 )
 import logging
 from pyrogram.enums import ParseMode
+from plugins.commands import donation
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
@@ -124,6 +125,28 @@ async def give_filter(client, message):
             f"<b>An unexpected error occurred. Please try again later.\n\nDetails: {str(e)}</b>",
             parse_mode=ParseMode.HTML
             )
+
+def get_butto1ns():
+    buttons = [
+        [
+            InlineKeyboardButton("🔍 Search Group", url="https://t.me/Filmykeedha/306"),
+            InlineKeyboardButton("📢 Offer Channel", url="https://t.me/+4dWp2gDjwC43YmJl"),
+        ],
+        [
+            InlineKeyboardButton("💰 Donate", callback_data="donation"),
+            InlineKeyboardButton("🏠 Main Channel", url="https://t.me/+zhtB8CYxfxFhOTM1"),
+        ],
+    ]
+    return InlineKeyboardMarkup(buttons)
+@Client.on_message(filters.group & filters.text & filters.incoming)
+async def private_message_handler(client, message):
+    await message.reply_text(
+        "🚫 I am not working here; I only work in groups.\n\n"
+        "👉 Explore the options below:",
+        reply_markup=get_butto1ns()
+    )    
+
+
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
     ident, req, key, offset = query.data.split("_")
