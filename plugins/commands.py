@@ -237,7 +237,7 @@ async def start(client, message):
             chat_id=message.from_user.id,
             text = script.DELETEMSG
         )
-        await asyncio.sleep(DLTTM)  # Adjust duration as needed
+        await asyncio.sleep(4200)  # Adjust duration as needed
 
         for msg in files_sent:
             try:
@@ -378,7 +378,7 @@ async def start(client, message):
         
         logger.info("All files sent. Sending confirmation message.")
         k = await client.send_message(chat_id=message.from_user.id, text="waah yar 😛")
-        await asyncio.sleep(30)
+        await asyncio.sleep(4200)
         
         logger.info("Deleting sent files after delay.")
         for x in filesarr:
@@ -501,13 +501,14 @@ async def start(client, message):
     ]
     logger.info("Default mode enabled. Buttons configured.")
             
-    await client.send_cached_media(
+    G = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
         caption=f_caption,
         protect_content=True if pre == 'filep' else False,
         reply_markup=InlineKeyboardMarkup(button)
         )
+    
 
                      
 
