@@ -133,7 +133,7 @@ def get_butto1ns():
             InlineKeyboardButton("📢 Offer Channel", url="https://t.me/+4dWp2gDjwC43YmJl"),
         ],
         [
-            InlineKeyboardButton("💰 Donate", callback_data="donation"),
+            InlineKeyboardButton("💰 Donate", callback_data="donation2"),
             InlineKeyboardButton("🏠 Main Channel", url="https://t.me/+zhtB8CYxfxFhOTM1"),
         ],
     ]
@@ -145,7 +145,19 @@ async def private_message_handler(client, message):
         "👉 Explore the options below:",
         reply_markup=get_butto1ns()
     )    
-
+@Client.on_callback_query(filters.regex("donation2"))
+async def donation_callback(client, callback_query):
+    await callback_query.answer()
+    buttons = [
+        [InlineKeyboardButton("ꜱᴇɴᴅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴘᴛ 🧾", url=f"https://t.me/{OWNER_USERNAME}")],
+        [InlineKeyboardButton("⚠️ ᴄʟᴏsᴇ / ᴅᴇʟᴇᴛᴇ ⚠️", callback_data="close_data")]
+    ]
+    reply_markup = InlineKeyboardMarkup(buttons)
+    await callback_query.message.reply_photo(
+        photo=PAYMENT_QR,
+        caption=PAYMENT_TEXT,
+        reply_markup=reply_markup
+    )
 
 @Client.on_callback_query(filters.regex(r"^next"))
 async def next_page(bot, query):
