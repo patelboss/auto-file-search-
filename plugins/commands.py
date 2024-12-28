@@ -61,7 +61,7 @@ async def start(client, message):
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
     if len(message.command) != 2:
         buttons = [[
-            InlineKeyboardButton('➕↖️ 𝗔𝗱𝗱 𝗠𝗲 𝗧𝗼 𝗬𝗼𝘂𝗿 𝗚𝗿𝗼𝘂𝗽𝘀\nमुझे GROUP में add करे। ↗️➕', url=f'http://t.me/{temp.U_NAME}?startgroup=true')
+            InlineKeyboardButton('➕↖️<b> Share To Your Friend</b>↗️➕', url=Share_msg)
             ],[
             InlineKeyboardButton('🔎 𝗦𝗲𝗮𝗿𝗰𝗵 🧐', switch_inline_query_current_chat=''),
             InlineKeyboardButton('✪𝙂𝙍𝙊𝙐𝙋✪', url=GRP_LNK)
@@ -485,7 +485,7 @@ async def start(client, message):
         except:
             pass
         return await message.reply('No such file exist.')
-            return
+         #   return
         except:
             pass
         return await message.reply('𝗡𝗼 𝘀𝘂𝗰𝗵 𝗳𝗶𝗹𝗲 𝗲𝘅𝗶𝘀𝘁.')
@@ -524,7 +524,7 @@ async def start(client, message):
     ]]
     k = await msg.reply(script.DELETEMSG ,quote=True)
     await asyncio.sleep(4200)
-    await mag.delete()
+    await msg.delete()
     await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>",reply_markup=InlineKeyboardMarkup(btn))
     return
     
