@@ -1,125 +1,146 @@
 import re
-from pyrogram import filters, Client, enums
-from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, UsernameInvalid, UsernameNotModified
-from info import ADMINS, LOG_CHANNEL, FILE_STORE_CHANNEL, PUBLIC_FILE_STORE
-from database.ia_filterdb import unpack_new_file_id
-from utils import temp
-import re
-import os
-import json
-import base64
 import logging
+import hashlib
+from pyrogram import Client, filters
+from pyrogram.errors.exceptions.bad_request_400 import ChannelInvalid, UsernameInvalid, UsernameNotModified
+from info import LOG_CHANNEL, PUBLIC_FILE_CHANNEL, BATCH_FILE_CHANNEL, ADMINS
+from database.batch_filedb import save_batch_details
+from utils import temp
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
+# Remove admin verification: Allow everyone
 async def allowed(_, __, message):
-    if PUBLIC_FILE_STORE:
-        return True
-    if message.from_user and message.from_user.id in ADMINS:
-        return True
-    return False
+#    logger.info("Access granted to user: %s", message.from_user.id)
+    return True  # Allow everyone
 
-@Client.on_message(filters.command(['link', 'plink']) & filters.create(allowed))
-async def gen_link_s(bot, message):
-    replied = message.reply_to_message
-    if not replied:
-        return await message.reply('Reply to a message to get a shareable link.')
-    file_type = replied.media
-    if file_type not in [enums.MessageMediaType.VIDEO, enums.MessageMediaType.AUDIO, enums.MessageMediaType.DOCUMENT]:
-        return await message.reply("Reply to a supported media")
-    if message.has_protected_content and message.chat.id not in ADMINS:
-        return await message.reply("okDa")
-    file_id, ref = unpack_new_file_id((getattr(replied, file_type.value)).file_id)
-    string = 'filep_' if message.text.lower().strip() == "/plink" else 'file_'
-    string += file_id
-    outstr = base64.urlsafe_b64encode(string.encode("ascii")).decode().strip("=")
-    await message.reply(f"Here is your Link:\nhttps://t.me/{temp.U_NAME}?start={outstr}")
-    
-    
-@Client.on_message(filters.command(['batch', 'pbatch']) & filters.create(allowed))
+@Client.on_message(filters.command(['batch', 'pbatch']) & filters.create(allowed) & filters.user(ADMINS))
 async def gen_link_batch(bot, message):
-    if " " not in message.text:
-        return await message.reply("Use correct format.\nExample <code>/batch https://t.me/LazyDeveloper https://t.me/LazyDeveloper</code>.")
+#    logger.info("Received batch command from user: %s", message.from_user.id)
+
     links = message.text.strip().split(" ")
-    if len(links) != 3:
-        return await message.reply("Use correct format.\nExample <code>/batch https://t.me/LazyDeveloper https://t.me/LazyDeveloper</code>.")
-    cmd, first, last = links
-    regex = re.compile("(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")
-    match = regex.match(first)
-    if not match:
-        return await message.reply('Invalid link')
-    f_chat_id = match.group(4)
-    f_msg_id = int(match.group(5))
-    if f_chat_id.isnumeric():
-        f_chat_id  = int(("-100" + f_chat_id))
+#    logger.info("Parsing batch links from user: %s", message.from_user.id)
 
-    match = regex.match(last)
-    if not match:
-        return await message.reply('Invalid link')
-    l_chat_id = match.group(4)
-    l_msg_id = int(match.group(5))
-    if l_chat_id.isnumeric():
-        l_chat_id  = int(("-100" + l_chat_id))
+    if len(links) < 3:  # Minimum: Command + at least 2 links
+#        logger.warning("Incorrect batch command format from user: %s", message.from_user.id)
+        return await message.reply(
+            "Use correct format.\nExample: `/batch https://t.me/c/123456789/1 https://t.me/c/123456789/2`."
+        )
 
-    if f_chat_id != l_chat_id:
-        return await message.reply("Chat ids not matched.")
+    cmd = links[0]
+    links = links[1:]  # Remove the command from the links
+
+    def validate_link(link):
+        regex = re.compile(r"(https://)?(t\.me/|telegram\.me/|telegram\.dog/)(c/)?(\d+|[a-zA-Z_0-9]+)/(\d+)$")
+        match = regex.match(link)
+        if not match:
+#            logger.warning("Invalid link format: %s", link)
+            return None, None
+        chat_id = match.group(4)
+        msg_id = int(match.group(5))
+        if chat_id.isnumeric():
+            chat_id = int("-100" + chat_id)  # Convert to negative for supergroups
+        return chat_id, msg_id
+
+    processed_links = [validate_link(link) for link in links]
+#    logger.info("Validated links: %s", processed_links)
+
+    if any(link is None for link in processed_links):
+#        logger.warning("Invalid link(s) provided by user: %s", message.from_user.id)
+        return await message.reply("Invalid link(s) provided.")
+
+    chat_ids = {chat_id for chat_id, _ in processed_links if chat_id}
+    if len(chat_ids) > 1:
+#        logger.warning("Links from different chats detected: %s", message.from_user.id)
+        return await message.reply("All links must belong to the same chat.")
+
+    chat_id = next(iter(chat_ids))
+#    logger.info("Resolved chat ID: %s", chat_id)
+
     try:
-        chat_id = (await bot.get_chat(f_chat_id)).id
-    except ChannelInvalid:
-        return await message.reply('This may be a private channel / group. Make me an admin over there to index the files.')
-    except (UsernameInvalid, UsernameNotModified):
-        return await message.reply('Invalid Link specified.')
+#        logger.info("Fetching chat details for chat ID: %s", chat_id)
+        chat_id = (await bot.get_chat(chat_id)).id
+#        logger.info("Chat ID resolved: %s", chat_id)
+    except (ChannelInvalid, UsernameInvalid, UsernameNotModified) as e:
+#        logger.error("Error accessing chat: %s", str(e))
+        return await message.reply("Error accessing chat. Ensure the bot has admin access.")
     except Exception as e:
-        return await message.reply(f'Errors - {e}')
+#        logger.error("Unexpected error: %s", str(e))
+        return await message.reply(f"Error: {e}")
 
-    sts = await message.reply("Generating link for your message.\nThis may take time depending upon number of messages")
-    if chat_id in FILE_STORE_CHANNEL:
-        string = f"{f_msg_id}_{l_msg_id}_{chat_id}_{cmd.lower().strip()}"
-        b_64 = base64.urlsafe_b64encode(string.encode("ascii")).decode().strip("=")
-        return await sts.edit(f"Here is your link https://t.me/{temp.U_NAME}?start=DSTORE-{b_64}")
+    await message.reply("Provide a name for this batch.")  # Ask for the batch name
+    response = await bot.listen(message.chat.id)  # Wait for the user's input for the batch name
+    batch_name = response.text.strip()  # Assign the batch name
+#    logger.info("Received batch name: %s", batch_name)
 
-    FRMT = "Generating Link...\nTotal Messages: `{total}`\nDone: `{current}`\nRemaining: `{rem}`\nStatus: `{sts}`"
+    await message.reply("Now, provide an optional message (or type 'pass' to skip).")  # Ask for the optional message
+    response = await bot.listen(message.chat.id)  # Wait for the user's input for the optional message
+    optional_message = response.text.strip() if response.text.strip().lower() != 'pass' else ""
+#    logger.info("Received optional message: %s", optional_message)
+
+    sts = await message.reply("Processing your batch...")
+#    logger.info("Sending processing status update to user")
 
     outlist = []
+    links_sent = 0
 
-    # file store without db channel
-    og_msg = 0
-    tot = 0
-    async for msg in bot.iter_messages(f_chat_id, l_msg_id, f_msg_id):
-        tot += 1
-        if msg.empty or msg.service:
-            continue
-        if not msg.media:
-            # only media messages supported.
-            continue
+    for sequence_num, (_, msg_id) in enumerate(processed_links, 1):
         try:
-            file_type = msg.media
-            file = getattr(msg, file_type.value)
-            caption = getattr(msg, 'caption', '')
-            if caption:
-                caption = caption.html
-            if file:
-                file = {
-                    "file_id": file.file_id,
-                    "caption": caption,
-                    "title": getattr(file, "file_name", ""),
-                    "size": file.file_size,
-                    "protect": cmd.lower().strip() == "/pbatch",
-                }
+#            logger.info("Fetching message with ID: %s", msg_id)
+            msg = await bot.get_messages(chat_id=chat_id, message_ids=msg_id)
 
-                og_msg +=1
-                outlist.append(file)
-        except:
-            pass
-        if not og_msg % 20:
-            try:
-                await sts.edit(FRMT.format(total=l_msg_id-f_msg_id, current=tot, rem=((l_msg_id-f_msg_id) - tot), sts="Saving Messages"))
-            except:
-                pass
-    with open(f"batchmode_{message.from_user.id}.json", "w+") as out:
-        json.dump(outlist, out)
-    post = await bot.send_document(LOG_CHANNEL, f"batchmode_{message.from_user.id}.json", file_name="Batch.json", caption="⚠️Generated for filestore.")
-    os.remove(f"batchmode_{message.from_user.id}.json")
-    file_id, ref = unpack_new_file_id(post.document.file_id)
-    await sts.edit(f"Here is your link\nContains `{og_msg}` files.\n https://t.me/{temp.U_NAME}?start=BATCH-{file_id}")
+            # Ensure the message has media and is either a document, video, or photo
+            if not msg or msg.empty or not msg.media:
+                continue
+
+            file = getattr(msg, msg.media.value)
+            caption = getattr(msg, 'caption', '') or ''
+            title = getattr(file, "file_name", 'Unnamed file')
+            size = getattr(file, "file_size", 0)
+
+            # Generate a unique hash for each file based on file_id and sequence_num
+            file_hash = hashlib.sha256(f"{file.file_id}{sequence_num}".encode()).hexdigest()[:15]
+            unique_link = file_hash  # Use the file hash directly as the unique link
+
+            outlist.append({
+                "file_id": file.file_id,
+                "caption": caption,
+                "title": title,
+                "size": size,
+                "protect": cmd.lower() == "/pbatch",  # Optional protection for batch
+                "unique_link": unique_link
+            })
+
+            links_sent += 1
+
+        except Exception as e:
+            logger.exception("Error processing message ID: %s", msg_id)
+
+    # Save the batch details and get the batch ID
+    batch_id = await save_batch_details(outlist, batch_name, optional_message)
+#    logger.info("Batch details saved in db for Batch ID: %s", batch_id)
+
+    # Generate the batch link
+    short_link = f"https://t.me/{temp.U_NAME}?start=BATCH-{batch_id}"
+    await sts.edit(f"Batch created successfully!\n"
+                   f"Batch Name: {batch_name}\n"
+                   f"Contains `{links_sent}` files.\n"
+                   f"Link: {short_link}")
+#    logger.info("Batch creation status sent to user")
+
+    # Send log to the admin channel
+    await bot.send_message(
+        LOG_CHANNEL,
+        f"New Batch Created:\nBatch ID: {batch_id}\nName: {batch_name}\n\n"
+        f"Link: {short_link}"
+    )
+    # Send the message with an inline button
+    await bot.send_message(
+        BATCH_FILE_CHANNEL,
+         f"Name: {batch_name}\nDetails: {optional_message}",
+        reply_markup=InlineKeyboardMarkup(
+            [[InlineKeyboardButton("Get All Files/Episodes", url=short_link)]]
+        )
+    )
