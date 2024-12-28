@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
 STREAM_MODE = "False"
-VERIFY = "True"
+VERIFY = "False"
 AUTO_DELETE = "False"
 GRP_LNK = "https://t.me/Filmykeedha/306"
 OFR_CNL = "https://t.me/+4dWp2gDjwC43YmJl"
