@@ -33,7 +33,6 @@ from database.filters_mdb import (
 )
 import logging
 from pyrogram.enums import ParseMode
-from plugins.commands import donation
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.ERROR)
 
