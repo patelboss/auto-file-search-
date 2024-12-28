@@ -167,7 +167,7 @@ async def start(client, message):
 
         for file_metadata in files_metadata:  # start=1 for sequence number
             try:
-                title = file_metadata.get("title")
+                title = clean_file_name(file_metadata.get("title"))
                 size = get_size(int(file_metadata.get("size", 0)))  # Assuming get_size is a function to get human-readable size
                 caption = file_metadata.get("caption", "")
                 protect = file_metadata.get("protect", False)
@@ -480,15 +480,15 @@ async def start(client, message):
             k = await msg.reply(script.DELETEMSG ,quote=True)
             await asyncio.sleep(4200)
             await msg.delete()
-            await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>",reply_markup=InlineKeyboardMarkup(btn))
+            await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\n</b>") #,reply_markup=InlineKeyboardMarkup(btn))
             return
         except:
             pass
         return await message.reply('No such file exist.')
          #   return
-        except:
-            pass
-        return await message.reply('𝗡𝗼 𝘀𝘂𝗰𝗵 𝗳𝗶𝗹𝗲 𝗲𝘅𝗶𝘀𝘁.')
+     #   except:
+      #      pass
+       # return await message.reply('𝗡𝗼 𝘀𝘂𝗰𝗵 𝗳𝗶𝗹𝗲 𝗲𝘅𝗶𝘀𝘁.')
     files = files_[0]
     title = clean_file_name(files.file_name)
     size = get_size(files.file_size)
@@ -525,7 +525,7 @@ async def start(client, message):
     k = await msg.reply(script.DELETEMSG ,quote=True)
     await asyncio.sleep(4200)
     await msg.delete()
-    await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>",reply_markup=InlineKeyboardMarkup(btn))
+    await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>") #,reply_markup=InlineKeyboardMarkup(btn))
     return
     
 
