@@ -1,8 +1,50 @@
 class script(object):
-    START_TXT = """Hello {},
-𝙼𝚈 𝙽𝙰𝙼𝙴 𝙸𝚂 <a href=https://t.me/{}>{}</a>,\n\nमैं आपको मूवीज खोजने में कम समय और मेहनत में सटीक परिणाम देने के लिए समक्ष हूं...🤪\n.\nJust follow me on Instagram \n https://www.instagram.com/reel/CzDbEApSkZe"""
-    HELP_TXT = """𝙷𝙴𝚈 {}
-𝙷𝙴𝚁𝙴 𝙸𝚂 𝚃𝙷𝙴 𝙷𝙴𝙻𝙿 𝙵𝙾𝚁 𝙼𝚈 𝙲𝙾𝙼𝙼𝙰𝙽𝙳𝚂."""
+    START_TXT = """
+<b><blockquote>👋 Hᴇʟʟᴏ <i>{}</i>,  
+✨ ᴍʏ ɴᴀᴍᴇ ɪꜱ <a href="https://t.me/{}"><b>{}</b></a> ✨</blockquote>  
+
+<b><i>⚡ I am your ultimate File Sharing Bot powered by <a href="https://t.me/filmykeedha">@FilmyKeedha</a> ⚡</i></b>  
+<pre>
+📚 With the largest media database on Telegram, we've proudly served users since 2021 and are committed to staying completely FREE in the future!
+
+Hindi:
+मैं आपका फ़ाइल शेयरिंग बॉट हूँ।
+📚 टेलीग्राम पर सबसे बड़े मीडिया डेटाबेस के साथ, हम 2021 से उपयोगकर्ताओं को निःशुल्क सेवा प्रदान कर रहे हैं और भविष्य में भी पूरी तरह से मुफ़्त रहने की योजना है!
+</pre>
+"""
+    
+    HELP_TXT = """ <b>Hᴇʏ {} , What's up?</b>
+
+<pre>
+⚫ How to use this bot:  
+- I know you're wondering how to use this bot. Do you need a Ph.D. in Telegram Bots? 😆 Just kidding!  
+- To use it, simply:  
+   • Join the search group.  
+   • Type the name of the movie or web series you want.  
+That's it! 🎬  
+
+⚫ Important Note:  
+If you'd like to support this bot's future operations:  
+   • Share it with others.  
+   • Click on the "Donate" button or use the /donate command to help financially.
+</pre>
+
+<b>Hindi:</b>
+<pre>
+⚫ बॉट का उपयोग कैसे करें:  
+- मुझे पता है कि आप सोच रहे होंगे कि बॉट का उपयोग कैसे करें। क्या टेलीग्राम बॉट्स में पीएचडी करनी होगी? 😆 बस मजाक कर रहा हूँ!  
+- उपयोग के लिए:  
+   • सर्च ग्रुप में शामिल हों।  
+   • जो मूवी या वेब सीरीज देखनी है, उसका नाम टाइप करें।  
+बस इतना ही! 🎬  
+
+⚫ एक और खास बात:  
+अगर आप इस बोट को भविष्य में भी चलाने में मदद करना चाहते हैं:  
+   • इसे दूसरों के साथ शेयर करें।  
+   • "Donate" बटन पर क्लिक करें या /donate कमांड का उपयोग करके आर्थिक मदद करें।
+</pre>
+Use /help for commands 
+"""
     ABOUT_TXT = """✯ 𝙼𝚈 𝙽𝙰𝙼𝙴: ᏒᏗᏕᏂᎷᎥ
 ✯ 𝙂𝙍𝙊𝙐𝙋: <a href=https://www.instagram.com/reel/CzDbEApSkZe>𝐅𝐢𝐥𝐦𝐲𝐤𝐞𝐞𝐝𝐡𝐚_𝐚𝐬𝐤</a>
 ✯ 𝙈𝘼𝙄𝙉 𝘾𝙃𝘼𝙉𝙉𝙀𝙇: <a href=https://t.me/Filmykeedha>𝐅𝐢𝐥𝐦𝐲𝐤𝐞𝐞𝐝𝐡𝐚</a>
