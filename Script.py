@@ -146,3 +146,11 @@ Added By - {}
 ID - <code>{}</code>
 Name - {}
 """
+    DELETEMSG = """
+<blockquote><b>⏳Deleting In 60 Minutes 🗑️</b></blockquote>
+<pre>To save your files, do one of the following 👇🏻
+├── 📤 Forward to your friends
+├── 📲 Forward to saved message
+├── 👥 Forward to our dumb group</pre>
+<a href="https://t.me/+4U2PRD2nYwQyNWM1">👉🏻ᴅᴜᴍʙ ɢʀᴏᴜᴘ👈🏻</a>"""
+    
