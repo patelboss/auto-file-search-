@@ -18,7 +18,7 @@ from info import *
 import json
 from database.batch_filedb import fetch_file_by_link, get_batch_by_id, save_batch_details, get_latest_batch_sequence, generate_batch_id
 import base64
-from variables import VERIFY, VERIFY_TUTORIAL
+from variables import VERIFY, VERIFY_TUTORIAL, DLTTM
 logger = logging.getLogger(__name__)
 import builtins
 BATCH_FILES = {}
@@ -258,7 +258,7 @@ async def start(client, message):
             chat_id=message.from_user.id,
             text = script.DELETEMSG
         )
-        await asyncio.sleep(4200)  # Adjust duration as needed
+        await asyncio.sleep(DLTTM)  # Adjust duration as needed
 
         for msg in files_sent:
             try:
@@ -397,8 +397,8 @@ async def start(client, message):
             filesarr.append(msg)
         
         logger.info("All files sent. Sending confirmation message.")
-        k = await client.send_message(chat_id=message.from_user.id, text="waah yar 😛")
-        await asyncio.sleep(4200)
+        k = await client.send_message(chat_id=message.from_user.id, text = script.DELETEMSG)
+        await asyncio.sleep(DLTTM)
         
         logger.info("Deleting sent files after delay.")
         for x in filesarr:
@@ -499,7 +499,7 @@ async def start(client, message):
                 InlineKeyboardButton("Get File Again", callback_data=f'del#{file_id}')
             ]]
             k = await msg.reply(script.DELETEMSG ,quote=True)
-            await asyncio.sleep(4200)
+            await asyncio.sleep(DLTTM)
             await msg.delete()
             await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\n</b>") #,reply_markup=InlineKeyboardMarkup(btn))
             return
@@ -545,7 +545,7 @@ async def start(client, message):
         InlineKeyboardButton("Get File Again", callback_data=f'del#{file_id}')
     ]]
     k = await msg.reply(script.DELETEMSG ,quote=True)
-    await asyncio.sleep(4200)
+    await asyncio.sleep(DLTTM)
     await msg.delete()
     await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>") #,reply_markup=InlineKeyboardMarkup(btn))
     return
