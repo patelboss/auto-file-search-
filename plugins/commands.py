@@ -98,11 +98,16 @@ async def start(client, message):
         return
     if AUTH_CHANNEL and not await is_subscribed(client, message):
         try:
+           # await m.delete()
             invite_link = await client.create_chat_invite_link(str(AUTH_CHANNELS).split(","))
                                                               
         except ChatAdminRequired:
             logger.error("𝗛𝗲𝘆 𝘀𝗼𝗻𝗮, 𝗘𝗸 𝗱𝗳𝗮 𝗰𝗵𝗲𝗰𝗸 𝗸𝗿 𝗹𝗼 𝗸𝗶 𝗺𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹 𝗺𝗲𝗶 𝗔𝗱𝗱 𝗵𝘂 𝘆𝗮 𝗻𝗵𝗶...!")
             return
+
+        except Exception as e:
+            logger.error(f" is subscribe error {e}")
+            return 
         btn = [
             [
                 InlineKeyboardButton(
@@ -276,18 +281,21 @@ async def start(client, message):
         userid = data.split("-", 2)[1]
         token = data.split("-", 3)[2]
         if str(message.from_user.id) != str(userid):
+            await m.delete()
             return await message.reply_text(
                 text="<b>Invalid link or Expired link !</b>",
                 protect_content=True
             )
         is_valid = await check_token(client, userid, token)
         if is_valid == True:
+            await m.delete()
             await message.reply_text(
                 text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.</b>",
                 protect_content=True
             )
             await verify_user(client, userid, token)
         else:
+            await m.delete()
             return await message.reply_text(
                 text="<b>Invalid link or Expired link !</b>",
                 protect_content=True
