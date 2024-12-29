@@ -49,6 +49,11 @@ async def stop_button(bot, message):
 
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
+    await message.react(emoji="🤩")
+    random_sticker = get_random_sticker()
+    m = await message.reply_sticker(random_sticker)
+    await asyncio.sleep(1)
+    
     if message.chat.type in [enums.ChatType.GROUP, enums.ChatType.SUPERGROUP]:
         buttons = [
             [
@@ -60,6 +65,7 @@ async def start(client, message):
             ]
         reply_markup = InlineKeyboardMarkup(buttons)
         await message.reply(script.START_TXT.format(message.from_user.mention if message.from_user else message.chat.title, temp.U_NAME, temp.B_NAME), reply_markup=reply_markup)
+        await m.delete()
         await asyncio.sleep(2) # 😢 https://github.com/patelboss/Rashmibot/blob/master/plugins/p_ttishow.py#L17 😬 wait a bit, before checking.
         if not await db.get_chat(message.chat.id):
             total=await client.get_chat_members_count(message.chat.id)
@@ -69,6 +75,7 @@ async def start(client, message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
+        await m.delete()
     if len(message.command) != 2:
         buttons = [[
             InlineKeyboardButton('➕↖️<b> Share To Your Friend</b>↗️➕', url=Share_msg)
@@ -80,6 +87,7 @@ async def start(client, message):
             InlineKeyboardButton('♥️ 𝗔𝗯𝗼𝘂𝘁 ♥️', callback_data='about')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
+        await m.delete()
         await message.reply_photo(
             photo=random.choice(PICS),
             caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
@@ -108,6 +116,7 @@ async def start(client, message):
                 btn.append([InlineKeyboardButton(" 🔄 𝗧𝗿𝘆 𝗔𝗴𝗮𝗶𝗻", callback_data=f"{pre}#{file_id}")])
             except (IndexError, ValueError):
                 btn.append([InlineKeyboardButton(" 🔄 𝗧𝗿𝘆 𝗔𝗴𝗮𝗶𝗻", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
+        await m.delete()
         await client.send_message(
             chat_id=message.from_user.id,
             text="**𝗣𝗹𝗲𝗮𝘀𝗲 𝗝𝗼𝗶𝗻 𝗠𝘆 𝗨𝗽𝗱𝗮𝘁𝗲𝘀 𝗖𝗵𝗮𝗻𝗻𝗲𝗹 𝘁𝗼 𝘂𝘀𝗲 𝘁𝗵𝗶𝘀 𝗕𝗼𝘁!**",
@@ -126,6 +135,7 @@ async def start(client, message):
             InlineKeyboardButton('♥️ 𝗔𝗯𝗼𝘂𝘁 ♥️', callback_data='about')
         ]]
         reply_markup = InlineKeyboardMarkup(buttons)
+        await m.delete()
         await message.reply_photo(
             photo=random.choice(PICS),
             caption=script.START_TXT.format(message.from_user.mention, temp.U_NAME, temp.B_NAME),
@@ -140,6 +150,7 @@ async def start(client, message):
         file_id = data
         pre = ""
     if data.split("-", 1)[0] == "BATCH":
+        await m.delete()
         # Notify user that the process is starting
         sts = await message.reply("<b>Please wait...</b>")
         batch_id = data.split("-", 1)[1]
@@ -286,6 +297,7 @@ async def start(client, message):
         userid = message.from_user.id if message.from_user else None
         settings = await get_settings(chat_id)
         #g = await get_shortlink(chat_id, f"https://telegram.me/{temp.U_NAME}?start=allfiles_{file_id}")
+        await m.delete()
         k = await client.send_message(chat_id=message.from_user.id,text=f"<b>Get All Files in a Single Click!!!\n\n📂 ʟɪɴᴋ ➠ : {g}</i></b>", reply_markup=InlineKeyboardMarkup(
                 [
                     [
@@ -303,9 +315,7 @@ async def start(client, message):
     
     elif data.startswith("all"):
         logger.info("Processing 'all' command.")
-        random_sticker = get_random_sticker()
-        logger.info("Random sticker selected.")
-        
+        await m.delete()
         files = temp.GETALL.get(file_id)
         if not files:
             logger.warning("No such file exists for the given file_id.")
@@ -400,6 +410,7 @@ async def start(client, message):
         return
     
     elif data.split("-", 1)[0] == "DSTORE":
+        await m.delete()
         sts = await message.reply("Please wait")
         b_string = data.split("-", 1)[1]
         decoded = (base64.urlsafe_b64decode(b_string + "=" * (-len(b_string) % 4))).decode("ascii")
@@ -521,7 +532,8 @@ async def start(client, message):
         [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
     ]
     logger.info("Default mode enabled. Buttons configured.")
-            
+
+    await m.delete()
     msg = await client.send_cached_media(
         chat_id=message.from_user.id,
         file_id=file_id,
