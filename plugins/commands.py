@@ -18,15 +18,16 @@ from info import *
 import json
 from database.batch_filedb import fetch_file_by_link, get_batch_by_id, save_batch_details, get_latest_batch_sequence, generate_batch_id
 import base64
+from variables import VERIFY, VERIFY_TUTORAL
 logger = logging.getLogger(__name__)
 
 BATCH_FILES = {}
 STREAM_MODE = "False"
-VERIFY = "False"
+#VERIFY = "False"
 AUTO_DELETE = "False"
 GRP_LNK = "https://t.me/Filmykeedha/306"
 OFR_CNL = "https://t.me/+4dWp2gDjwC43YmJl"
-VERIFY_TUTORIAL = "https://t.me/Filmykeedha/394"
+#VERIFY_TUTORIAL = "https://t.me/Filmykeedha/394"
 sticker_ids = [
     "CAACAgIAAxkBAAItAmdbY-9IY20HNfLFeeboOOex74M0AAL9AQACFkJrCqSvYaKm6vLJHgQ",
     "CAACAgIAAxkBAAIs1GdbWBhGfsD2U3Z2pGiR-d64z08mAAJvAAPb234AAZlbUKh7k4B0HgQ",
