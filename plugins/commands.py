@@ -50,7 +50,7 @@ async def stop_button(bot, message):
 
 @Client.on_message(filters.command("start") & filters.incoming)
 async def start(client, message):
-    await message.react(emoji="🤩")
+    #await message.react(emoji="🤩")
     random_sticker = get_random_sticker()
     m = await message.reply_sticker(random_sticker)
     await asyncio.sleep(1)
