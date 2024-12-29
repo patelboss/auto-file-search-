@@ -137,7 +137,7 @@ def get_butto1ns():
         ],
     ]
     return InlineKeyboardMarkup(buttons)
-@Client.on_message(filters.group & filters.text & filters.incoming)
+@Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_message_handler(client, message):
     await message.reply_text(
         "🚫 I am not working here; I only work in groups.\n\n"
