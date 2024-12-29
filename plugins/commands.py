@@ -491,6 +491,7 @@ async def start(client, message):
             ], [
                 InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
             ]]
+            await m.delete()
             await message.reply_text(
                 text="<b>You are not verified!\nKindly verify to continue!</b>",
                 protect_content=True,
