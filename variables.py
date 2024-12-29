@@ -30,3 +30,5 @@ AUTH_CHANNELS = environ.get("AUTH_CHANNELS", "").split(",") if config.get("AUTH_
 DLTTM = int(config.get("DLTTM")) if config.get("DLTTM") else int(environ.get("DLTTM", "4200"))
 print(f"DLTTM: {config.get('DLTTM')}")
 #
+WELCOME_VIDEO_ID = config.get("WELCOME_VIDEO_ID") if config.get("WELCOME_VIDEO_ID") else environ.get("MELCOW_VID", "BAACAgQAAxkBAAEWWw5nXJ_bgRy9MY3ZNxpLzbIaysGuswAC2hoAAuLv4VIyB40_JD42Hh4E")
+
