@@ -781,7 +781,18 @@ async def settings(client, message):
             reply_to_message_id=message.id
         )
 
-
+@Client.on_message(filters.command("donate"))
+async def plans_cmd_handler(client, message): 
+    btn = [            
+        [InlineKeyboardButton("ꜱᴇɴᴅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴘᴛ 🧾", url=f"https://t.me/{OWNER_USERNAME}")],
+        [InlineKeyboardButton("⚠️ ᴄʟᴏsᴇ / ᴅᴇʟᴇᴛᴇ ⚠️", callback_data="close_data")]
+    ]
+    reply_markup = InlineKeyboardMarkup(btn)
+    await message.reply_photo(
+        photo=PAYMENT_QR,
+        caption=PAYMENT_TEXT,
+        reply_markup=reply_markup
+    )
 
 @Client.on_message(filters.command('set_template'))
 async def save_template(client, message):
