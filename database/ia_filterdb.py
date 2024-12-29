@@ -7,20 +7,20 @@ from pymongo.errors import DuplicateKeyError
 from umongo import Instance, Document, fields
 from motor.motor_asyncio import AsyncIOMotorClient
 from marshmallow.exceptions import ValidationError
-from info import DATABASE_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTER
+from info import FILE_DB_URI, DATABASE_NAME, COLLECTION_NAME, USE_CAPTION_FILTER
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-client = AsyncIOMotorClient(DATABASE_URI)
+client = AsyncIOMotorClient(FILE_DB_URI)
 db = client[DATABASE_NAME]
 instance = Instance.from_db(db)
 #col = db[COLLECTION_NAME]
 
 @instance.register
 class Media(Document):
-    file_id = fields.StrField(attribute='file_id')
+    file_id = fields.StrField(attribute='_id')
     file_ref = fields.StrField(allow_none=True)
     file_name = fields.StrField(required=True)
     file_size = fields.IntField(required=True)
