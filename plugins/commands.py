@@ -19,7 +19,7 @@ from info import *
 import json
 from database.batch_filedb import fetch_file_by_link, get_batch_by_id, save_batch_details, get_latest_batch_sequence, generate_batch_id
 import base64
-from variables import VERIFY, VERIFY_TUTORIAL, DLTTM
+from variables import VERIFY, VERIFY_TUTORIAL, DLTTM, AUTH_CHANNELS
 logger = logging.getLogger(__name__)
 import builtins
 BATCH_FILES = {}
