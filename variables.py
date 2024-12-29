@@ -25,4 +25,8 @@ VERIFY_TUTORIAL = config.get('VERIFY_TUTORIAL') if config.get('VERIFY_TUTORIAL')
 
 CUSTOM_FILE_CAPTION = config.get("CUSTOM_FILE_CAPTION") if config.get("CUSTOM_FILE_CAPTION") else environ.get("CUSTOM_FILE_CAPTION", f"{script.CAPTION}")
 
-AUTH_CHANNELS = environ.get("AUTH_CHANNELS", "").split() if config.get("AUTH_CHANNELS") else []
+AUTH_CHANNELS = environ.get("AUTH_CHANNELS", "").split(",") if config.get("AUTH_CHANNELS") else []
+
+DLTTM = int(config.get("DLTTM")) if config.get("DLTTM") else int(environ.get("DLTTM", "4200"))
+print(f"DLTTM: {config.get('DLTTM')}")
+#
