@@ -20,7 +20,7 @@ import json
 from database.batch_filedb import fetch_file_by_link, get_batch_by_id, save_batch_details, get_latest_batch_sequence, generate_batch_id
 import base64
 from variables import VERIFY, VERIFY_TUTORIAL, DLTTM, AUTH_CHANNELS
-logger = logging.getLogger(__name__)
+#logger = logging.getLogger(__name__)
 import builtins
 BATCH_FILES = {}
 STREAM_MODE = "False"
@@ -36,7 +36,24 @@ sticker_ids = [
     "CAACAgQAAxkBAAIs_mdbY-Zk1JR7yRLoWsi8NbJEMFerAALVGAACOqGIUIer-Up9iv5aHgQ",
     "CAACAgQAAxkBAAIs-mdbY96brNo0bbqiAT0h9aHmGjfZAAISDgACQln9BFRvgD6jmKybHgQ"
 ]
+import logging
+import sys
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
+# Configure logging explicitly to write to stdout
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# Create a stream handler for stdout
+stdout_handler = logging.StreamHandler(sys.stdout)
+stdout_handler.setLevel(logging.INFO)
+
+# Set a formatter for better readability
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+stdout_handler.setFormatter(formatter)
+
+# Add the handler to the logger
+logger.addHandler(stdout_handler)
 def get_random_sticker():
     return random.choice(sticker_ids)
 
