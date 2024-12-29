@@ -20,7 +20,7 @@ from database.batch_filedb import fetch_file_by_link, get_batch_by_id, save_batc
 import base64
 from variables import VERIFY, VERIFY_TUTORIAL
 logger = logging.getLogger(__name__)
-
+import builtins
 BATCH_FILES = {}
 STREAM_MODE = "False"
 #VERIFY = "False"
