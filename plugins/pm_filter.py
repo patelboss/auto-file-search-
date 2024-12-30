@@ -1048,11 +1048,13 @@ async def advantage_spell_chok(client, msg):
             [InlineKeyboardButton(movie.strip(), callback_data=f"spolling#{user_id}#{idx}")]
             for idx, movie in enumerate(movielist)
         ]
-        buttons.append([InlineKeyboardButton("Close", callback_data=f'spell#{user_id}#close')])
-        await msg.reply(
-            f"Here are some suggestions for **{query}**:",
+        buttons.append([InlineKeyboardButton("Close", callback_data=f'spolling#{user_id}#close_spellcheck')])
+        t = await msg.reply(
+            f"<b>Here are some suggestions for **{query}**:</b>",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
+        await asyncio.sleep(120)
+        await t.delete()
         logger.info(f"Displayed suggestions for query '{query}'.")
     except Exception as e:
         logger.error(f"Error displaying movie suggestions for query '{query}': {e}")
