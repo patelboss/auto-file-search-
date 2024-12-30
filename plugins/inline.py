@@ -1,35 +1,28 @@
+import logging
 from pyrogram import Client, emoji, filters
 from pyrogram.errors.exceptions.bad_request_400 import QueryIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
 from utils import is_subscribed, get_size, temp
-from info import CACHE_TIME, AUTH_USERS, AUTH_CHANNEL, CUSTOM_FILE_CAPTION
+from info import CACHE_TIME, AUTH_CHANNEL, CUSTOM_FILE_CAPTION
 from database.connections_mdb import active_connection
 
-cache_time = 0 if AUTH_USERS or AUTH_CHANNEL else CACHE_TIME
+# Configure logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
-async def inline_users(query: InlineQuery):
-    """Check if the user is allowed to use the inline query."""
-    if AUTH_USERS:
-        if query.from_user and query.from_user.id in AUTH_USERS:
-            return True
-        else:
-            return False
-    return query.from_user and query.from_user.id not in temp.BANNED_USERS
+cache_time = 0 if AUTH_CHANNEL else CACHE_TIME
 
 @Client.on_inline_query()
 async def answer(bot, query):
     """Show search results for the given inline query."""
+    logger.info(f"Received inline query from user {query.from_user.id}: {query.query}")
+
     chat_id = await active_connection(str(query.from_user.id))
 
-    if not await inline_users(query):
-        await query.answer(results=[],
-                           cache_time=0,
-                           switch_pm_text='Unauthorized user',
-                           switch_pm_parameter="unauthorized")
-        return
-
+    # Check if the user is subscribed to the required channel
     if AUTH_CHANNEL and not await is_subscribed(bot, query):
+        logger.warning(f"User {query.from_user.id} is not subscribed to the required channel.")
         await query.answer(results=[],
                            cache_time=0,
                            switch_pm_text='You must subscribe to use this bot',
@@ -45,6 +38,14 @@ async def answer(bot, query):
         string = query.query.strip()
         file_type = None
 
+    if not string:  # Default message for empty queries
+        logger.info(f"User {query.from_user.id} provided an empty query.")
+        await query.answer(results=[],
+                           cache_time=cache_time,
+                           switch_pm_text="Type any movie or web series name to search.",
+                           switch_pm_parameter="default")
+        return
+
     offset = int(query.offset or 0)
 
     reply_markup = get_reply_markup(query=string)
@@ -57,7 +58,9 @@ async def answer(bot, query):
             max_results=10,
             offset=offset
         )
+        logger.info(f"Search results retrieved for query '{string}' by user {query.from_user.id}.")
     except Exception as e:
+        logger.error(f"Error while fetching search results for query '{string}': {e}")
         await query.answer(results=[], cache_time=cache_time, switch_pm_text="Error occurred", switch_pm_parameter="error")
         return
 
@@ -74,7 +77,7 @@ async def answer(bot, query):
                         file_caption=f_caption
                     )
                 except Exception:
-                    pass
+                    logger.warning(f"Error formatting custom caption for file '{title}'.")
             if not f_caption:
                 f_caption = title
 
@@ -87,7 +90,8 @@ async def answer(bot, query):
                     reply_markup=reply_markup
                 )
             )
-        except Exception:
+        except Exception as e:
+            logger.error(f"Error while processing file '{file.get('file_name', 'Unknown')}': {e}")
             continue
 
     if results:
@@ -103,8 +107,9 @@ async def answer(bot, query):
                 switch_pm_parameter="start",
                 next_offset=str(next_offset)
             )
+            logger.info(f"Search results sent for query '{string}' by user {query.from_user.id}.")
         except QueryIdInvalid:
-            pass
+            logger.warning(f"QueryIdInvalid error for user {query.from_user.id}.")
     else:
         switch_pm_text = f"{emoji.CROSS_MARK} No results"
         if string:
@@ -117,6 +122,7 @@ async def answer(bot, query):
             switch_pm_text=switch_pm_text,
             switch_pm_parameter="no_results"
         )
+        logger.info(f"No results found for query '{string}' by user {query.from_user.id}.")
 
 def get_reply_markup(query):
     """Generate reply markup for inline results."""
