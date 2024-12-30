@@ -8,7 +8,6 @@ from info import AUTH_CHANNEL, LONG_IMDB_DESCRIPTION, MAX_LIST_ELM
 #from imdb import IMDb
 from variables import AUTH_CHANNELS
 import asyncio
-from pyrogram.types import Message, InlineKeyboardButton
 from pyrogram import enums
 from typing import Union
 import re
@@ -20,10 +19,8 @@ from database.users_chats_db import db
 from bs4 import BeautifulSoup
 import requests
 from shortzy import Shortzy
-
-import logging
+from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 import sys
-from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 # Configure logging explicitly to write to stdout
 logger = logging.getLogger(__name__)
