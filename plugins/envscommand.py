@@ -1,7 +1,7 @@
 from pyrogram import Client, filters
 from info import *
 #bot = Client("my_bot")
-from database.envs import fetch_config, get_env, save_env, fetch_all_configs, update_config
+from database.envs import fetch_config, get_env, save_env, fetch_all_configs, update_config, delete_env_from_db
 from pyrogram.types import Message
 from pymongo import UpdateOne
 import logging
