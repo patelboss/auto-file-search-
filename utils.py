@@ -76,6 +76,123 @@ async def is_subscribed(bot, query):
     missing_channels = []
     logger.info(f"Checking subscription for user ID: {query.from_user.id}")
 
+    if REQUEST_TO_JOIN_MODE and join_db().isActive():
+        logger.info("Request-to-join mode is active.")
+        try:
+            user = await join_db().get_user(query.from_user.id)
+            if user and user["user_id"] == query.from_user.id:
+                logger.info(f"User {query.from_user.id} found in the database and is authorized.")
+                return True
+            else:
+                logger.info(f"User {query.from_user.id} not found in the database or unauthorized.")
+                for channel_id in AUTH_CHANNELS:
+                    try:
+                        user_data = await bot.get_chat_member(int(channel_id), query.from_user.id)
+                    except UserNotParticipant:
+                        channel = await bot.get_chat(int(channel_id))
+                        missing_channels.append(
+                            InlineKeyboardButton(f"Join {channel.title}", url=channel.invite_link)
+                        )
+                        logger.info(f"User {query.from_user.id} is not a participant in channel {channel.title}.")
+                    except Exception as e:
+                        logger.error(f"Error while checking user {query.from_user.id} in channel {channel_id}: {e}")
+                        return False  # Return False if there's an error
+
+                if missing_channels:
+                    logger.info(f"User {query.from_user.id} is missing subscription to channels.")
+                    reply_markup = InlineKeyboardMarkup([missing_channels])
+
+                    if isinstance(query, CallbackQuery):
+                        await query.answer(
+                            text="Please join all required channels & Unmute Them to use the bot.\nTap on Files Again",
+                            show_alert=True
+                        )
+                        logger.info("Sending subscription prompt via CallbackQuery.")
+                        await query.message.reply(
+                            "Join the channels using the buttons below.\nTap on Join Then Unmute\nTap On Files Again To Get Files", 
+                            reply_markup=reply_markup
+                        )
+                    elif isinstance(query, InlineQuery):
+                        await query.answer(
+                            results=[],  # No results for this query type
+                            cache_time=0,
+                            switch_pm_text="Please subscribe to all required channels.",
+                            switch_pm_parameter="subscribe"
+                        )
+                        logger.info("Sending subscription prompt via InlineQuery.")
+                    else:
+                        await query.reply(
+                            "You need to join all the required channels & Unmute Them to get the files.",
+                            reply_markup=reply_markup
+                        )
+                        logger.info("Sending subscription prompt via message reply.")
+                    return False
+
+                logger.info(f"User {query.from_user.id} is subscribed to all required channels.")
+                return True
+
+        except Exception as e:
+            logger.error(f"Unexpected error for user {query.from_user.id}: {e}")
+            return False
+    else:
+        logger.info("Request-to-join mode is inactive.")
+        for channel_id in AUTH_CHANNELS:
+            try:
+                user = await bot.get_chat_member(int(channel_id), query.from_user.id)
+                if user.status == enums.ChatMemberStatus.BANNED:
+                    logger.warning(f"User {query.from_user.id} is banned in channel {channel_id}.")
+                    return False
+            except UserNotParticipant:
+                logger.info(f"User {query.from_user.id} is not a participant in channel {channel_id}.")
+                missing_channels.append(channel_id)
+                continue
+            except Exception as e:
+                logger.error(f"Error while checking channel {channel_id} for user {query.from_user.id}: {e}")
+
+        if missing_channels:
+            logger.info(f"User {query.from_user.id} is missing subscription to channels: {missing_channels}.")
+            join_buttons = []
+            for channel_id in missing_channels:
+                channel = await bot.get_chat(int(channel_id))
+                join_buttons.append(
+                    InlineKeyboardButton(f"Join {channel.title}", url=channel.invite_link)
+                )
+            reply_markup = InlineKeyboardMarkup([join_buttons])
+
+            if isinstance(query, CallbackQuery):
+                await query.answer(
+                    text="Please join all required channels & Unmute Them to use the bot.\nTap on Files Again",
+                    show_alert=True
+                )
+                logger.info("Sending subscription prompt via CallbackQuery.")
+                await query.message.reply(
+                    "Join the channels using the buttons below.\nTap on Join Then Unmute\nTap On Files Again To Get Files", 
+                    reply_markup=reply_markup
+                )
+            elif isinstance(query, InlineQuery):
+                await query.answer(
+                    results=[],
+                    cache_time=0,
+                    switch_pm_text="Please subscribe to all required channels.",
+                    switch_pm_parameter="subscribe"
+                )
+                logger.info("Sending subscription prompt via InlineQuery.")
+            else:
+                await query.reply(
+                    "You need to join all the required channels & Unmute Them to get the files.",
+                    reply_markup=reply_markup
+                )
+                logger.info("Sending subscription prompt via message reply.")
+            return False
+
+    logger.info(f"User {query.from_user.id} is subscribed to all required channels.")
+    return True
+
+
+async def is_subscribed1(bot, query):
+    missing_channels = []
+    logger.info(f"Checking subscription for user ID: {query.from_user.id}")
+
     if REQUEST_TO_JOIN_MODE == True and join_db().isActive():
         logger.info("Request-to-join mode is active.")
         try:
