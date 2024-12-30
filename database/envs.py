@@ -159,16 +159,19 @@ def delete_env_from_db(config_name: str, key: str) -> bool:
     Returns:
         bool: True if deletion was successful, False otherwise.
     """
-    config_data = col.find_one({"config_name": config_name})
     try:
-
+        # Ensure the config exists
         config_data = col.find_one({"config_name": config_name})
-    
-        result = db.col.update_one(
-            {'config_name': config_name},
-            {'$unset': {key: ""}}
+        if not config_data:
+            print(f"No config found with name: {config_name}")
+            return False
+
+        # Perform the deletion
+        result = col.update_one(
+            {"config_name": config_name},
+            {"$unset": {key: ""}}
         )
         return result.modified_count > 0
     except Exception as e:
-        logger.error(f"Error while deleting environment variable: {e}")
+        print(f"Error while deleting environment variable: {e}")
         return False
