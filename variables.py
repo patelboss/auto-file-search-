@@ -10,7 +10,7 @@ config = fetch_config(config_name)
 print(config)
 
 VERIFY = bool(config.get('VERIFY')) if config.get('VERIFY') else bool(environ.get('VERIFY', False))
-print(f"Verify = {VERIFY}")
+print(f"VERIFY = {VERIFY}")
 VERIFY_SECOND_SHORTNER = bool(config.get('VERIFY_SECOND_SHORTNER')) if config.get('VERIFY_SECOND_SHORTNER') else bool(environ.get('VERIFY_SECOND_SHORTNER', False))
 print(f"VERIFY_SECOND_SHORTNER = {VERIFY_SECOND_SHORTNER}")
 VERIFY_SHORTLINK_URL = config.get('VERIFY_SHORTLINK_URL') if config.get('VERIFY_SHORTLINK_URL') else environ.get('VERIFY_SHORTLINK_URL', '')
