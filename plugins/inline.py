@@ -75,9 +75,9 @@ async def answer(bot, query):
 
     for file in files:
         try:
-            title = file.get("file_name", "Unknown Title")
-            size = get_size(file.get("file_size", 0))
-            f_caption = file.get("caption", "")
+            title = file.file_name
+            size = get_size(file.file_size
+            f_caption = file.caption
             if CUSTOM_FILE_CAPTION:
                 try:
                     f_caption = CUSTOM_FILE_CAPTION.format(
@@ -95,7 +95,7 @@ async def answer(bot, query):
                     title=title,
                     document_file_id=file["file_id"],
                     caption=f_caption,
-                    description=f"Size: {size}\nType: {file.get('file_type', 'Unknown')}",
+                    description=f"Size: {size}\nType: {file.file_type}",
                     reply_markup=reply_markup
                 )
             )
