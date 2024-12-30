@@ -956,21 +956,21 @@ async def advantage_spell_chok(client, msg):
     mv_id = msg.id
     user_id = msg.from_user.id if msg.from_user else 0
     req_user = await client.get_users(user_id)
-    logger.info(f"Received spell check request from user {req_user.username or user_id} (User ID: {user_id}).")
+#    logger.info(f"Received spell check request from user {req_user.username or user_id} (User ID: {user_id}).")
 
     query = re.sub(
         r"\b(pl(i|e)*?(s|z+|ease|se|ese|(e+)s(e)?)|((send|snd|giv(e)?|gib)(\sme)?)|movie(s)?|new|latest|br((o|u)h?)*|^h(e|a)?(l)*(o)*|mal(ayalam)?|t(h)?amil|file|that|find|und(o)*|kit(t(i|y)?)?o(w)?|thar(u)?(o)*w?|kittum(o)*|aya(k)*(um(o)*)?|full\smovie|any(one)|with\ssubtitle(s)?)",
         "", msg.text, flags=re.IGNORECASE
     ).strip()
 
-    logger.info(f"Processed query: {query}")
+#    logger.info(f"Processed query: {query}")
 
     try:
         # Fetch movie suggestions
-        logger.info(f"check by get poster {query}")
+#        logger.info(f"check by get poster {query}")
         movies = await get_poster(query, bulk=True)
         if not movies:
-            logger.warning(f"No movies found for query: {query}")
+#            logger.warning(f"No movies found for query: {query}")
             search_query = query.replace(" ", "+")
             buttons = [
                 [InlineKeyboardButton("Search Google", url=f"https://www.google.com/search?q={search_query}")],
@@ -1002,7 +1002,7 @@ async def advantage_spell_chok(client, msg):
     ]
 
     if not movielist:
-        logger.warning(f"No valid movie titles found for query '{query}'.")
+#        logger.warning(f"No valid movie titles found for query '{query}'.")
         search_query = query.replace(" ", "+")
         buttons = [
             [InlineKeyboardButton("Search Google", url=f"https://www.google.com/search?q={search_query}")],
@@ -1014,7 +1014,7 @@ async def advantage_spell_chok(client, msg):
         )
         return
 
-    logger.info(f"Found {len(movielist)} movies for query '{query}'.")
+#    logger.info(f"Found {len(movielist)} movies for query '{query}'.")
     SPELL_CHECK[mv_id] = movielist
 
     try:
@@ -1027,10 +1027,10 @@ async def advantage_spell_chok(client, msg):
                 break
 
         if matched_movie:
-            logger.info(f"Spell check found a match: {matched_movie}")
+#            logger.info(f"Spell check found a match: {matched_movie}")
             await auto_filter(client, msg, matched_movie)
         else:
-            logger.info(f"No close matches found for query '{query}'.")
+#            logger.info(f"No close matches found for query '{query}'.")
             search_query = query.replace(" ", "+")
             buttons = [
                 [InlineKeyboardButton("Search Google", url=f"https://www.google.com/search?q={search_query}")],
@@ -1055,7 +1055,7 @@ async def advantage_spell_chok(client, msg):
         )
         await asyncio.sleep(120)
         await t.delete()
-        logger.info(f"Displayed suggestions for query '{query}'.")
+#        logger.info(f"Displayed suggestions for query '{query}'.")
     except Exception as e:
         logger.error(f"Error displaying movie suggestions for query '{query}': {e}")
 
