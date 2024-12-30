@@ -153,4 +153,7 @@ Name - {}
 ├── 📲 Forward to saved message
 ├── 👥 Forward to our dumb group</pre>
 <a href="https://t.me/+4U2PRD2nYwQyNWM1">👉🏻ᴅᴜᴍʙ ɢʀᴏᴜᴘ👈🏻</a>"""
-    
+    MELCOW_ENG = """
+<b>Hᴇʟʟᴏ {} 😍 Welcome 🤗 to {}
+Chaliye shuru karte hai 
+Ab Aayega Majaa 🥳. </b>"""
