@@ -9,7 +9,7 @@ from pyrogram.errors import ChatAdminRequired, FloodWait
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 from database.ia_filterdb import Media, get_file_details, unpack_new_file_id, get_file_details1
 from database.users_chats_db import db
-from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, CUSTOM_FILE_CAPTION, PROTECT_CONTENT
+from info import CHANNELS, ADMINS, AUTH_CHANNEL, LOG_CHANNEL, PICS, BATCH_FILE_CAPTION, PROTECT_CONTENT
 from utils import get_settings, get_size, is_subscribed, save_group_settings, temp, clean_file_name
 from utils import *
 #from verify import *
@@ -19,7 +19,7 @@ from info import *
 import json
 from database.batch_filedb import fetch_file_by_link, get_batch_by_id, save_batch_details, get_latest_batch_sequence, generate_batch_id
 import base64
-from variables import VERIFY, VERIFY_TUTORIAL, DLTTM, AUTH_CHANNELS
+from variables import CUSTOM_FILE_CAPTION, VERIFY, VERIFY_TUTORIAL, DLTTM, AUTH_CHANNELS
 #logger = logging.getLogger(__name__)
 import builtins
 BATCH_FILES = {}
