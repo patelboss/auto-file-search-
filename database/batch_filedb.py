@@ -5,7 +5,7 @@ import base64
 from pyrogram.file_id import FileId
 from pymongo import MongoClient
 from pymongo.errors import DuplicateKeyError
-from info import FILE_DB_URI , DATABASE_NAME
+from info import DATABASE_URI, DATABASE_NAME
 from utils import get_settings, save_group_settings
 from pymongo.errors import PyMongoError
 from datetime import datetime
@@ -24,7 +24,7 @@ import logging
 
 COLLECTIONB_NAME = "Batched"
 # Ensure that MongoDB client and collections are initialized properly
-client = MongoClient(FILE_DB_URI)
+client = MongoClient(DATABASE_URI)
 db = client[DATABASE_NAME]
 col = db["batch"]
 
