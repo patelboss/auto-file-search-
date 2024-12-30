@@ -115,8 +115,8 @@ async def start(client, message):
         return
     if AUTH_CHANNEL and not await is_subscribed(client, message):
         try:
-           # await m.delete()
-            invite_link = await client.create_chat_invite_link(str(AUTH_CHANNELS).split(","))
+            await m.delete()
+            invite_link = await client.create_chat_invite_link(AUTH_CHANNELS)
                                                               
         except ChatAdminRequired:
             logger.error("𝗛𝗲𝘆 𝘀𝗼𝗻𝗮, 𝗘𝗸 𝗱𝗳𝗮 𝗰𝗵𝗲𝗰𝗸 𝗸𝗿 𝗹𝗼 𝗸𝗶 𝗺𝗮𝗶𝗻 𝗖𝗵𝗮𝗻𝗻𝗲𝗹 𝗺𝗲𝗶 𝗔𝗱𝗱 𝗵𝘂 𝘆𝗮 𝗻𝗵𝗶...!")
@@ -140,7 +140,7 @@ async def start(client, message):
                 btn.append([InlineKeyboardButton(" 🔄 𝗧𝗿𝘆 𝗔𝗴𝗮𝗶𝗻", callback_data=f"{pre}#{file_id}")])
             except (IndexError, ValueError):
                 btn.append([InlineKeyboardButton(" 🔄 𝗧𝗿𝘆 𝗔𝗴𝗮𝗶𝗻", url=f"https://t.me/{temp.U_NAME}?start={message.command[1]}")])
-        await m.delete()
+      #  await m.delete()
         await client.send_message(
             chat_id=message.from_user.id,
             text="**𝗣𝗹𝗲𝗮𝘀𝗲 𝗝𝗼𝗶𝗻 𝗠𝘆 𝗨𝗽𝗱𝗮𝘁𝗲𝘀 𝗖𝗵𝗮𝗻𝗻𝗲𝗹 𝘁𝗼 𝘂𝘀𝗲 𝘁𝗵𝗶𝘀 𝗕𝗼𝘁!**",
