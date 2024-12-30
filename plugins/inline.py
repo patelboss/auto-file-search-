@@ -3,7 +3,7 @@ from pyrogram import Client, emoji, filters
 from pyrogram.errors.exceptions.bad_request_400 import QueryIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
-from utils import is_subscribed, get_size
+from utils import is_subscribed, get_size, clean_file_name
 from info import CACHE_TIME, AUTH_CHANNEL, CUSTOM_FILE_CAPTION
 from database.connections_mdb import active_connection
 
@@ -75,8 +75,8 @@ async def answer(bot, query):
 
     for file in files:
         try:
-            title = file.file_name
-            size = get_size(file.file_size
+            title = clean_file_name(file.file_name)
+            size = get_size(file.file_size)
             f_caption = file.caption
             if CUSTOM_FILE_CAPTION:
                 try:
