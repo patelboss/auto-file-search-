@@ -139,11 +139,13 @@ def get_butto1ns():
     return InlineKeyboardMarkup(buttons)
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_message_handler(client, message):
-    await message.reply_text(
-        "🚫 I am not working here; I only work in groups.\n\n"
-        "👉 Explore the options below:",
-        reply_markup=get_butto1ns()
-    )    
+    p = await message.reply_text(
+           "🚫 I am not working here; I only work in groups.\n\n"
+           "👉 Explore the options below:",
+           reply_markup=get_butto1ns()
+        )    
+    await asyncio.sleep(60) 
+    await p.delete()
 @Client.on_callback_query(filters.regex("donation2"))
 async def donation_callback(client, callback_query):
     await callback_query.answer()
