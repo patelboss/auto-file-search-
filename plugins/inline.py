@@ -16,13 +16,13 @@ cache_time = 0 if AUTH_CHANNEL else CACHE_TIME
 @Client.on_inline_query()
 async def answer(bot, query):
     """Show search results for the given inline query."""
-    logger.info(f"Received inline query from user {query.from_user.id}: {query.query}")
+#   logger.info(f"Received inline query from user {query.from_user.id}: {query.query}")
 
     chat_id = await active_connection(str(query.from_user.id))
 
     # Check if the user is subscribed to the required channel
     if AUTH_CHANNEL and not await is_subscribed(bot, query):
-        logger.warning(f"User {query.from_user.id} is not subscribed to the required channel.")
+#        logger.warning(f"User {query.from_user.id} is not subscribed to the required channel.")
         await query.answer(
             results=[],
             cache_time=0,
@@ -41,11 +41,11 @@ async def answer(bot, query):
         file_type = None
 
     if not string:  # Default message for empty queries
-        logger.info(f"User {query.from_user.id} provided an empty query.")
+#        logger.info(f"User {query.from_user.id} provided an empty query.")
         await query.answer(
             results=[],
             cache_time=cache_time,
-            switch_pm_text="Type any movie or web series name to search.",
+            switch_pm_text="📂 Type any movie or web series name to search.",
             switch_pm_parameter="default"
         )
         return
@@ -62,7 +62,7 @@ async def answer(bot, query):
             max_results=10,
             offset=offset
         )
-        logger.info(f"Search results retrieved for query '{string}' by user {query.from_user.id}.")
+#        logger.info(f"Search results retrieved for query '{string}' by user {query.from_user.id}.")
     except Exception as e:
         logger.error(f"Error while fetching search results for query '{string}': {e}")
         await query.answer(
@@ -116,7 +116,7 @@ async def answer(bot, query):
                 switch_pm_parameter="start",
                 next_offset=str(next_offset)
             )
-            logger.info(f"Search results sent for query '{string}' by user {query.from_user.id}.")
+#            logger.info(f"Search results sent for query '{string}' by user {query.from_user.id}.")
         except QueryIdInvalid:
             logger.warning(f"QueryIdInvalid error for user {query.from_user.id}.")
     else:
@@ -131,13 +131,31 @@ async def answer(bot, query):
             switch_pm_text=switch_pm_text,
             switch_pm_parameter="no_results"
         )
-        logger.info(f"No results found for query '{string}' by user {query.from_user.id}.")
+#       logger.info(f"No results found for query '{string}' by user {query.from_user.id}.")
+
+def get_reply_markup1(query):
+    """Generate reply markup for inline results."""
+    buttons = [
+        [
+            InlineKeyboardButton('Search again', switch_inline_query_current_chat=query)
+        ]
+    ]
+    return InlineKeyboardMarkup(buttons)
+from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
 
 def get_reply_markup(query):
     """Generate reply markup for inline results."""
     buttons = [
         [
-            InlineKeyboardButton('Search again', switch_inline_query_current_chat=query)
+            InlineKeyboardButton('Search again', switch_inline_query_current_chat=query)  # Existing button
+        ],
+        [
+            InlineKeyboardButton('Search Group', url=GRP_LNK),  # Link to the search group
+            InlineKeyboardButton('Main Channel', url=CNL_LNK)  # Link to the main channel
+        ],
+        [
+            InlineKeyboardButton('Donate Us', callback_data='donation') #,  # Callback to trigger donation action
+          #  InlineKeyboardButton('Contact Support', url="http://example.com/contact")  # Example of a second button in this row
         ]
     ]
     return InlineKeyboardMarkup(buttons)
