@@ -148,3 +148,23 @@ async def update_config(config_name, key, value):
         logger.error(f"Error while updating config: {e}")
         return False
 
+def delete_env_from_db(config_name: str, key: str) -> bool:
+    """
+    Deletes an environment variable from a specified config in the database.
+
+    Args:
+        config_name (str): The name of the config.
+        key (str): The key of the environment variable to delete.
+
+    Returns:
+        bool: True if deletion was successful, False otherwise.
+    """
+    try:
+        result = db.environment.update_one(
+            {'_id': config_name},
+            {'$unset': {key: ""}}
+        )
+        return result.modified_count > 0
+    except Exception as e:
+        LOGGER(__name__).error(f"Error while deleting environment variable: {e}")
+        return False
