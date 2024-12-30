@@ -6,7 +6,7 @@ from database.users_chats_db import db #, delete_all_referal_users, get_referal_
 # Define a dictionary to store secret codes (could be persisted in a database if needed)
 secret_codes = {}
 
-@Client.on_message(filters.command('feedback', 'report') & filters.private)
+@Client.on_message(filters.command(['feedback', 'report']) & filters.private)
 async def feedback(client, message):
     """
     Handle feedback or issue reporting with optional file attachments.
