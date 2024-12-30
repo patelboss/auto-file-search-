@@ -9,7 +9,7 @@ config_name = "env_config"
 config = fetch_config(config_name)
 print(config)
 
-VERIFY = config.get('VERIFY') if config.get('VERIFY') else environ.get('VERIFY', False)
+VERIFY = bool(config.get('VERIFY')) if config.get('VERIFY') else bool(environ.get('VERIFY', False))
 print(f"VERIFY = {VERIFY}")
 VERIFY_SECOND_SHORTNER = bool(config.get('VERIFY_SECOND_SHORTNER')) if config.get('VERIFY_SECOND_SHORTNER') else bool(environ.get('VERIFY_SECOND_SHORTNER', False))
 print(f"VERIFY_SECOND_SHORTNER = {VERIFY_SECOND_SHORTNER}")
