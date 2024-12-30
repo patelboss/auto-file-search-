@@ -137,14 +137,19 @@ def get_butto1ns():
         ],
     ]
     return InlineKeyboardMarkup(buttons)
+
+
 @Client.on_message(filters.private & filters.text & filters.incoming)
 async def private_message_handler(client, message):
+    if message.text.startswith("/"):  # Ignore commands
+        return
+
     p = await message.reply_text(
-           "🚫 I am not working here; I only work in groups.\n\n"
-           "👉 Explore the options below:",
-           reply_markup=get_butto1ns()
-        )    
-    await asyncio.sleep(60) 
+        "<b>🚫 I am not working here; I only work in groups.</b>\n\n"
+        "<b>👉 Explore the options below:</b>",
+        reply_markup=get_butto1ns()  # Replace `get_buttons` with your actual function
+    )
+    await asyncio.sleep(60)
     await p.delete()
 @Client.on_callback_query(filters.regex("donation2"))
 async def donation_callback(client, callback_query):
