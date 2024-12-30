@@ -4,7 +4,7 @@ from pyrogram.errors.exceptions.bad_request_400 import QueryIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
 from utils import is_subscribed, get_size, clean_file_name
-from info import CACHE_TIME, AUTH_CHANNEL, GRP_LNK, CNL_LNK
+from info import CACHE_TIME, AUTH_CHANNEL, GRP_LNK, CHNL_LNK
 from database.connections_mdb import active_connection
 from variables import CUSTOM_FILE_CAPTION
 # Configure logging
@@ -151,7 +151,7 @@ def get_reply_markup(query):
         ],
         [
             InlineKeyboardButton('Search Group', url=GRP_LNK),  # Link to the search group
-            InlineKeyboardButton('Main Channel', url=CNL_LNK)  # Link to the main channel
+            InlineKeyboardButton('Main Channel', url=CHNL_LNK)  # Link to the main channel
         ],
         [
             InlineKeyboardButton('Donate Us', callback_data='donation') #,  # Callback to trigger donation action
