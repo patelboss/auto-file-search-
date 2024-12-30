@@ -3,7 +3,7 @@ from pyrogram import Client, emoji, filters
 from pyrogram.errors.exceptions.bad_request_400 import QueryIdInvalid
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup, InlineQueryResultCachedDocument, InlineQuery
 from database.ia_filterdb import get_search_results
-from utils import is_subscribed, get_size, temp
+from utils import is_subscribed, get_size
 from info import CACHE_TIME, AUTH_CHANNEL, CUSTOM_FILE_CAPTION
 from database.connections_mdb import active_connection
 
@@ -23,10 +23,12 @@ async def answer(bot, query):
     # Check if the user is subscribed to the required channel
     if AUTH_CHANNEL and not await is_subscribed(bot, query):
         logger.warning(f"User {query.from_user.id} is not subscribed to the required channel.")
-        await query.answer(results=[],
-                           cache_time=0,
-                           switch_pm_text='You must subscribe to use this bot',
-                           switch_pm_parameter="subscribe")
+        await query.answer(
+            results=[],
+            cache_time=0,
+            switch_pm_text='You must subscribe to use this bot',
+            switch_pm_parameter="subscribe"
+        )
         return
 
     results = []
@@ -40,10 +42,12 @@ async def answer(bot, query):
 
     if not string:  # Default message for empty queries
         logger.info(f"User {query.from_user.id} provided an empty query.")
-        await query.answer(results=[],
-                           cache_time=cache_time,
-                           switch_pm_text="Type any movie or web series name to search.",
-                           switch_pm_parameter="default")
+        await query.answer(
+            results=[],
+            cache_time=cache_time,
+            switch_pm_text="Type any movie or web series name to search.",
+            switch_pm_parameter="default"
+        )
         return
 
     offset = int(query.offset or 0)
@@ -51,9 +55,9 @@ async def answer(bot, query):
     reply_markup = get_reply_markup(query=string)
 
     try:
+        # Ensure correct argument mapping for get_search_results
         files, next_offset, total_results = await get_search_results(
-            chat_id,
-            string,
+            query=string,
             file_type=file_type,
             max_results=10,
             offset=offset
@@ -61,7 +65,12 @@ async def answer(bot, query):
         logger.info(f"Search results retrieved for query '{string}' by user {query.from_user.id}.")
     except Exception as e:
         logger.error(f"Error while fetching search results for query '{string}': {e}")
-        await query.answer(results=[], cache_time=cache_time, switch_pm_text="Error occurred", switch_pm_parameter="error")
+        await query.answer(
+            results=[],
+            cache_time=cache_time,
+            switch_pm_text="Error occurred",
+            switch_pm_parameter="error"
+        )
         return
 
     for file in files:
