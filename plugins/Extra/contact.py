@@ -6,7 +6,7 @@ from database.users_chats_db import db #, delete_all_referal_users, get_referal_
 # Define a dictionary to store secret codes (could be persisted in a database if needed)
 secret_codes = {}
 
-@Client.on_message(filters.command(['feedback', 'report']) & filters.private)
+@Client.on_message(filters.command(['feedback', 'report']))
 async def feedback(client, message):
     """
     Handle feedback or issue reporting with optional file attachments.
@@ -130,7 +130,7 @@ async def talk(client, message):
     # Notify the user that their message has been delivered
     await message.reply("Your message has been delivered to the admin. Please be patient, the admin will reply soon.")
 
-@Client.on_message(filters.command('create_code') & filters.private)
+@Client.on_message(filters.command('create_code') & filters.private & filters.user(ADMINS))
 async def create_code(client, message):
     """
     Admin command to create a new secret code.
@@ -149,7 +149,7 @@ async def create_code(client, message):
     secret_codes[new_code] = True  # You can also add expiration or validation if needed
     await message.reply(f"New secret code has been created successfully:\n\n`{new_code}`")  # In monospace text for easy copy
 
-@Client.on_message(filters.command('delete_code') & filters.private)
+@Client.on_message(filters.command('delete_code') & filters.private & filters.user(ADMINS))
 async def delete_code(client, message):
     """
     Admin command to delete a secret code.
