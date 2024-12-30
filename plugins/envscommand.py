@@ -85,3 +85,19 @@ async def update_env(client, message):
         await message.reply(f"Environment variable {key} updated to {value} in {config_name}.")
     else:
         await message.reply(f"Failed to update environment variable {key} in {config_name}.")
+
+@Client.on_message(filters.command('delete_env') & filters.user(ADMINS))  # Replace with admin IDs
+async def delete_env(client, message):
+    args = message.text.split()
+    if len(args) < 3:
+        await message.reply("Usage: /delete_env {config_name} {key}")
+        return
+
+    config_name, key = args[1], args[2]
+
+    # Attempt to delete the environment variable
+    success = delete_env_from_db(config_name, key)  # Function to delete the key from DB
+    if success:
+        await message.reply(f"Environment variable <pre>{key}</pre> deleted from {config_name}.", parse_mode=ParseMode.HTML)
+    else:
+        await message.reply(f"Failed to delete <pre>{key}</pre> from {config_name}. It might not exist.", parse_mode=ParseMode.HTML)
