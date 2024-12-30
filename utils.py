@@ -76,7 +76,7 @@ async def is_subscribed(bot, query):
     missing_channels = []
     logger.info(f"Checking subscription for user ID: {query.from_user.id}")
 
-    if REQUEST_TO_JOIN_MODE and join_db().isActive():
+    if REQUEST_TO_JOIN_MODE == True and join_db().isActive():
         logger.info("Request-to-join mode is active.")
         try:
             user = await join_db().get_user(query.from_user.id)
