@@ -123,7 +123,7 @@ async def start(client, message):
             return
 
         except Exception as e:
-            logger.error(f" is subscribe error {e}")
+    #        logger.error(f" is subscribe error {e}")
             return 
         btn = [
             [
