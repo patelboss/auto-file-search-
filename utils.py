@@ -84,7 +84,7 @@ async def is_subscribed(bot, query):
 #                logger.warning(f"User {query.from_user.id} is banned in channel {channel_id}.")
                 return False
         except UserNotParticipant:
-            logger.info(f"User {query.from_user.id} is not a participant in channel {channel_id}.")
+#            logger.info(f"User {query.from_user.id} is not a participant in channel {channel_id}.")
             missing_channels.append(channel_id)
             continue
         except Exception as e:
@@ -574,7 +574,7 @@ def humanbytes(size):
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
-FILTER_KEYWORDS = ['[', '@', 'www.', 'movie', 'www', 'telegram', 'tg']
+FILTER_KEYWORDS = ['[', '@', 'www.', 'clipmate', 'apd', 'movie', 'www', 'telegram', 'tg']
 #from config import FILTER_KEYWORDS
 
 def clean_file_name(file_name):
