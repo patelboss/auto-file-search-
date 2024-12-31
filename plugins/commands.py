@@ -341,14 +341,14 @@ async def start(client, message):
 
     
     elif data.startswith("all"):
-        logger.info("Processing 'all' command.")
+#        logger.info("Processing 'all' command.")
         await m.delete()
         files = temp.GETALL.get(file_id)
         if not files:
-            logger.warning("No such file exists for the given file_id.")
+#            logger.warning("No such file exists for the given file_id.")
             return await message.reply('<b><i>No such file exist.</b></i>')
         
-        logger.info(f"Found {len(files)} files associated with file_id: {file_id}.")
+#        logger.info(f"Found {len(files)} files associated with file_id: {file_id}.")
         filesarr = []
     
     # Check verification status first, outside the loop
@@ -365,24 +365,24 @@ async def start(client, message):
                     protect_content=True,
                     reply_markup=InlineKeyboardMarkup(btn)
                 )
-                logger.info(f"User {message.from_user.id} is not verified. Verification prompt sent.")
+#                logger.info(f"User {message.from_user.id} is not verified. Verification prompt sent.")
                 return  # Stop further execution if user is not verified
     
     # Process files if verified
         for file in files:
             file_id = file["file_id"]
-            logger.info(f"Processing file with file_id: {file_id}.")
+#            logger.info(f"Processing file with file_id: {file_id}.")
             
-            logger.info(f"Awaiting file details.")
+#            logger.info(f"Awaiting file details.")
             files_ = await get_file_details1(file_id)
-            logger.debug(f"File details retrieved: {files_}.")
+#            logger.debug(f"File details retrieved: {files_}.")
             
             files1 = files_
             title = clean_file_name(files1['file_name'])
             size = get_size(files1['file_size'])
             f_caption = files1['caption']
             
-            logger.info(f"File details: title={title}, size={size}.")
+#            logger.info(f"File details: title={title}, size={size}.")
             
             if CUSTOM_FILE_CAPTION:
                 try:
@@ -391,27 +391,27 @@ async def start(client, message):
                         file_size=size,
                         file_caption=f_caption
                     )
-                    logger.info("Custom caption applied successfully.")
+#                    logger.info("Custom caption applied successfully.")
                 except Exception as e:
                     logger.exception("Error applying custom caption.")
                     f_caption = f_caption or title
             
             if not f_caption:
                 f_caption = title
-                logger.info("Fallback caption applied.")
+#                logger.info("Fallback caption applied.")
 
             if STREAM_MODE:
                 button = [
                     [InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)],
                     [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
                 ]
-                logger.info("Stream mode enabled. Buttons configured.")
+#                logger.info("Stream mode enabled. Buttons configured.")
             else:
                 button = [
                     [InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)],
                     [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
                 ]
-                logger.info("Default mode enabled. Buttons configured.")
+#                logger.info("Default mode enabled. Buttons configured.")
             
             msg = await client.send_cached_media(
                 chat_id=message.from_user.id,
@@ -420,20 +420,20 @@ async def start(client, message):
                 protect_content=True if pre == 'filep' else False,
                 reply_markup=InlineKeyboardMarkup(button)
             )
-            logger.info(f"File sent to user: {message.from_user.id}, message_id: {msg.id}.")
+#            logger.info(f"File sent to user: {message.from_user.id}, message_id: {msg.id}.")
             filesarr.append(msg)
         
-        logger.info("All files sent. Sending confirmation message.")
+#        logger.info("All files sent. Sending confirmation message.")
         k = await client.send_message(chat_id=message.from_user.id, text = script.DELETEMSG)
         await asyncio.sleep(DLTTM)
         
-        logger.info("Deleting sent files after delay.")
+#        logger.info("Deleting sent files after delay.")
         for x in filesarr:
             await x.delete()
-            logger.info(f"Deleted message: {x.id}.")
+#            logger.info(f"Deleted message: {x.id}.")
         
         await k.edit_text("<b>Your All Files/Videos is successfully deleted!!!</b>")
-        logger.info("Confirmation message edited to indicate deletion.")
+#        logger.info("Confirmation message edited to indicate deletion.")
         return
     
     elif data.split("-", 1)[0] == "DSTORE":
@@ -497,7 +497,7 @@ async def start(client, message):
                 protect_content=True,
                 reply_markup=InlineKeyboardMarkup(btn)
             )
-            logger.info(f"User {message.from_user.id} is not verified. Verification prompt sent.")
+#            logger.info(f"User {message.from_user.id} is not verified. Verification prompt sent.")
             return  # Stop execution if the user is not verified
 
     if not files_:
@@ -559,7 +559,7 @@ async def start(client, message):
         [InlineKeyboardButton("Join Our Offer Zone 🤑", url=OFR_CNL)],
         [InlineKeyboardButton('💳 Dᴏɴᴀᴛᴇ', callback_data='donation')]
     ]
-    logger.info("Default mode enabled. Buttons configured.")
+#    logger.info("Default mode enabled. Buttons configured.")
 
     await m.delete()
     msg = await client.send_cached_media(
