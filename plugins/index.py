@@ -22,6 +22,8 @@ async def retry_on_floodwait(func, *args, **kwargs):
         try:
             return await func(*args, **kwargs)
         except FloodWait as e:
+            print(dir(e))  # Lists all attributes of the exception
+            print(f"Flood wait for {e.value} seconds.")  # Correct attribute
             logger.warning(f"FloodWait Error, retrying after {e.x} seconds...")
             await asyncio.sleep(e.x)
 
@@ -217,7 +219,7 @@ async def index_files_to_db(lst_msg_id, chat, msg, bot):
                     break
 
                 current += 1
-                if current % 20 == 0:
+                if current % 100 == 0:
                     elapsed_time = round(time.time() - start_time)  # Calculate elapsed time
                     formatted_time = format_time(elapsed_time)  # Format the time
 
