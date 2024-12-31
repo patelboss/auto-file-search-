@@ -68,10 +68,10 @@ Use /help for commands
 3. Alert buttons have a limit of 64 characters.
 
 <b>Commands and Usage:</b>
-• /filter - <code>add a filter in chat</code>
+• /addfilter - <code>add a filter in chat</code>
 • /filters - <code>list all the filters of a chat</code>
-• /del - <code>delete a specific filter in chat</code>
-• /delall - <code>delete the whole filters in a chat (chat owner only)</code>"""
+• /delete_filter - <code>delete a specific filter in chat</code>
+• /delallfilters - <code>delete the whole filters in a chat (chat owner only)</code>"""
     BUTTON_TXT = """Help: <b>Buttons</b>
 
 - Supports both url and alert inline buttons.
@@ -92,6 +92,7 @@ Use /help for commands
 1. Make me the admin of your channel if it's private.
 2. Make sure that your channel does not contains camrips, porn and fake files.
 3. Forward the last message to me with quotes.
+4. Reply That Message With /index Command.
  I'll add all the files in that channel to my db."""
     CONNECTION_TXT = """Help: <b>Connections</b>
 
@@ -112,9 +113,14 @@ Use /help for commands
 these are the extra features of ᏒᏗᏕᏂᎷᎥ
 
 <b>Commands and Usage:</b>
-• /id - <code>get id of a specified user.</code>
-• /info  - <code>get information about a user.</code>
-• /search  - <code>get the film information from various sources.</code>"""
+• /id - <pre>get id of a specified user or channel (if you reply to a channel post).</pre>
+• /info  - <pre>get information about a user.</pre>
+• /imdb  - <pre>get the film information from various sources.</pre>
+• /cpost - <pre>Post in channel via bot. </pre>
+• /ppost - <pre>Post in Channel private post (can't copy or forward) </pre>
+• /report - <pre>Reply to any message you want to report or inform Admin about that. </pre>
+• /talk - <pre>Talk to Admin with a special code. it can deliver Admin if you report any issue.</pre>
+• <b>Yaad Nahi Aa Raha Hai 😛😄</b>"""
     ADMIN_TXT = """Help: <b>Admin mods</b>
 
 <b>NOTE:</b>
@@ -131,7 +137,10 @@ This module only works for my admins
 • /ban  - <code>to ban a user.</code>
 • /unban  - <code>to unban a user.</code>
 • /channel - <code>to get list of total connected channels</code>
-• /broadcast - <code>to broadcast a message to all users</code>"""
+• /broadcast - <code>to broadcast a message to all users</code>
+• /send - send anything to users
+• /create_code - Create talk code
+• /delete_code - Delete talk code"""
     STATUS_TXT = """★ 𝚃𝙾𝚃𝙰𝙻 𝙵𝙸𝙻𝙴𝚂: <code>{}</code>
 ★ 𝚃𝙾𝚃𝙰𝙻 𝚄𝚂𝙴𝚁𝚂: <code>{}</code>
 ★ 𝚃𝙾𝚃𝙰𝙻 𝙲𝙷𝙰𝚃𝚂: <code>{}</code>
@@ -147,25 +156,26 @@ ID - <code>{}</code>
 Name - {}
 """
     DELETEMSG = """
-<blockquote><b>⏳Deleting In 60 Minutes 🗑️</b></blockquote>
+<pre><b>⏳Deleting In 60 Minutes 🗑️</b></pre>
 <pre>To save your files, do one of the following 👇🏻
 ├── 📤 Forward to your friends
 ├── 📲 Forward to saved message
 ├── 👥 Forward to our dumb group</pre>
 <a href="https://t.me/+4U2PRD2nYwQyNWM1">👉🏻ᴅᴜᴍʙ ɢʀᴏᴜᴘ👈🏻</a>"""
     MELCOW_ENG = """
-<b>Hᴇʟʟᴏ {} 😍 Welcome 🤗 to {}
+<b>Hᴇʟʟᴏ {} 😍 
+Welcome 🤗 to <pre> {} </pre>
 Chaliye shuru karte hai 
 Ab Aayega Majaa 🥳. </b>"""
+
     CAPTION = """
-<blockquote>𝗡𝗮𝗺𝗲</blockquote>
-@Filmykeedha <a href='https://whomeenoaglauns.com/4/8685800'><b>{file_name}</b></a>
+<pre>✨ 𝗡𝗮𝗺𝗲</pre>
+🎥 <b>@Filmykeedha</b> <a href='https://whomeenoaglauns.com/4/8685800'><b>{file_name}</b></a>
 
-<blockquote>𝗦𝗶𝘇𝗲</blockquote>
-<a href='https://whomeenoaglauns.com/4/8685800'>{file_size}</a>
+<pre>✨ 𝗦𝗶𝘇𝗲</pre>
+📂 <b><a href='https://whomeenoaglauns.com/4/8685800'>{file_size}</a></b>
 
-☞<a href='https://t.me/Filmykeedha'>𝗝𝗼𝗶𝗻 𝐅𝐢𝐥𝐦𝐲𝐤𝐞𝐞𝐝𝐡𝐚</a> 
+🔗 <b><a href='https://t.me/Filmykeedha'>𝗝𝗼𝗶𝗻 𝐅𝐢𝐥𝐦𝐲𝐤𝐞𝐞𝐝𝐡𝐚 🔥</a></b>  
+🎁 <b><a href='https://whomeenoaglauns.com/4/8685800'>💎 Tap Here for an Exclusive Surprise 💎</a></b>  
 
-☞<a href='https://whomeenoaglauns.com/4/8685800'>Tap on me for Surprise</a>
- 
-<pre>Help or Thanks Us By Donating 🙏🏻</pre>"""
+<pre>💖 Support Us by Donating 🙏🏻</pre>"""
