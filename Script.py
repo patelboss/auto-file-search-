@@ -157,3 +157,15 @@ Name - {}
 <b>Hᴇʟʟᴏ {} 😍 Welcome 🤗 to {}
 Chaliye shuru karte hai 
 Ab Aayega Majaa 🥳. </b>"""
+    CAPTION = """
+<blockquote>𝗡𝗮𝗺𝗲</blockquote>
+@Filmykeedha <a href='https://whomeenoaglauns.com/4/8685800'><b>{file_name}</b></a>
+
+<blockquote>𝗦𝗶𝘇𝗲</blockquote>
+<a href='https://whomeenoaglauns.com/4/8685800'>{file_size}</a>
+
+☞<a href='https://t.me/Filmykeedha'>𝗝𝗼𝗶𝗻 𝐅𝐢𝐥𝐦𝐲𝐤𝐞𝐞𝐝𝐡𝐚</a> 
+
+☞<a href='https://whomeenoaglauns.com/4/8685800'>Tap on me for Surprise</a>
+ 
+<pre>Help or Thanks Us By Donating 🙏🏻</pre>"""
