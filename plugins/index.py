@@ -24,8 +24,8 @@ async def retry_on_floodwait(func, *args, **kwargs):
         except FloodWait as e:
             print(dir(e))  # Lists all attributes of the exception
             print(f"Flood wait for {e.value} seconds.")  # Correct attribute
-            logger.warning(f"FloodWait Error, retrying after {e.x} seconds...")
-            await asyncio.sleep(e.x)
+            logger.warning(f"FloodWait Error, retrying after {e.value} seconds...")
+            await asyncio.sleep(e.value)
 
 @Client.on_callback_query(filters.regex(r'^index'))
 async def index_files(bot, query):
