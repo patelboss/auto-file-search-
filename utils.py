@@ -311,8 +311,8 @@ async def broadcast_messages(user_id, message, forward=False):
             await message.copy(chat_id=user_id)
         return True, "Success"
     except FloodWait as e:
-        logger.warning(f"FloodWait: Sleeping for {e.x} seconds.")
-        await asyncio.sleep(e.x)
+        logger.warning(f"FloodWait: Sleeping for {e.value} seconds.")
+        await asyncio.sleep(e.value)
         return await broadcast_messages(user_id, message, forward)
     except InputUserDeactivated:
         # Delete the user only if the account is deactivated
@@ -344,8 +344,8 @@ async def broadcast_messages_group(chat_id, message, forward=False):
                 logger.warning(f"Could not pin message in group {chat_id}: {e}")
         return True, "Success"
     except FloodWait as e:
-        logger.warning(f"FloodWait: Sleeping for {e.x} seconds.")
-        await asyncio.sleep(e.x)
+        logger.warning(f"FloodWait: Sleeping for {e.value} seconds.")
+        await asyncio.sleep(e.value)
         return await broadcast_messages_group(chat_id, message, forward)
     except Exception as e:
         logger.error(f"Error broadcasting to group {chat_id}: {e}")
