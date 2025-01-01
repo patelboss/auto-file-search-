@@ -47,9 +47,9 @@ async def pm_broadcast(client, message):
                         deleted += 1
                     else:
                         failed += 1
-              #  except FloodWait as e:
-                #    logger.warning(f"FloodWait of {e.x} seconds encountered. Waiting...")
-                 #   await asyncio.sleep(e.x)
+                except FloodWait as e:
+                    logger.warning(f"FloodWait of {e.value} seconds encountered. Waiting...")
+                    await asyncio.sleep(e.value)
                 #    await send_error_log(client, "broadcast floodwait waiting", e)
                 except InputUserDeactivated:
                     logger.warning(f"User {user['id']} is deactivated.")
@@ -111,9 +111,9 @@ async def broadcast_group(bot, message):
                         success += 1
                     else:
                         failed += 1
-            #    except FloodWait as e:
-             #       logger.warning(f"FloodWait of {e.x} seconds encountered. Waiting...")
-            #        await asyncio.sleep(e.x)
+                except FloodWait as e:
+                    logger.warning(f"FloodWait of {e.value} seconds encountered. Waiting...")
+                    await asyncio.sleep(e.value)
                 except Exception as e:
                     logger.error(f"Error broadcasting to group {group['id']}: {e}")
                     failed += 1
