@@ -24,6 +24,7 @@ from variables import CUSTOM_FILE_CAPTION, VERIFY, VERIFY_TUTORIAL, DLTTM, AUTH_
 import builtins
 from datetime import datetime, date
 from utils import VERIFIED
+import pytz
 BATCH_FILES = {}
 STREAM_MODE = "False"
 #VERIFY = "False"
