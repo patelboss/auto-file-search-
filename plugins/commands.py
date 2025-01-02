@@ -22,6 +22,8 @@ import base64
 from variables import CUSTOM_FILE_CAPTION, VERIFY, VERIFY_TUTORIAL, DLTTM, AUTH_CHANNELS
 #logger = logging.getLogger(__name__)
 import builtins
+from datetime import datetime, date
+from utils import VERIFIED
 BATCH_FILES = {}
 STREAM_MODE = "False"
 #VERIFY = "False"
@@ -93,6 +95,11 @@ async def start(client, message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
         await client.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(message.from_user.id, message.from_user.mention))
+        user = message.from_user
+        tz = pytz.timezone('Asia/Kolkata')
+        today = date.today()
+        VERIFIED[user.id] = str(today)
+       # logger.info(f"added in verified.")
         await m.delete()
     if len(message.command) != 2:
         buttons = [[
