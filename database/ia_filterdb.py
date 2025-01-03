@@ -115,14 +115,14 @@ async def get_search_results(query, file_type=None, max_results=10, offset=0, fi
 async def get_file_details1(query):
     try:
         filter = {'file_id': query}
-        logger.info(f"Filter or file ID: {filter}")
+       # logger.info(f"Filter or file ID: {filter}")
 
         # Fetch a single result using find().limit(1)
         cursor = Media.find(filter).limit(1)
         filedetails = await cursor.to_list(length=1)
 
         if filedetails:
-            logger.info(f"File details fetched successfully for query: {query}")
+            #logger.info(f"File details fetched successfully for query: {query}")
             return filedetails[0]  # Return the first (and only) result
         else:
             logger.warning(f"No file details found for query: {query}")
