@@ -272,7 +272,7 @@ async def start(client, message):
 
             except FloodWait as e:
 #                logger.warning(f"FloodWait of {e.x} seconds while sending file.")
-                await asyncio.sleep(e.x)
+                await asyncio.sleep(e.value)
                 continue
 
             except Exception as e:
@@ -288,7 +288,8 @@ async def start(client, message):
 #        logger.info("Cleaning up after sending files.")
         cleanup_msg = await client.send_message(
             chat_id=message.from_user.id,
-            text = script.DELETEMSG
+            text = script.DELETEMSG,
+            protect_content=True
         )
         await asyncio.sleep(DLTTM)  # Adjust duration as needed
 
@@ -314,11 +315,14 @@ async def start(client, message):
         is_valid = await check_token(client, userid, token)
         if is_valid == True:
             await m.delete()
-            await message.reply_text(
+            n = await message.reply_text(
                 text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.\nआपको मिला आज का प्रीमियम।\nआप आज मध्य रात्रि तक सभी सेवाओं का मुफ्त लाभ उठा सकते हैं।🤩</b>",
                 protect_content=True
             )
+            
             await verify_user(client, userid, token)
+            await asyncio.sleep(300)
+            await n.delete
         else:
             await m.delete()
             return await message.reply_text(
@@ -432,7 +436,7 @@ async def start(client, message):
             filesarr.append(msg)
         
 #        logger.info("All files sent. Sending confirmation message.")
-        k = await client.send_message(chat_id=message.from_user.id, text = script.DELETEMSG)
+        k = await client.send_message(chat_id=message.from_user.id, text = script.DELETEMSG, protect_content=True)
         await asyncio.sleep(DLTTM)
         
 #        logger.info("Deleting sent files after delay.")
@@ -534,7 +538,7 @@ async def start(client, message):
             btn = [[
                 InlineKeyboardButton("Get File Again", callback_data=f'del#{file_id}')
             ]]
-            k = await msg.reply(script.DELETEMSG ,quote=True)
+            k = await msg.reply(script.DELETEMSG ,quote=True, protect_content=True)
             await asyncio.sleep(DLTTM)
             await msg.delete()
             await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\n</b>") #,reply_markup=InlineKeyboardMarkup(btn))
@@ -580,7 +584,7 @@ async def start(client, message):
     btn = [[
         InlineKeyboardButton("Get File Again", callback_data=f'del#{file_id}')
     ]]
-    k = await msg.reply(script.DELETEMSG ,quote=True)
+    k = await msg.reply(script.DELETEMSG ,quote=True, protect_content=True)
     await asyncio.sleep(DLTTM)
     await msg.delete()
     await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>") #,reply_markup=InlineKeyboardMarkup(btn))
