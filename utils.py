@@ -574,7 +574,7 @@ def humanbytes(size):
         n += 1
     return str(round(size, 2)) + " " + Dic_powerN[n] + 'B'
 
-FILTER_KEYWORDS = ['[', '@', 'www.', 'clipmate', 'apd', 'movie', 'www', 'telegram', 'tg']
+FILTER_KEYWORDS = ['[', '@', 'www.', 'clipmate', 'apd', 'movie', 'www', 'telegram', 'tg', 'Tg', 'Movies', 'Filmy4cap', 'clipmate']
 #from config import FILTER_KEYWORDS
 
 def clean_file_name(file_name):
