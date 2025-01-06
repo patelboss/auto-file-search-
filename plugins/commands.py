@@ -322,7 +322,7 @@ async def start(client, message):
             
             await verify_user(client, userid, token)
             await asyncio.sleep(300)
-            await n.delete
+            await n.delete()
         else:
             await m.delete()
             return await message.reply_text(
