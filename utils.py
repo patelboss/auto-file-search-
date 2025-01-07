@@ -661,8 +661,8 @@ async def check_verification1(bot, userid):
         await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
     tz = pytz.timezone('Asia/Kolkata')
     today = date.today()
-    if user.id in check_verification():
-        EXP = check_verification(user.id)
+    if user.id in check_verificationdb():
+        EXP = check_verificationdb(user.id)
         years, month, day = EXP.split('-')
         comp = date(int(years), int(month), int(day))
         if comp<today:
@@ -686,7 +686,7 @@ async def verify_user(bot, userid, token):
     
     TOKENS[user.id] = {token: True}
     userid = user.id
-    await verify_user(userid)  # Mark the user as verified
+    await verify_userdb(userid)  # Mark the user as verified
 
 async def check_verification(bot, userid):
     """
@@ -698,7 +698,7 @@ async def check_verification(bot, userid):
         await db.add_user(user.id, user.first_name)
         await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
 
-    if await check_verification(userid):
+    if await check_verificationdb(userid):
         return True  # User is verified
     else:
         return False  # User is not verified
