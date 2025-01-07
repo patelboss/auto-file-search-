@@ -1,4 +1,4 @@
-#from database.verified import *
+from database.verified import check_verification, verify_user
 import logging, asyncio, os, re, random, pytz, aiohttp, requests, string, json, http.client
 from info import *
 from datetime import datetime, date
@@ -652,7 +652,7 @@ async def verify_user(bot, userid, token):
     TOKENS[user.id] = {token: True}
     tz = pytz.timezone('Asia/Kolkata')
     today = date.today()
-    VERIFIED[user.id] = str(today)
+    verify_user(user.id, str(today))
 
 async def check_verification(bot, userid):
     user = await bot.get_users(userid)
@@ -661,8 +661,8 @@ async def check_verification(bot, userid):
         await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
     tz = pytz.timezone('Asia/Kolkata')
     today = date.today()
-    if user.id in VERIFIED.keys():
-        EXP = VERIFIED[user.id]
+    if user.id in check_verification():
+        EXP = check_verification(user.id)
         years, month, day = EXP.split('-')
         comp = date(int(years), int(month), int(day))
         if comp<today:
