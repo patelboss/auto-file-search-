@@ -18,3 +18,4 @@ aiohttp
 pyromod #==1.5
 git+https://github.com/Joelkb/cinemagoer
 fuzzywuzzy
+python-Levenshtein
