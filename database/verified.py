@@ -18,7 +18,9 @@ async def check_verificationdb(userid):
     if verified_user:
         # Check if the verification is within the last 24 hours
         verification_time = verified_user['verified_at']
-        if verification_time + timedelta(hours=24) > datetime.utcnow():
+        tz = pytz.timezone('Asia/Kolkata')
+    
+        if verification_time > datetime.today():
             return True  # Verified within the last 24 hours
         else:
             # Remove expired verification
