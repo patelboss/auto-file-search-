@@ -644,7 +644,7 @@ async def get_token(bot, userid, link):
     else:
         return str(shortened_verify_url)
 
-async def verify_user(bot, userid, token):
+async def verify_user1(bot, userid, token):
     user = await bot.get_users(userid)
     if not await db.is_user_exist(user.id):
         await db.add_user(user.id, user.first_name)
@@ -654,7 +654,7 @@ async def verify_user(bot, userid, token):
     today = date.today()
     verify_user(user.id, str(today))
 
-async def check_verification(bot, userid):
+async def check_verification1(bot, userid):
     user = await bot.get_users(userid)
     if not await db.is_user_exist(user.id):
         await db.add_user(user.id, user.first_name)
@@ -671,7 +671,36 @@ async def check_verification(bot, userid):
             return True
     else:
         return False      
-        
+
+
+#TOKENS = {}  # Assuming TOKENS is a dictionary to track user tokens
+
+async def verify_user(bot, userid, token):
+    """
+    Verify user by adding them to the database and storing the token.
+    """
+    user = await bot.get_users(userid)
+    if not await db.is_user_exist(user.id):
+        await db.add_user(user.id, user.first_name)
+        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
+    
+    TOKENS[user.id] = {token: True}
+    await verify_user(user.id)  # Mark the user as verified
+
+async def check_verification(bot, userid):
+    """
+    Check if a user is verified.
+    """
+    user = await bot.get_users(userid)
+    if not await db.is_user_exist(user.id):
+        await db.add_user(user.id, user.first_name)
+        await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
+
+    if await check_verification(user.id):
+        return True  # User is verified
+    else:
+        return False  # User is not verified
+
 async def send_all(bot, userid, files, ident, chat_id, user_name, query):
     settings = await get_settings(chat_id)
     if 'is_shortlink' in settings.keys():
