@@ -13,7 +13,7 @@ async def check_verificationdb(userid):
     Check if the user is verified within the last 24 hours.
     Returns True if verified, else False.
     """
-    verified_user = await verified_collection.find_one({'user_id': userid})
+    verified_user = verified_collection.find_one({'user_id': userid})
 
     if verified_user:
         # Check if the verification is within the last 24 hours
