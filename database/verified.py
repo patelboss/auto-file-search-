@@ -9,7 +9,8 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client['your_database']  # replace 'your_database' with your actual database name
 verified_collection = db['verified_users']
 
-async def check_verification(userid):
+def check_verification(userid):
+     
     """
     Check if the user is verified within the last 24 hours.
     Returns True if verified, else False.
@@ -28,7 +29,7 @@ async def check_verification(userid):
     else:
         return False  # User not verified
 
-async def verify_user(userid):
+def verify_user(userid):
     """
     Save the user's verification status with the current timestamp.
     """
