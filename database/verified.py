@@ -3,10 +3,10 @@
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 import pytz
-
+from info import DATABASE_URI
 # Initialize MongoDB client and database (replace with your connection details)
-client = MongoClient('mongodb://localhost:27017/')
-db = client['your_database']  # replace 'your_database' with your actual database name
+client = MongoClient(DATABASE_URI)
+db = client['VERIDY']  # replace 'your_database' with your actual database name
 verified_collection = db['verified_users']
 
 def check_verification(userid):
@@ -29,13 +29,13 @@ def check_verification(userid):
     else:
         return False  # User not verified
 
-def verify_user(userid):
+def verify_user(userid, verified_at):
     """
     Save the user's verification status with the current timestamp.
     """
     verified_data = {
         'user_id': userid,
-        'verified_at': datetime.utcnow()  # Store the current UTC time for verification
+        'verified_at': verified_at  # Store the current UTC time for verification
     }
 
     # Insert or update the user's verification status in MongoDB
