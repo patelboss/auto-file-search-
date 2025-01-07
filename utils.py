@@ -1,4 +1,4 @@
-from database.verified import check_verification, verify_user
+from database.verified import check_verificationdb, verify_userdb
 import logging, asyncio, os, re, random, pytz, aiohttp, requests, string, json, http.client
 from info import *
 from datetime import datetime, date
