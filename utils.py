@@ -685,18 +685,20 @@ async def verify_user(bot, userid, token):
         await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
     
     TOKENS[user.id] = {token: True}
-    await verify_user(user.id)  # Mark the user as verified
+    userid = user.id
+    await verify_user(userid)  # Mark the user as verified
 
 async def check_verification(bot, userid):
     """
     Check if a user is verified.
     """
     user = await bot.get_users(userid)
+    userid = user.id
     if not await db.is_user_exist(user.id):
         await db.add_user(user.id, user.first_name)
         await bot.send_message(LOG_CHANNEL, script.LOG_TEXT_P.format(user.id, user.mention))
 
-    if await check_verification(user.id):
+    if await check_verification(userid):
         return True  # User is verified
     else:
         return False  # User is not verified
