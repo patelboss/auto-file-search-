@@ -1,5 +1,5 @@
 from pymongo import MongoClient
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import pytz
 import asyncio
 from info import DATABASE_URI
@@ -31,9 +31,10 @@ async def verify_user(userid):
     """
     Save the user's verification status with the current timestamp.
     """
+    tz = pytz.timezone('Asia/Kolkata')
     verified_data = {
         'user_id': userid,
-        'verified_at': datetime.utcnow()  # Store the current UTC time for verification
+        'verified_at': date.today()  # Store the current UTC time for verification
     }
 
     # Insert or update the user's verification status in MongoDB
