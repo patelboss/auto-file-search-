@@ -23,13 +23,13 @@ def profile_function(function_to_profile):
     
     return output.getvalue()  # Return the profiling results as a string
 @Client.on_message(filters.command("profile"))
-    async def profile_command(self, client, message):
+async def profile_command(self, client, message):
         """
         Profile a function and return the results when /profile command is invoked.
         """
         # Call the profiling utility with the function to profile
-        profile_result = profile_function(self.some_function_to_profile)
+    profile_result = profile_function(self.some_function_to_profile)
 
         # Send the profiling results to the user
-        await message.reply_text(f"**Profiling Results:**\n{profile_result}")
+    await message.reply_text(f"**Profiling Results:**\n{profile_result}")
 
