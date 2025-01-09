@@ -99,8 +99,9 @@ async def start(client, message):
         user = message.from_user
         tz = pytz.timezone('Asia/Kolkata')
         today = date.today()
-        VERIFIED[user.id] = str(today)
-       # logger.info(f"added in verified.")
+        userid = user.id
+        await verify_userdb(userid)
+        logger.info(f"added in verified. {userid} ")
         await m.delete()
     if len(message.command) != 2:
         buttons = [[
@@ -315,6 +316,7 @@ async def start(client, message):
         is_valid = await check_token(client, userid, token)
         if is_valid == True:
             await m.delete()
+            await q.delete()
             n = await message.reply_text(
                 text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.\nआपको मिला आज का प्रीमियम।\nआप आज मध्य रात्रि तक सभी सेवाओं का मुफ्त लाभ उठा सकते हैं।🤩</b>",
                 protect_content=True
@@ -372,7 +374,7 @@ async def start(client, message):
                 ],[
                     InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
                 ]]
-                await message.reply_text(
+                q = await message.reply_text(
                     text="<b>You are not verified!\nKindly verify to continue!</b>",
                     protect_content=True,
                     reply_markup=InlineKeyboardMarkup(btn)
@@ -504,7 +506,7 @@ async def start(client, message):
                 InlineKeyboardButton("How To Open Link & Verify", url=VERIFY_TUTORIAL)
             ]]
             await m.delete()
-            await message.reply_text(
+            q = await message.reply_text(
                 text="<b>You are not verified!\nKindly verify to continue!</b>",
                 protect_content=True,
                 reply_markup=InlineKeyboardMarkup(btn)
