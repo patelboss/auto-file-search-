@@ -303,34 +303,6 @@ async def start(client, message):
         await cleanup_msg.edit_text("<b>Your All Files/Videos have been successfully deleted!</b>")
 #        logger.info("Batch processing completed for Batch ID: %s", batch_id)
 
-    elif data.split("-", 1)[0] == "verify":
-        userid = data.split("-", 2)[1]
-        token = data.split("-", 3)[2]
-        if str(message.from_user.id) != str(userid):
-            await m.delete()
-            return await message.reply_text(
-                text="<b>Invalid link or Expired link !</b>",
-                protect_content=True
-            )
-        is_valid = await check_token(client, userid, token)
-        if is_valid == True:
-            await m.delete()
-            await q.delete()
-            n = await message.reply_text(
-                text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.\nआपको मिला आज का प्रीमियम।\nआप आज मध्य रात्रि तक सभी सेवाओं का मुफ्त लाभ उठा सकते हैं।🤩</b>",
-                protect_content=True
-            )
-            
-            await verify_user(client, userid, token)
-            await asyncio.sleep(300)
-            await n.delete()
-        else:
-            await m.delete()
-            return await message.reply_text(
-                text="<b>Invalid link or Expired link !</b>",
-                protect_content=True
-            )
-
         
     if data.startswith("sendfiles"):
         chat_id = int("-" + file_id.split("-")[1])
@@ -590,7 +562,36 @@ async def start(client, message):
     await msg.delete()
     await k.edit_text("<b>Your File/Video is successfully deleted!!!\n\nClick below button to get your deleted file 👇</b>") #,reply_markup=InlineKeyboardMarkup(btn))
     return
-    
+
+    elif data.split("-", 1)[0] == "verify":
+        userid = data.split("-", 2)[1]
+        token = data.split("-", 3)[2]
+        if str(message.from_user.id) != str(userid):
+            await m.delete()
+            return await message.reply_text(
+                text="<b>Invalid link or Expired link !</b>",
+                protect_content=True
+            )
+        is_valid = await check_token(client, userid, token)
+        if is_valid == True:
+            await m.delete()
+            await q.delete()
+            n = await message.reply_text(
+                text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.\nआपको मिला आज का प्रीमियम।\nआप आज मध्य रात्रि तक सभी सेवाओं का मुफ्त लाभ उठा सकते हैं।🤩</b>",
+                protect_content=True
+            )
+            
+            await verify_user(client, userid, token)
+            await asyncio.sleep(300)
+            await n.delete()
+        else:
+            await m.delete()
+            return await message.reply_text(
+                text="<b>Invalid link or Expired link !</b>",
+                protect_content=True
+            )
+
+
 
                      
 
