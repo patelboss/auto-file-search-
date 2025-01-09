@@ -315,7 +315,7 @@ async def start(client, message):
         is_valid = await check_token(client, userid, token)
         if is_valid == True:
             await m.delete()
-            await q.delete()
+            #await q.delete()
             n = await message.reply_text(
                 text=f"<b>Hey {message.from_user.mention}, You are successfully verified !\nNow you have unlimited access for all movies till today midnight.\nआपको मिला आज का प्रीमियम।\nआप आज मध्य रात्रि तक सभी सेवाओं का मुफ्त लाभ उठा सकते हैं।🤩</b>",
                 protect_content=True
