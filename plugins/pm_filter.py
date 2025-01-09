@@ -879,6 +879,10 @@ async def auto_filter(client, msg, spoll=False):
            # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
         ])
+        btn.insert(0, [
+             InlineKeyboardButton(f"Results For {msg}", callback_data=f"fsendfiles#{key}")
+
+        ])
 
     if offset != "":
         key = f"{message.chat.id}-{message.id}"
