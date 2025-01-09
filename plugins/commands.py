@@ -16,7 +16,7 @@ from utils import *
 from database.connections_mdb import active_connection
 import re
 from info import *
-import json
+#import json
 from database.batch_filedb import fetch_file_by_link, get_batch_by_id, save_batch_details, get_latest_batch_sequence, generate_batch_id
 import base64
 from variables import CUSTOM_FILE_CAPTION, VERIFY, VERIFY_TUTORIAL, DLTTM, AUTH_CHANNELS
@@ -824,7 +824,7 @@ async def settings(client, message):
         )
 
 @Client.on_message(filters.command("donate"))
-async def plans_cmd_handler(client, message): 
+async def donatetion(client, message): 
     btn = [            
         [InlineKeyboardButton("ꜱᴇɴᴅ ᴘᴀʏᴍᴇɴᴛ ʀᴇᴄᴇɪᴘᴛ 🧾", url=f"https://t.me/{OWNER_USERNAME}")],
         [InlineKeyboardButton("⚠️ ᴄʟᴏsᴇ / ᴅᴇʟᴇᴛᴇ ⚠️", callback_data="close_data")]
