@@ -1,6 +1,8 @@
 import cProfile
 import pstats
 from io import StringIO
+import logging
+from pyrogram import Client, filters
 
 def profile_function(function_to_profile):
     """
