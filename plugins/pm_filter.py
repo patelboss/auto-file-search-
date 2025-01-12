@@ -105,7 +105,7 @@ async def give_filter(client, message):
 
         # If not in the support chat, execute manual and auto-filter logic
         #logger.info(f"User is not in the support chat (chat_id: {chat_id}). Executing filters.")
-        L = await message.reply_text("<b>This Group Ban Anytime so Join Another Private Group.</b> <i> Link : https://t.me/+13JZ5BMiiSM4ZmE1 </i>\n Wait 10 second Bot is finding Movie", disable_web_page_preview=True)
+        L = await message.reply_text("<b>This Group Ban Anytime so Join Another Private Group.</b><i>👉🏻Link(1) : https://t.me/+5pa88NB3YAhiNDQ1 </i>\n<i>👉🏻Link(2) : https://t.me/+13JZ5BMiiSM4ZmE1 </i>\n\n Wait 10 second Bot is finding Movie", disable_web_page_preview=True)
         await manual_filters(client, message)
         await auto_filter(client, message)
         await asyncio.sleep(60)
