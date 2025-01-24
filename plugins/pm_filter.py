@@ -830,7 +830,7 @@ async def auto_filter(client, msg, spoll=False):
         if message.text.startswith("/"): return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
             return
-        if 2 < len(message.text) < 100:
+        if len(message.text) < 100:
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
@@ -863,6 +863,10 @@ async def auto_filter(client, msg, spoll=False):
             InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
             #InlineKeyboardButton("ʟanguage", callback_data=f"languages#{key}"),
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
+        ])
+        btn.insert(0, [
+             InlineKeyboardButton(f"Results For {message}", callback_data=f"fsendfiles#{key}")
+
         ])
     else:
         btn = [
