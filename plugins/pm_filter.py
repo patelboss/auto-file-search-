@@ -474,6 +474,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
             alert = alert.replace("\\n", "\n").replace("\\t", "\t")
             await query.answer(alert, show_alert=True)
     if query.data.startswith("file"):
+        logger.info("data start with file")
         ident, file_id = query.data.split("#")
         files_ = await get_file_details(file_id)
         if not files_:
@@ -498,9 +499,11 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
         try:
             if settings['botpm']:
+                logger.info("botpm is activate")
                 await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
                 return
             else:
+                logger.info("no bot pm")
                 msg = await client.send_cached_media(
                     chat_id=query.from_user.id,
                     file_id=file_id,
@@ -514,11 +517,16 @@ async def cb_handler(client: Client, query: CallbackQuery):
                 await k.edit_text("<b>Your File/Video is successfully deleted!!!</b>") #,reply_markup=InlineKeyboardMarkup(btn))
     
                 await query.answer('𝐂𝐡𝐞𝐜𝐤 𝐘𝐨𝐮𝐫 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐦𝐞𝐬𝐬𝐚𝐠𝐞, 𝐈 𝐡𝐚𝐯𝐞 𝐬𝐞𝐧𝐭 𝐟𝐢𝐥𝐞𝐬 𝐢𝐧 𝐩𝐦 \nCheck @Rashmika_mandanana_bot', show_alert=True)
+                logger.info("show alert")
         except UserIsBlocked:
+            logger.info("user block")
             await query.answer('𝐔𝐧𝐛𝐥𝐨𝐜𝐤 𝐭𝐡𝐞 𝐁𝐨𝐭!', show_alert=True)
         except PeerIdInvalid:
+            logger.info("peer id invalid")
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
         except Exception as e:
+            logger.info(f"exception {e}")
+            #print(f"error acure {e} ")
             await query.answer(url=f"https://t.me/{temp.U_NAME}?start={ident}_{file_id}")
     elif query.data.startswith("send_fsall"):
         temp_var, ident, key, offset = query.data.split("#")
