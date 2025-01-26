@@ -513,7 +513,7 @@ async def cb_handler(client: Client, query: CallbackQuery):
 
 
                 await query.answer('𝐂𝐡𝐞𝐜𝐤 𝐘𝐨𝐮𝐫 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐦𝐞𝐬𝐬𝐚𝐠𝐞, 𝐈 𝐡𝐚𝐯𝐞 𝐬𝐞𝐧𝐭 𝐟𝐢𝐥𝐞𝐬 𝐢𝐧 𝐩𝐦 \nCheck @Rashmika_mandanana_bot', show_alert=True)
-                logger.info("show alert")
+             #   logger.info("show alert")
                 
                 k = await msg.reply(script.DELETEMSG ,quote=True, protect_content=True)
                 await asyncio.sleep(DLTTM)
