@@ -210,6 +210,11 @@ async def next_page(bot, query):
            # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
         ])
+        btn.insert(0, [
+             InlineKeyboardButton(f"Results Of👉🏻 {search} 👈🏻", callback_data=f"fsendfiles#{key}")
+
+        ])
+        
     else:
         btn = [
             [
@@ -227,6 +232,10 @@ async def next_page(bot, query):
             InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
            # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
+        ])
+        btn.insert(0, [
+             InlineKeyboardButton(f"Results Of👉🏻 {search} 👈🏻", callback_data=f"fsendfiles#{key}")
+
         ])
 
     if 0 < offset <= 10:
@@ -871,6 +880,10 @@ async def auto_filter(client, msg, spoll=False):
             #InlineKeyboardButton("ʟanguage", callback_data=f"languages#{key}"),
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
         ])
+        btn.insert(0, [
+             InlineKeyboardButton(f"Results Of👉🏻 {search} 👈🏻", callback_data=f"fsendfiles#{key}")
+
+        ])
     else:
         btn = [
             [
@@ -891,6 +904,10 @@ async def auto_filter(client, msg, spoll=False):
             InlineKeyboardButton("𝐒𝐞𝐧𝐝 𝐀𝐥𝐥", callback_data=f"sendfiles#{key}") #,
            # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
+        ])
+        btn.insert(0, [
+             InlineKeyboardButton(f"Results Of👉🏻 {search} 👈🏻", callback_data=f"fsendfiles#{key}")
+
         ])
 
     if offset != "":
