@@ -32,6 +32,8 @@ from database.filters_mdb import (
     find_filter,
     get_filters,
 )
+from variables import CUSTOM_FILE_CAPTION, VERIFY, VERIFY_TUTORIAL, DLTTM, AUTH_CHANNELS
+
 import logging
 from pyrogram.enums import ParseMode
 logger = logging.getLogger(__name__)
@@ -508,6 +510,17 @@ async def cb_handler(client: Client, query: CallbackQuery):
                     protect_content=True if ident == "filep" else False 
                 )
                 await query.answer('𝐂𝐡𝐞𝐜𝐤 𝐘𝐨𝐮𝐫 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐦𝐞𝐬𝐬𝐚𝐠𝐞, 𝐈 𝐡𝐚𝐯𝐞 𝐬𝐞𝐧𝐭 𝐟𝐢𝐥𝐞𝐬 𝐢𝐧 𝐩𝐦', show_alert=True)
+
+
+                await query.answer('𝐂𝐡𝐞𝐜𝐤 𝐘𝐨𝐮𝐫 𝐏𝐫𝐢𝐯𝐚𝐭𝐞 𝐦𝐞𝐬𝐬𝐚𝐠𝐞, 𝐈 𝐡𝐚𝐯𝐞 𝐬𝐞𝐧𝐭 𝐟𝐢𝐥𝐞𝐬 𝐢𝐧 𝐩𝐦 \nCheck @Rashmika_mandanana_bot', show_alert=True)
+                logger.info("show alert")
+                
+                k = await msg.reply(script.DELETEMSG ,quote=True, protect_content=True)
+                await asyncio.sleep(DLTTM)
+                await msg.delete()
+                await k.edit_text("<b>Your File/Video is successfully deleted!!!</b>") #,reply_markup=InlineKeyboardMarkup(btn))
+    
+        
         except UserIsBlocked:
             await query.answer('𝐔𝐧𝐛𝐥𝐨𝐜𝐤 𝐭𝐡𝐞 𝐁𝐨𝐭!', show_alert=True)
         except PeerIdInvalid:
@@ -824,7 +837,7 @@ async def auto_filter(client, msg, spoll=False):
         if message.text.startswith("/"): return  # ignore commands
         if re.findall("((^\/|^,|^!|^\.|^[\U0001F600-\U000E007F]).*)", message.text):
             return
-        if 2 < len(message.text) < 100:
+        if len(message.text) < 100:
             search = message.text
             files, offset, total_results = await get_search_results(search.lower(), offset=0, filter=True)
             if not files:
