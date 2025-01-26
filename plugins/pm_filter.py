@@ -210,6 +210,11 @@ async def next_page(bot, query):
            # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
         ])
+        btn.insert(0, [
+             InlineKeyboardButton(f"Search: {search}", callback_data=f"fsendfiles#{key}")
+
+        ])
+        
     else:
         btn = [
             [
@@ -228,6 +233,11 @@ async def next_page(bot, query):
            # InlineKeyboardButton("ʟᴀɴɢᴜᴀɢᴇs", callback_data=f"languages#{key}"),
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
         ])
+        btn.insert(0, [
+             InlineKeyboardButton(f"Search : {search}", callback_data=f"fsendfiles#{key}")
+
+        ])
+        
 
     if 0 < offset <= 10:
         off_set = 0
@@ -881,7 +891,7 @@ async def auto_filter(client, msg, spoll=False):
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
         ])
         btn.insert(0, [
-             InlineKeyboardButton(f"Results For {search}", callback_data=f"fsendfiles#{key}")
+             InlineKeyboardButton(f"Search : {search}", callback_data=f"fsendfiles#{key}")
 
         ])
     else:
@@ -906,7 +916,7 @@ async def auto_filter(client, msg, spoll=False):
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
         ])
         btn.insert(0, [
-             InlineKeyboardButton(f"Results For {search}", callback_data=f"fsendfiles#{key}")
+             InlineKeyboardButton(f"Search : {search}", callback_data=f"fsendfiles#{key}")
 
         ])
 
