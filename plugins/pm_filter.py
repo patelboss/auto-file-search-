@@ -862,9 +862,9 @@ async def auto_filter(client, msg, spoll=False):
     FRESH[key] = search
     temp.GETALL[key] = files
     temp.SHORT[message.from_user.id] = message.chat.id
-    logger.info(f"msg : {msg} ")
-    logger.info(f"message: {message}")
-    logger.info(f"search: {search}")
+   # logger.info(f"msg : {msg} ")
+   # logger.info(f"message: {message}")
+   # logger.info(f"search: {search}")
     
     if settings["button"]:
         btn = [
@@ -881,7 +881,7 @@ async def auto_filter(client, msg, spoll=False):
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
         ])
         btn.insert(0, [
-             InlineKeyboardButton(f"Results For {message}", callback_data=f"fsendfiles#{key}")
+             InlineKeyboardButton(f"Results For {search}", callback_data=f"fsendfiles#{key}")
 
         ])
     else:
@@ -906,7 +906,7 @@ async def auto_filter(client, msg, spoll=False):
             #InlineKeyboardButton("ʏᴇᴀʀs", callback_data=f"years#{key}")
         ])
         btn.insert(0, [
-             InlineKeyboardButton(f"Results For {msg}", callback_data=f"fsendfiles#{key}")
+             InlineKeyboardButton(f"Results For {search}", callback_data=f"fsendfiles#{key}")
 
         ])
 
