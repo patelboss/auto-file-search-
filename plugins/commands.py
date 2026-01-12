@@ -30,7 +30,7 @@ STREAM_MODE = "False"
 #VERIFY = "False"
 AUTO_DELETE = "False"
 GRP_LNK = "https://t.me/Filmykeedha/306"
-OFR_CNL = "https://t.me/+4dWp2gDjwC43YmJl"
+#OFR_CNL = "https://t.me/+4dWp2gDjwC43YmJl"
 #VERIFY_TUTORIAL = "https://t.me/Filmykeedha/394"
 sticker_ids = [
     "CAACAgUAAxkBAAI15Wd8MrA2SLTI-Li_SmwkWxcxOoTVAALNBAACWe0YVlcLt2c9ppYFHgQ",
@@ -889,3 +889,4 @@ async def donation_callback(client, callback_query):
         caption=PAYMENT_TEXT,
         reply_markup=reply_markup
     )
+
