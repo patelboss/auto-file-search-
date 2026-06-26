@@ -161,21 +161,22 @@ Name - {}
 ├── 📤 Forward to your friends
 ├── 📲 Forward to saved message
 ├── 👥 Forward to our dumb group</pre>
-<a href="https://t.me/+4U2PRD2nYwQyNWM1">👉🏻ᴅᴜᴍʙ ɢʀᴏᴜᴘ👈🏻</a>"""
+<a href="https://t.me/Filmykeedha/306">👉🏻ᴅᴜᴍʙ ɢʀᴏᴜᴘ👈🏻</a>"""
     MELCOW_ENG = """
 <b>Hᴇʟʟᴏ {} 😍 
 Welcome 🤗 to <pre> {} </pre>
 Chaliye shuru karte hai 
-Ab Aayega Majaa 🥳. </b>"""
+Ab Aayega Majaa 🥳. 
+Tap Button Below 👇🏻 To Find Active Group</b>"""
 
     CAPTION = """
 <pre>✨ 𝗡𝗮𝗺𝗲</pre>
-🎥 <b>@Filmykeedha</b> <a href='https://whomeenoaglauns.com/4/8685800'><b>{file_name}</b></a>
+🎥 <b>@Filmykeedha</b> <a href='https://t.me/Filmykeedha/306'><b>{file_name}</b></a>
 
 <pre>✨ 𝗦𝗶𝘇𝗲</pre>
-📂 <b><a href='https://whomeenoaglauns.com/4/8685800'>{file_size}</a></b>
+📂 <b><a href='https://t.me/Filmykeedha/306'>{file_size}</a></b>
 
 🔗 <b><a href='https://t.me/Filmykeedha'>𝗝𝗼𝗶𝗻 𝐅𝐢𝐥𝐦𝐲𝐤𝐞𝐞𝐝𝐡𝐚 🔥</a></b>  
-🎁 <b><a href='https://whomeenoaglauns.com/4/8685800'>💎 Tap Here for an Exclusive Surprise 💎</a></b>  
+🎁 <b><a href='https://t.me/Filmykeedha/306'>💎 Tap Here for an Exclusive Surprise 💎</a></b>  
 
 <pre>💖 Support Us by Donating 🙏🏻</pre>"""
