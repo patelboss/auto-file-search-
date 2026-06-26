@@ -49,11 +49,22 @@ async def envs_command(client: Client, message: Message):
         configs = fetch_all_configs()
 
         if configs:
-            # Format all configurations
             response = "Current Environment Configurations:\n\n"
             for config in configs:
                 config_name = config.get("config_name", "Unknown")
-                details = "\n\n".join(f"{key} = {value}" for key, value in config.items() if key != "_id")
+                
+                # Clean the config name just in case
+                config_name = str(config_name).encode('utf-8', 'ignore').decode('utf-8')
+                
+                details_list = []
+                for key, value in config.items():
+                    if key != "_id":
+                        # Convert both key and value to string, then scrub surrogate characters
+                        clean_key = str(key).encode('utf-8', 'ignore').decode('utf-8')
+                        clean_value = str(value).encode('utf-8', 'ignore').decode('utf-8')
+                        details_list.append(f"{clean_key} = {clean_value}")
+                
+                details = "\n\n".join(details_list)
                 response += f"<b>{config_name}</b>:\n<pre>{details}</pre>\n\n"
             
             # Send the formatted response
@@ -62,8 +73,9 @@ async def envs_command(client: Client, message: Message):
             await message.reply("No environment configurations found.")
     
     except Exception as e:
-        await message.reply(f"An error occurred while fetching configurations: {e}")
-
+        # Clean the error message too, just in case 'e' contains the bad character
+        clean_err = str(e).encode('utf-8', 'ignore').decode('utf-8')
+        await message.reply(f"An error occurred while fetching configurations: {clean_err}")
 
 
 @Client.on_message(filters.command('update_env') & filters.user(ADMINS))  # Only admins can use this
